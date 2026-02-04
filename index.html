@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>katOS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #000;
+  --border: rgba(255,255,255,0.15);
+  --glass: rgba(0,0,0,0.75);
+  --text: #fff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--text); height:100vh; overflow:hidden; }
+.desktop { width:100%; height:100vh; position:relative; }
+.terminal-bg, .video-bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; pointer-events:none; opacity: 0.4; }
+.taskbar { position:fixed; bottom:0; width:100%; background:rgba(255,255,255,0.05); border-top:1px solid var(--border); padding:8px 15px; font-size:12px; z-index:10; display: flex; justify-content: space-between; align-items: center; }
+.window { position:absolute; background:linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.18); border-radius:14px; backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); box-shadow: 0 0 30px rgba(255,255,255,0.05), inset 0 0 10px rgba(255,255,255,0.05); z-index:2; transition: all 0.3s ease; }
+.window:hover { box-shadow: 0 0 45px rgba(255,255,255,0.12), inset 0 0 15px rgba(255,255,255,0.08); transform: translateY(-3px); }
+.titlebar { padding:8px; border-bottom:1px solid var(--border); font-size:11px; cursor:grab; display:flex; align-items:center; gap:6px; }
+.mac-btn { width:12px; height:12px; border-radius:50%; background:white; border:1px solid #000; }
+.content { padding:15px; font-size:13px; overflow:auto; }
+.mono { font-family:'Courier New', 'Consolas', monospace; white-space:pre; text-shadow: 0 0 6px rgba(255,255,255,0.25); line-height:1.4; font-size:11px; letter-spacing: 0.5px; }
+.link { cursor:pointer; margin-bottom:6px; }
+.link:hover { text-decoration:underline; }
+.terminal-window { background: linear-gradient(145deg, rgba(0,0,0,0.85), rgba(0,0,0,0.7)); border:1px solid rgba(255,255,255,0.2); backdrop-filter: blur(22px) saturate(180%); border-radius:16px; }
+.terminal-window .content { max-height: calc(100% - 35px); overflow-y: auto; overflow-x: hidden; }
+.profile-icon { width:50px; height:50px; border-radius:50%; margin-bottom:8px; border:1px solid rgba(255,255,255,0.3); display:block; margin-left:auto; margin-right:auto; }
+
+/* Custom scrollbar for terminal windows */
+.terminal-window .content::-webkit-scrollbar { width: 8px; }
+.terminal-window .content::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+.terminal-window .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+.terminal-window .content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+/* Video container for pipes terminal */
+.video-container { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 0 0 14px 14px; background: #000; display: flex; align-items: center; justify-content: center; }
+.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Loading screen */
+#loadingScreen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+  transition: opacity 0.5s ease;
+}
+#loadingScreen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-content {
+  text-align: center;
+}
+.loading-logo {
+  font-size: 72px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px rgba(255,255,255,0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+.loading-text {
+  font-size: 16px;
+  opacity: 0.7;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Music controls */
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+}
+.music-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+}
+.music-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+.music-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.music-icon {
+  animation: spin 3s linear infinite;
+}
+.music-icon.paused {
+  animation-play-state: paused;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.volume-slider {
+  width: 60px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255,255,255,0.2);
+  outline: none;
+  border-radius: 2px;
+}
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 50%;
+  border: none;
+}
+
+.placeholder-text {
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<!-- Loading Screen -->
+<div id="loadingScreen">
+  <div class="loading-content">
+    <div class="loading-logo">katOS</div>
+    <div class="loading-text">Click anywhere to enter</div>
+  </div>
+</div>
+
+<div class="desktop">
+<video class="video-bg" id="bgVideo" autoplay muted loop playsinline></video>
+<div class="taskbar">
+  <span>katOS</span>
+
+  <div class="music-controls">
+    <div class="music-info">
+      <i class="fas fa-compact-disc music-icon" id="musicIcon"></i>
+      <span id="musicStatus">Music Ready</span>
+    </div>
+    <button class="music-btn" id="playPauseBtn" title="Play/Pause">
+      <i class="fas fa-play" id="playPauseIcon"></i>
+    </button>
+    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="40" title="Volume">
+  </div>
+</div>
+
+<!-- About Window -->
+<div class="window" style="top:60px; left:40px; width:320px;">
+  <div class="titlebar">
+    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
+    about.bash
+  </div>
+  <div class="content">
+  I cant stop loving linux, pls speed i need this<br><br>
+  minecraft shyt, networking experiments, and Linux customization.<br><br>
+  i was on the ███████████████<br><br>
+  cats &gt; people haha.<br><br>
+  you da real kat 🤍.
+  </div>
+</div>
+
+<!-- Links Window -->
+<div class="window" style="top: 228px; left: 405px; width: 320px;">
+  <div class="titlebar">
+    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
+    links.AppImage
+  </div>
+  <div class="content">
+  <p class="link" onclick="openLink('https://discordapp.com/users/1082968457559146506')"><i class="fab fa-discord"></i> Discord</p><br>
+  <p class="link" onclick="openLink('https://www.instagram.com/oiupoyt/')"><i class="fab fa-instagram"></i> Instagram</p><br>
+  <p class="link" onclick="openLink('https://www.youtube.com/@OIUPOYT')"><i class="fab fa-youtube"></i> YouTube</p><br>
+  <p class="link" onclick="openLink('https://www.roblox.com/users/1529210346/profile')"><i class="fas fa-gamepad"></i> Roblox</p><br>
+  <p class="link" onclick="openLink('https://modrinth.com/user/oiupoyt')"><i class="fas fa-cube"></i> Modrinth</p>
+  </div>
+</div>
+
+<!-- Skills Window -->
+<div class="window" style="top: 510px; left: 120px; width: 320px;">
+  <div class="titlebar">
+    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
+    skills.yaml
+  </div>
+  <div class="content">
+  linux / arch<br>Minecraft Servers<br>Self Hosting<br>server networking<br>Java / Plugins<br>yappin<br>im crine<br>tweaking<br>hahahahahha<br>cool content<br>very funny<br>veri fond of cats
+  </div>
+</div>
+
+<!-- Neofetch Profile Window -->
+<div class="window terminal-window" style="top: 60px; left: 777px; width: 950px; height:390px;">
+  <div class="titlebar">
+    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
+    ~neofetch
+  </div>
+  <div class="content mono" id="neofetchTerminal"></div>
+</div>
+
+<!-- Pipes Terminal Window -->
+<div class="window terminal-window" style="top: 474.433px; left: 721px; width: 950px; height: 450px;">
+  <div class="titlebar">
+    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
+    terminal-e
+  </div>
+  <div class="video-container" id="pipesContainer">
+    <div class="placeholder-text" id="pipesPlaceholder">Loading...</div>
+    <video id="pipesVideo" autoplay loop muted playsinline style="display:none;"></video>
+  </div>
+</div>
+
+</div>
+
+<!-- Audio element for music -->
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+function openLink(url){ window.open(url, '_blank'); }
+
+document.querySelectorAll(".window").forEach(win=>{
+ const bar = win.querySelector(".titlebar");
+ if (!bar) return;
+ bar.onmousedown = e=>{
+  let shiftX = e.clientX - win.getBoundingClientRect().left;
+  let shiftY = e.clientY - win.getBoundingClientRect().top;
+  function move(x,y){ win.style.left = x - shiftX + 'px'; win.style.top = y - shiftY + 'px'; }
+  function mouseMove(e){ move(e.pageX,e.pageY); }
+  document.addEventListener('mousemove',mouseMove);
+  document.onmouseup = ()=>{ document.removeEventListener('mousemove',mouseMove); document.onmouseup=null; }
+ }
+});
+
+// Neofetch Output
+const neofetchWin = document.getElementById("neofetchTerminal");
+const neofetchData = `
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢰⡆⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄               oiupoyt@katarch
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢠⣿⣿⡄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⣾⣿⣿⣿⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   ╭──────────── Software ────────────
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  OS 🢒 Archcraft x86_64
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⣿⣷⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  KER 🢒 Linux 6.18.7-arch1-1
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢼⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  PKG 🢒 1548 (pacman), 42 (flatpak)
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣤⣈⠻⢿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  SHL 🢒 zsh 5.9
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣿⣿⣿⣮⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  TER 🢒 kitty
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  LOC 🢒 en_IN
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   ├──────────── Hardware ────────────
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  UPT 🢒 5 hours, 59 mins
+⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⡿⣿⣿⡟⠄⠄⠸⣿⣿⡿⣿⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄⠄⠄   │  HST 🢒 HUAWEI BOHK-WAX9X-PCB
+⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⡏⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠈⣿⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄   │  CPU 🢒 AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx
+⠄⠄⠄⠄⠄⠄⢀⣼⣿⣿⣿⣿⣿⣿⡗⠄⠄⠄⢀⣠⣤⣀⠄⠄⠄⠸⣿⣿⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄   │  GPU 🢒 AMD ATI Radeon Vega Series / Radeon Vega Mobile Series
+⠄⠄⠄⠄⠄⢀⣾⣿⣿⣿⣿⣿⡏⠁⠄⠄⠄⢠⣿⣿⣿⣿⡇⠄⠄⠄⠄⢙⣿⣿⣻⠿⣿⣷⡀⠄⠄⠄⠄⠄   │  MEM 🢒 5182MiB / 6862MiB (75%)
+⠄⠄⠄⠄⢀⣾⣿⣿⣿⣿⣿⣿⣷⣤⡀⠄⠄⠄⠻⣿⣿⡿⠃⠄⠄⠄⢀⣼⣿⣿⣿⣿⣦⣌⠙⠄⠄⠄⠄⠄   │  (/) 🢒 142G / 183G (83%)
+⠄⠄⠄⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠄⠄⠄   │  BA1 🢒 97% [Not charging]
+⠄⠄⢠⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⡄⠄⠄   ╰──────── 🟦 🟦 🟦 🟦 🟦 🟦 🟦 🟦 ─────────
+⠄⣠⣿⣿⣿⣿⠿⠛⠋⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠉⠙⠻⢿⣿⣿⣿⣿⣆⠄
+⡰⠟⠛⠉⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠉⠙⠛⠿⢆                    I 🤍 cats yupe
+`;
+neofetchWin.textContent = neofetchData;
+
+// Music player
+const bgMusic = document.getElementById('bgMusic');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const playPauseIcon = document.getElementById('playPauseIcon');
+const volumeSlider = document.getElementById('volumeSlider');
+const musicStatus = document.getElementById('musicStatus');
+const musicIcon = document.getElementById('musicIcon');
+
+let isPlaying = false;
+
+// Set initial volume
+bgMusic.volume = volumeSlider.value / 100;
+
+// Play/Pause button
+playPauseBtn.addEventListener('click', () => {
+  if (isPlaying) {
+    bgMusic.pause();
+    playPauseIcon.className = 'fas fa-play';
+    musicStatus.textContent = 'Paused';
+    musicIcon.classList.add('paused');
+    isPlaying = false;
+  } else {
+    bgMusic.play().then(() => {
+      playPauseIcon.className = 'fas fa-pause';
+      musicStatus.textContent = 'Now Playing';
+      musicIcon.classList.remove('paused');
+      isPlaying = true;
+    }).catch(err => {
+      console.error('Music play error:', err);
+      musicStatus.textContent = 'Error playing';
+    });
+  }
+});
+
+// Volume control
+volumeSlider.addEventListener('input', (e) => {
+  bgMusic.volume = e.target.value / 100;
+});
+
+// Update status when music ends
+bgMusic.addEventListener('ended', () => {
+  playPauseIcon.className = 'fas fa-play';
+  musicStatus.textContent = 'Ended';
+  musicIcon.classList.add('paused');
+  isPlaying = false;
+});
+
+// Loading screen functionality
+const loadingScreen = document.getElementById('loadingScreen');
+const bgVideo = document.getElementById('bgVideo');
+const pipesVideo = document.getElementById('pipesVideo');
+const pipesPlaceholder = document.getElementById('pipesPlaceholder');
+
+loadingScreen.addEventListener('click', () => {
+  // Hide loading screen
+  loadingScreen.classList.add('hidden');
+
+  // Start videos
+  tryAutoLoad();
+
+  // Auto-play music
+  setTimeout(() => {
+    bgMusic.play().then(() => {
+      playPauseIcon.className = 'fas fa-pause';
+      musicStatus.textContent = 'Now Playing';
+      musicIcon.classList.remove('paused');
+      isPlaying = true;
+    }).catch(err => {
+      console.error('Auto-play blocked:', err);
+      musicStatus.textContent = 'Click play';
+    });
+  }, 500);
+});
+
+// Try to auto-load if videos are in same directory (fallback)
+async function tryAutoLoad() {
+  try {
+    const bgResponse = await fetch('backgroundVideo.mp4');
+    if (bgResponse.ok) {
+      const blob = await bgResponse.blob();
+      const url = URL.createObjectURL(blob);
+      bgVideo.src = url;
+      bgVideo.load();
+      bgVideo.play().catch(e => console.error('BG video error:', e));
+    }
+  } catch (e) {
+    console.log('Background video not found, trying .webm');
+    try {
+      const bgResponse = await fetch('backgroundVideo.webm');
+      if (bgResponse.ok) {
+        const blob = await bgResponse.blob();
+        const url = URL.createObjectURL(blob);
+        bgVideo.src = url;
+        bgVideo.load();
+        bgVideo.play().catch(e => console.error('BG video error:', e));
+      }
+    } catch (e2) {
+      console.error('No background video found');
+    }
+  }
+
+  try {
+    const pipesResponse = await fetch('terminal.mp4');
+    if (pipesResponse.ok) {
+      const blob = await pipesResponse.blob();
+      const url = URL.createObjectURL(blob);
+      pipesVideo.src = url;
+      pipesVideo.style.display = 'block';
+      pipesPlaceholder.style.display = 'none';
+      pipesVideo.load();
+      pipesVideo.play().catch(e => console.error('Pipes video error:', e));
+    }
+  } catch (e) {
+    console.log('Pipes video not found, trying .webm or pipes.mp4');
+    try {
+      const pipesResponse = await fetch('terminal.webm');
+      if (pipesResponse.ok) {
+        const blob = await pipesResponse.blob();
+        const url = URL.createObjectURL(blob);
+        pipesVideo.src = url;
+        pipesVideo.style.display = 'block';
+        pipesPlaceholder.style.display = 'none';
+        pipesVideo.load();
+        pipesVideo.play().catch(e => console.error('Pipes video error:', e));
+      }
+    } catch (e2) {
+      // Try pipes.mp4 as fallback
+      try {
+        const pipesResponse = await fetch('pipes.mp4');
+        if (pipesResponse.ok) {
+          const blob = await pipesResponse.blob();
+          const url = URL.createObjectURL(blob);
+          pipesVideo.src = url;
+          pipesVideo.style.display = 'block';
+          pipesPlaceholder.style.display = 'none';
+          pipesVideo.load();
+          pipesVideo.play().catch(e => console.error('Pipes video error:', e));
+        }
+      } catch (e3) {
+        console.error('No pipes video found');
+        pipesPlaceholder.textContent = 'No video found';
+      }
+    }
+  }
+}
+</script>
+</body>
+</html>
