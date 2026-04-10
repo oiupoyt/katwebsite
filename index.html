@@ -190,18 +190,19 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
   </div>
   <div class="content">
   I cant stop loving linux, pls speed i need this<br><br>
-  minecraft shyt, networking experiments, and Linux customization.<br><br>
+  minecraft shyt, networking experiments, and linux customization.<br><br>
   i was on the ███████████████<br><br>
   cats &gt; people haha.<br><br>
+  i use arch yea <br><br>
   you da real kat 🤍.
   </div>
 </div>
 
 <!-- Links Window -->
-<div class="window" style="top: 158px; left: 398px; width: 320px;">
+<div class="window" style="top: 434px; left: 41px; width: 320px;"">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    links.AppImage
+    links.zip
   </div>
   <div class="content">
   <p class="link" onclick="openLink('https://discordapp.com/users/1082968457559146506')"><i class="fab fa-discord"></i> Discord</p><br>
@@ -219,11 +220,12 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
   </div>
   <div class="content"><br>
 <p class="link" onclick="openLink('https://katdrop.onrender.com/')"><i class="fas fa-share-nodes"></i> website to share files cuz ye</p><br><br>
+<p class="link" onclick="openLink('https;//justdownload.netlify.app')"><i class="fas fa-download"></i> downlaod youtube and instagram contents</p><br>
 <p class="link" onclick="openLink('https://kat-images.netlify.app/')"><i class="fas fa-images"></i> free kat images cuz ye</p><br>
   </div>
 </div>
 <!-- Skills Window -->
-<div class="window" style="top: 410.433px; left: 41px; width: 320px;">
+<div class="window" style="top: 162px; left: 426px; width: 320px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
     skills.yaml
@@ -233,17 +235,17 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<!-- Neofetch Profile Window -->
-<div class="window" style="top: 60px; left: 777px; width: 950px; height:390px;">
+<!-- FastFetch Profile Window -->
+<div class="window" style="top: 31px; left: 927px; width: 750px; height: 390px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    ~neofetch
+    ~fastfetch
   </div>
   <div class="content mono" id="neofetchTerminal"></div>
 </div>
 
 <!-- Pipes Terminal Window -->
-<div class="window" style="top: 501.033px; left: 831px; width: 950px; height: 450px;">
+<div class="window" style="top: 457.467px; left: 783px; width: 950px; height: 450px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
     terminal-e
@@ -281,26 +283,25 @@ document.querySelectorAll(".window").forEach(win=>{
 // Neofetch Output
 const neofetchWin = document.getElementById("neofetchTerminal");
 const neofetchData = `
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢰⡆⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄               oiupoyt@katarch
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢠⣿⣿⡄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⣾⣿⣿⣿⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   ╭──────────── Software ────────────
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  OS 🢒 Archcraft x86_64
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⣿⣷⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  KER 🢒 Linux 6.18.7-arch1-1
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢼⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  PKG 🢒 1548 (pacman), 42 (flatpak)
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣤⣈⠻⢿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  SHL 🢒 zsh 5.9
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣿⣿⣿⣮⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  TER 🢒 kitty
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  LOC 🢒 en_IN
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   ├──────────── Hardware ────────────
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄   │  UPT 🢒 5 hours, 59 mins
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⡿⣿⣿⡟⠄⠄⠸⣿⣿⡿⣿⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄⠄⠄   │  HST 🢒 HUAWEI BOHK-WAX9X-PCB
-⠄⠄⠄⠄⠄⠄⠄⠄⣼⣿⣿⣿⣿⣿⡏⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠈⣿⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄   │  CPU 🢒 AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx
-⠄⠄⠄⠄⠄⠄⢀⣼⣿⣿⣿⣿⣿⣿⡗⠄⠄⠄⢀⣠⣤⣀⠄⠄⠄⠸⣿⣿⣿⣿⣿⣿⣷⡀⠄⠄⠄⠄⠄⠄   │  GPU 🢒 AMD ATI Radeon Vega Series / Radeon Vega Mobile Series
-⠄⠄⠄⠄⠄⢀⣾⣿⣿⣿⣿⣿⡏⠁⠄⠄⠄⢠⣿⣿⣿⣿⡇⠄⠄⠄⠄⢙⣿⣿⣻⠿⣿⣷⡀⠄⠄⠄⠄⠄   │  MEM 🢒 5182MiB / 6862MiB (75%)
-⠄⠄⠄⠄⢀⣾⣿⣿⣿⣿⣿⣿⣷⣤⡀⠄⠄⠄⠻⣿⣿⡿⠃⠄⠄⠄⢀⣼⣿⣿⣿⣿⣦⣌⠙⠄⠄⠄⠄⠄   │  (/) 🢒 142G / 183G (83%)
-⠄⠄⠄⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠄⠄⠄   │  BA1 🢒 97% [Not charging]
-⠄⠄⢠⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⡄⠄⠄   ╰──────── ⬜ ⬜ ⬜ ⬜ ⬜ ⬜ ⬜ ⬜ ─────────
-⠄⣠⣿⣿⣿⣿⠿⠛⠋⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠉⠙⠻⢿⣿⣿⣿⣿⣆⠄
-⡰⠟⠛⠉⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠉⠙⠛⠿⢆                    I 🤍 cats yupe
+                   ▄
+                  ▟█▙
+                 ▟███▙                   oiupoyt@archlinux
+                ▟█████▙
+               ▟███████▙                      Arch Linux x86_64
+              ▂▔▀▜██████▙                     Linux 6.19.8-arch1-1
+             ▟██▅▂▝▜█████▙                    1254 (pacman), 60 (flatpak)
+            ▟█████████████▙                   fish 4.5.0
+           ▟███████████████▙                  kitty 0.46.1
+          ▟█████████████████▙                 Hyprland 0.54.2 (Wayland)
+         ▟███████████████████▙                breeze
+        ▟█████████▛▀▀▜████████▙               NotoSansMono-Regular (11pt)
+       ▟████████▛      ▜███████▙              9 hours, 16 mins
+      ▟█████████        ████████▙             2026-4-10
+     ▟██████████        █████▆▅▄▃▂          󰝚  Baiaa081 - Noite Isolada (Playing)
+    ▟██████████▛        ▜█████████▙           Youtube (Mozilla zen)
+   ▟██████▀▀▀              ▀▀██████▙
+  ▟███▀▘                       ▝▀███▙
+ ▟▛▀                               ▀▜▙
 `;
 neofetchWin.textContent = neofetchData;
 
