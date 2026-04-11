@@ -382,7 +382,7 @@ loadingScreen.addEventListener('click', () => {
 });
 
 async function tryLoadBgVideo() {
-  for (const name of ['backgroundVideo.mp4', 'backgroundVideo.webm']) {
+  for (const name of ['background.mp4', 'background.webm']) {
     try {
       const res = await fetch(name);
       if (res.ok) {
