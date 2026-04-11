@@ -20,8 +20,8 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 .desktop { width:100%; height:100vh; position:relative; }
 .terminal-bg, .video-bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; pointer-events:none; opacity: 0.4; }
 .taskbar { position:fixed; bottom:0; width:100%; background:rgba(255,255,255,0.05); border-top:1px solid var(--border); padding:8px 15px; font-size:12px; z-index:10; display: flex; justify-content: space-between; align-items: center; }
-.window { position:absolute; background:linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.18); border-radius:14px; backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); box-shadow: 0 0 30px rgba(255,255,255,0.05), inset 0 0 10px rgba(255,255,255,0.05); z-index:2; transition: all 0.3s ease; }
-.window:hover { box-shadow: 0 0 45px rgba(255,255,255,0.12), inset 0 0 15px rgba(255,255,255,0.08); transform: translateY(-3px); }
+.window { position:absolute; background:linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.1) 100%); border:1px solid rgba(255,255,255,0.13); border-radius:14px; backdrop-filter: blur(26px) saturate(180%) brightness(1.06); -webkit-backdrop-filter: blur(26px) saturate(180%) brightness(1.06); box-shadow: 0 4px 30px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.1) inset; z-index:2; transition: all 0.35s ease; }
+.window:hover { box-shadow: 0 8px 48px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.06), 0 1px 0 rgba(255,255,255,0.15) inset; transform: translateY(-3px); backdrop-filter: blur(32px) saturate(200%) brightness(1.1); -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.1); }
 .titlebar { padding:8px; border-bottom:1px solid var(--border); font-size:11px; cursor:grab; display:flex; align-items:center; gap:6px; }
 .mac-btn { width:12px; height:12px; border-radius:50%; background:white; border:1px solid #000; }
 .content { padding:15px; font-size:13px; overflow:auto; }
@@ -39,8 +39,8 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 .terminal-window .content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
 /* Video container for pipes terminal */
-.video-container { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 0 0 14px 14px; background: #000; display: flex; align-items: center; justify-content: center; }
-.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.video-container { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 0 0 14px 14px; background: transparent; display: flex; align-items: center; justify-content: center; }
+.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; background: transparent; }
 
 /* Loading screen */
 #loadingScreen {
@@ -248,7 +248,7 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 <div class="window" style="top: 457.467px; left: 783px; width: 950px; height: 450px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    terminal-e
+    visualizer
   </div>
   <div class="video-container" id="pipesContainer">
     <div class="placeholder-text" id="pipesPlaceholder">Loading...</div>
