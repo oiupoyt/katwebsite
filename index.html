@@ -28,6 +28,8 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 .mono { font-family:'Courier New', 'Consolas', monospace; white-space:pre; text-shadow: 0 0 6px rgba(255,255,255,0.25); line-height:1.4; font-size:11px; letter-spacing: 0.5px; }
 .link { cursor:pointer; margin-bottom:6px; }
 .link:hover { text-decoration:underline; }
+.glow-links .link { text-shadow: 0 0 8px rgba(255,255,255,0.45), 0 0 20px rgba(255,255,255,0.15); }
+.glow-links .link:hover { text-shadow: 0 0 12px rgba(255,255,255,0.7), 0 0 28px rgba(255,255,255,0.25); }
 .terminal-window { background: linear-gradient(145deg, rgba(0,0,0,0.85), rgba(0,0,0,0.7)); border:1px solid rgba(255,255,255,0.2); backdrop-filter: blur(22px) saturate(180%); border-radius:16px; }
 .terminal-window .content { max-height: calc(100% - 35px); overflow-y: auto; overflow-x: hidden; }
 .profile-icon { width:50px; height:50px; border-radius:50%; margin-bottom:8px; border:1px solid rgba(255,255,255,0.3); display:block; margin-left:auto; margin-right:auto; }
@@ -209,8 +211,8 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
   <p class="link" onclick="openLink('https://discordapp.com/users/1082968457559146506')"><i class="fab fa-discord"></i> Discord</p><br>
   <p class="link" onclick="openLink('https://www.instagram.com/oiupoyt/')"><i class="fab fa-instagram"></i> Instagram</p><br>
   <p class="link" onclick="openLink('https://www.youtube.com/@OIUPOYT')"><i class="fab fa-youtube"></i> YouTube</p><br>
-  <p class="link" onclick="openLink('https://www.roblox.com/users/1529210346/profile')"><i class="fas fa-gamepad"></i> Roblox</p><br>
-  <p class="link" onclick="openLink('https://modrinth.com/user/oiupoyt')"><i class="fas fa-cube"></i> Modrinth</p>
+  <p class="link" onclick="openLink('https://www.roblox.com/users/1529210346/profile')"><svg style="width:13px;height:13px;vertical-align:middle;margin-right:4px;fill:currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.686 0L0 19.314 19.314 24 24 4.686zm10.016 14.23l-5.072-1.358 1.358-5.072 5.072 1.358z"/></svg> Roblox</p><br>
+  <p class="link" onclick="openLink('https://modrinth.com/user/oiupoyt')"><svg style="width:13px;height:13px;vertical-align:middle;margin-right:4px;fill:currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.148 3.259 9.563 7.88 11.226-.034-.523-.006-1.15.13-1.72l.96-4.063s-.245-.49-.245-1.215c0-1.14.66-1.99 1.48-1.99.698 0 1.036.524 1.036 1.153 0 .702-.448 1.754-.68 2.73-.193.815.409 1.478 1.21 1.478 1.45 0 2.43-1.86 2.43-4.061 0-1.675-1.13-2.928-3.172-2.928-2.31 0-3.745 1.727-3.745 3.66 0 .663.185 1.13.476 1.49.133.158.152.22.103.402-.035.132-.113.45-.146.577-.047.183-.192.249-.352.181-1.311-.535-1.923-1.97-1.923-3.582 0-2.663 2.247-5.866 6.7-5.866 3.588 0 5.954 2.602 5.954 5.394 0 3.698-2.05 6.467-5.063 6.467-1.015 0-1.97-.55-2.296-1.17l-.643 2.528c-.2.753-.59 1.508-.952 2.104A12.03 12.03 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg> Modrinth</p>
   </div>
 </div>
 
@@ -219,7 +221,7 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
     websites.html
   </div>
-  <div class="content"><br>
+  <div class="content glow-links"><br>
 <p class="link" onclick="openLink('https://katdrop.onrender.com/')"><i class="fas fa-share-nodes"></i> website to share files cuz ye</p><br><br>
 <p class="link" onclick="openLink('https://justdownload.netlify.app')"><i class="fas fa-download"></i> downlaod youtube and instagram contents</p><br>
 <p class="link" onclick="openLink('https://kat-images.netlify.app/')"><i class="fas fa-images"></i> free kat images cuz ye</p><br>
@@ -429,8 +431,8 @@ function drawViz() {
   // Clear with a slight fade trail for smoothness
   vizCtx.clearRect(0, 0, W, H);
 
-  const barCount  = 80;
-  const gap       = W * 0.004;
+  const barCount  = 20;
+  const gap       = W * 0.012;
   const barW      = (W - gap * (barCount + 1)) / barCount;
   const step      = Math.floor(bufLen / barCount);
   const maxH      = H * 0.82;
