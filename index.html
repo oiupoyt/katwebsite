@@ -26,6 +26,7 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 .mac-btn { width:12px; height:12px; border-radius:50%; background:white; border:1px solid #000; }
 .content { padding:15px; font-size:13px; overflow:auto; }
 .mono { font-family:'Fira Code', 'Courier New', monospace; white-space:pre; text-shadow: 0 0 6px rgba(255,255,255,0.25); line-height:1.4; font-size:11px; letter-spacing: 0.3px; }
+#neofetchTerminal { white-space: normal; }
 .link { cursor:pointer; margin-bottom:6px; }
 .link:hover { text-decoration:underline; }
 .glow-links .link { text-shadow: 0 0 8px rgba(255,255,255,0.45), 0 0 20px rgba(255,255,255,0.15); }
@@ -283,30 +284,31 @@ document.querySelectorAll(".window").forEach(win=>{
  }
 });
 
-// Neofetch Output
+// Neofetch Output — innerHTML with Font Awesome icons
 const neofetchWin = document.getElementById("neofetchTerminal");
-const neofetchData = `
-                   ▄
-                  ▟█▙
-                 ▟███▙                   oiupoyt@archlinux
-                ▟█████▙
-               ▟███████▙                      Arch Linux x86_64
-              ▂▔▀▜██████▙                     Linux 6.19.8-arch1-1
-             ▟██▅▂▝▜█████▙                    1254 (pacman), 60 (flatpak)
-            ▟█████████████▙                   fish 4.5.0
-           ▟███████████████▙                  kitty 0.46.1
-          ▟█████████████████▙                 Hyprland 0.54.2 (Wayland)
-         ▟███████████████████▙                breeze
-        ▟█████████▛▀▀▜████████▙               NotoSansMono-Regular (11pt)
-       ▟████████▛      ▜███████▙              9 hours, 16 mins
-      ▟█████████        ████████▙             2026-4-10
-     ▟██████████        █████▆▅▄▃▂          ♫  Baiaa081 - Noite Isolada (Playing)
-    ▟██████████▛        ▜█████████▙           Youtube (Mozilla zen)
-   ▟██████▀▀▀              ▀▀██████▙
-  ▟███▀▘                       ▝▀███▙
- ▟▛▀                               ▀▜▙
-`;
-neofetchWin.textContent = neofetchData;
+const i = (cls) => `<i class="${cls}" style="width:1.1em;text-align:center;display:inline-block;opacity:0.8;font-size:10px;"></i>`;
+neofetchWin.innerHTML = [
+  `                   ▄`,
+  `                  ▟█▙`,
+  `                 ▟███▙                   <b>oiupoyt</b><span style="opacity:0.4">@</span><b>archlinux</b>`,
+  `                ▟█████▙                  <span style="opacity:0.35">────────────────────────</span>`,
+  `               ▟███████▙                 ${i('fas fa-laptop')} <span style="opacity:0.45;font-size:10px">OS</span> Arch Linux x86_64`,
+  `              ▂▔▀▜██████▙                ${i('fas fa-microchip')} <span style="opacity:0.45;font-size:10px">Kernel</span> Linux 6.19.8-arch1-1`,
+  `             ▟██▅▂▝▜█████▙               ${i('fas fa-box-open')} <span style="opacity:0.45;font-size:10px">Packages</span> 1254 (pacman), 60 (flatpak)`,
+  `            ▟█████████████▙              ${i('fas fa-terminal')} <span style="opacity:0.45;font-size:10px">Shell</span> fish 4.5.0`,
+  `           ▟███████████████▙             ${i('fas fa-display')} <span style="opacity:0.45;font-size:10px">Terminal</span> kitty 0.46.1`,
+  `          ▟█████████████████▙            ${i('fas fa-window-restore')} <span style="opacity:0.45;font-size:10px">WM</span> Hyprland 0.54.2 (Wayland)`,
+  `         ▟███████████████████▙           ${i('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> breeze`,
+  `        ▟█████████▛▀▀▜████████▙          ${i('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> NotoSansMono-Regular (11pt)`,
+  `       ▟████████▛      ▜███████▙         ${i('fas fa-clock')} <span style="opacity:0.45;font-size:10px">Uptime</span> 9 hours, 16 mins`,
+  `      ▟█████████        ████████▙        ${i('fas fa-calendar-days')} <span style="opacity:0.45;font-size:10px">Date</span> 2026-4-10`,
+  `     ▟██████████        █████▆▅▄▃▂       ${i('fas fa-music')} <span style="opacity:0.45;font-size:10px">Music</span> Baiaa081 - Noite Isolada`,
+  `    ▟██████████▛        ▜█████████▙      ${i('fab fa-firefox-browser')} <span style="opacity:0.45;font-size:10px">Browser</span> Youtube (Mozilla zen)`,
+  `   ▟██████▀▀▀              ▀▀██████▙`,
+  `  ▟███▀▘                       ▝▀███▙`,
+  ` ▟▛▀                               ▀▜▙`,
+].map(l => `<div style="white-space:pre;line-height:1.5;display:flex;align-items:center;gap:6px;">${l}</div>`).join('');
+
 
 // Music player
 const bgMusic = document.getElementById('bgMusic');
