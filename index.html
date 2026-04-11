@@ -5,75 +5,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>katOS</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
 :root {
   --bg: #000;
-  --border: rgba(255,255,255,0.15);
-  --glass: rgba(0,0,0,0.75);
+  --border: rgba(255,255,255,0.12);
+  --glass: rgba(0,0,0,0.6);
   --text: #fff;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--text); height:100vh; overflow:hidden; }
 .desktop { width:100%; height:100vh; position:relative; }
-.terminal-bg, .video-bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; pointer-events:none; opacity: 0.4; }
-.taskbar { position:fixed; bottom:0; width:100%; background:rgba(255,255,255,0.05); border-top:1px solid var(--border); padding:8px 15px; font-size:12px; z-index:10; display: flex; justify-content: space-between; align-items: center; }
-.window { position:absolute; background:linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.18); border-radius:14px; backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); box-shadow: 0 0 30px rgba(255,255,255,0.05), inset 0 0 10px rgba(255,255,255,0.05); z-index:2; transition: all 0.3s ease; }
-.window:hover { box-shadow: 0 0 45px rgba(255,255,255,0.12), inset 0 0 15px rgba(255,255,255,0.08); transform: translateY(-3px); }
-.titlebar { padding:8px; border-bottom:1px solid var(--border); font-size:11px; cursor:grab; display:flex; align-items:center; gap:6px; }
-.mac-btn { width:12px; height:12px; border-radius:50%; background:white; border:1px solid #000; }
+
+/* Background video — no opacity so it shows through windows naturally */
+.video-bg {
+  position:fixed; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:0; pointer-events:none;
+  opacity: 0.55;
+}
+
+.taskbar {
+  position:fixed; bottom:0; width:100%;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:8px 15px; font-size:12px; z-index:10;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: background 0.4s ease;
+}
+
+/* ── Smoother glass windows ── */
+.window {
+  position:absolute;
+  /* Layered gradient for subtle depth */
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.07) 0%,
+    rgba(255,255,255,0.03) 40%,
+    rgba(0,0,0,0.15) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius:14px;
+  /* Stronger blur for richer glass look */
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.08);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.08);
+  box-shadow:
+    0 4px 32px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.12) inset,
+    0 -1px 0 rgba(0,0,0,0.2) inset;
+  z-index:2;
+  transition: box-shadow 0.35s ease, transform 0.35s ease, backdrop-filter 0.35s ease;
+}
+.window:hover {
+  box-shadow:
+    0 8px 48px rgba(0,0,0,0.45),
+    0 0 24px rgba(255,255,255,0.07),
+    0 1px 0 rgba(255,255,255,0.18) inset,
+    0 -1px 0 rgba(0,0,0,0.25) inset;
+  transform: translateY(-3px);
+  backdrop-filter: blur(32px) saturate(200%) brightness(1.12);
+  -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.12);
+}
+
+.titlebar {
+  padding:8px; border-bottom:1px solid rgba(255,255,255,0.08);
+  font-size:11px; cursor:grab; display:flex; align-items:center; gap:6px;
+  background: rgba(255,255,255,0.025);
+  border-radius: 14px 14px 0 0;
+}
+.mac-btn { width:12px; height:12px; border-radius:50%; background:white; border:1px solid rgba(0,0,0,0.3); }
 .content { padding:15px; font-size:13px; overflow:auto; }
-.mono { font-family:'Courier New', 'Consolas', monospace; white-space:pre; text-shadow: 0 0 6px rgba(255,255,255,0.25); line-height:1.4; font-size:11px; letter-spacing: 0.5px; }
+
+/* ── Neofetch: use JetBrains Mono which has full Unicode block coverage ── */
+.mono {
+  font-family: 'JetBrains Mono', 'Noto Sans Mono', 'DejaVu Sans Mono', 'Courier New', monospace;
+  white-space: pre;
+  text-shadow: 0 0 6px rgba(255,255,255,0.2);
+  line-height: 1.45;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
 .link { cursor:pointer; margin-bottom:6px; }
 .link:hover { text-decoration:underline; }
-.terminal-window { background: linear-gradient(145deg, rgba(0,0,0,0.85), rgba(0,0,0,0.7)); border:1px solid rgba(255,255,255,0.2); backdrop-filter: blur(22px) saturate(180%); border-radius:16px; }
+
+/* Terminal window — transparent background so video alpha shows through */
+.terminal-window {
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(0,0,0,0.08) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border-radius: 16px;
+}
 .terminal-window .content { max-height: calc(100% - 35px); overflow-y: auto; overflow-x: hidden; }
+
 .profile-icon { width:50px; height:50px; border-radius:50%; margin-bottom:8px; border:1px solid rgba(255,255,255,0.3); display:block; margin-left:auto; margin-right:auto; }
 
-/* Custom scrollbar for terminal windows */
+/* Custom scrollbar */
 .terminal-window .content::-webkit-scrollbar { width: 8px; }
-.terminal-window .content::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-.terminal-window .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-.terminal-window .content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+.terminal-window .content::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 10px; }
+.terminal-window .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 10px; }
+.terminal-window .content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
 
-/* Video container for pipes terminal */
-.video-container { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 0 0 14px 14px; background: #000; display: flex; align-items: center; justify-content: center; }
-.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* ── Video container: fully transparent so alpha-channel webm composites correctly ── */
+.video-container {
+  width: 100%; height: 100%;
+  position: relative; overflow: hidden;
+  border-radius: 0 0 14px 14px;
+  /* NO background — removed the black #000 so alpha video punches through */
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+}
+.video-container video {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  /* mix-blend-mode: normal keeps alpha intact; set to 'screen' if you want additive blending */
+  mix-blend-mode: normal;
+  /* Let the video's own alpha channel control opacity */
+  background: transparent;
+}
 
 /* Loading screen */
 #loadingScreen {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  cursor: pointer;
-  transition: opacity 0.5s ease;
+  position: fixed; inset: 0; background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999; cursor: pointer;
+  transition: opacity 0.6s ease;
 }
-#loadingScreen.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-.loading-content {
-  text-align: center;
-}
+#loadingScreen.hidden { opacity: 0; pointer-events: none; }
+.loading-content { text-align: center; }
 .loading-logo {
-  font-size: 72px;
-  font-weight: 700;
-  margin-bottom: 30px;
+  font-size: 72px; font-weight: 700; margin-bottom: 30px;
   text-shadow: 0 0 20px rgba(255,255,255,0.5);
   animation: pulse 2s ease-in-out infinite;
 }
-.loading-text {
-  font-size: 16px;
-  opacity: 0.7;
-  animation: fadeInOut 2s ease-in-out infinite;
-}
+.loading-text { font-size: 16px; opacity: 0.7; animation: fadeInOut 2s ease-in-out infinite; }
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.8; transform: scale(1.05); }
@@ -84,76 +157,32 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 }
 
 /* Music controls */
-.music-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 11px;
-}
+.music-controls { display: flex; align-items: center; gap: 10px; font-size: 11px; }
 .music-btn {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--text);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; color: var(--text);
 }
-.music-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.1);
-}
-.music-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.music-icon {
-  animation: spin 3s linear infinite;
-}
-.music-icon.paused {
-  animation-play-state: paused;
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+.music-btn:hover { background: rgba(255,255,255,0.18); transform: scale(1.1); }
+.music-info { display: flex; align-items: center; gap: 8px; }
+.music-icon { animation: spin 3s linear infinite; }
+.music-icon.paused { animation-play-state: paused; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .volume-slider {
-  width: 60px;
-  height: 4px;
-  -webkit-appearance: none;
-  appearance: none;
-  background: rgba(255,255,255,0.2);
-  outline: none;
-  border-radius: 2px;
+  width: 60px; height: 4px;
+  -webkit-appearance: none; appearance: none;
+  background: rgba(255,255,255,0.2); outline: none; border-radius: 2px;
 }
 .volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 50%;
+  -webkit-appearance: none; appearance: none;
+  width: 12px; height: 12px; background: #fff; cursor: pointer; border-radius: 50%;
 }
 .volume-slider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 50%;
-  border: none;
+  width: 12px; height: 12px; background: #fff; cursor: pointer; border-radius: 50%; border: none;
 }
-
-.placeholder-text {
-  color: rgba(255,255,255,0.5);
-  font-size: 14px;
-  text-align: center;
-}
+.placeholder-text { color: rgba(255,255,255,0.5); font-size: 14px; text-align: center; }
 </style>
 </head>
 <body>
@@ -199,7 +228,7 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <!-- Links Window -->
-<div class="window" style="top: 434px; left: 41px; width: 320px;"">
+<div class="window" style="top: 434px; left: 41px; width: 320px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
     links.zip
@@ -220,15 +249,13 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
   </div>
   <div class="content"><br>
 <p class="link" onclick="openLink('https://katdrop.onrender.com/')"><i class="fas fa-share-nodes"></i> website to share files cuz ye</p><br><br>
-<p class="link" onclick="openLink('https://justdownload.netlify.app')"><i class="fas fa-download"></i> downlaod youtube and instagram contents</p><br>
-<p class="link" onclick="openLink('https://kat-images.netlify.app/')"><i class="fas fa-images"></i> free kat images cuz ye</p><br>
   </div>
 </div>
-<!-- Skills Window -->
-<div class="window" style="top: 162px; left: 426px; width: 320px;">
+
+<div class="window" style="top: 79px; left: 417px; width: 320px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    skills.yaml
+    interests.txt
   </div>
   <div class="content">
   linux / arch<br>Minecraft Servers<br>Self Hosting<br>server networking<br>Java / Plugins<br>yappin<br>im crine<br>tweaking<br>hahahahahha<br>cool content<br>very funny<br>veri fond of cats
@@ -245,7 +272,7 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <!-- Pipes Terminal Window -->
-<div class="window" style="top: 457.467px; left: 783px; width: 950px; height: 450px;">
+<div class="window terminal-window" style="top: 457.467px; left: 783px; width: 950px; height: 450px;">
   <div class="titlebar">
     <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
     terminal-e
@@ -281,24 +308,26 @@ document.querySelectorAll(".window").forEach(win=>{
 });
 
 // Neofetch Output
+// Uses textContent so Unicode block/box chars render as-is.
+// JetBrains Mono (loaded via Google Fonts) covers all these glyphs.
 const neofetchWin = document.getElementById("neofetchTerminal");
 const neofetchData = `
                    ▄
                   ▟█▙
                  ▟███▙                   oiupoyt@archlinux
                 ▟█████▙
-               ▟███████▙                      Arch Linux x86_64
-              ▂▔▀▜██████▙                     Linux 6.19.8-arch1-1
-             ▟██▅▂▝▜█████▙                    1254 (pacman), 60 (flatpak)
-            ▟█████████████▙                   fish 4.5.0
-           ▟███████████████▙                  kitty 0.46.1
-          ▟█████████████████▙                 Hyprland 0.54.2 (Wayland)
-         ▟███████████████████▙                breeze
-        ▟█████████▛▀▀▜████████▙               NotoSansMono-Regular (11pt)
-       ▟████████▛      ▜███████▙              9 hours, 16 mins
-      ▟█████████        ████████▙             2026-4-10
+               ▟███████▙                      Arch Linux x86_64
+              ▂▔▀▜██████▙                     Linux 6.19.8-arch1-1
+             ▟██▅▂▝▜█████▙                    1254 (pacman), 60 (flatpak)
+            ▟█████████████▙                   fish 4.5.0
+           ▟███████████████▙                  kitty 0.46.1
+          ▟█████████████████▙                 Hyprland 0.54.2 (Wayland)
+         ▟███████████████████▙                breeze
+        ▟█████████▛▀▀▜████████▙               NotoSansMono-Regular (11pt)
+       ▟████████▛      ▜███████▙              9 hours, 16 mins
+      ▟█████████        ████████▙             2026-4-10
      ▟██████████        █████▆▅▄▃▂          󰝚  Baiaa081 - Noite Isolada (Playing)
-    ▟██████████▛        ▜█████████▙           Youtube (Mozilla zen)
+    ▟██████████▛        ▜█████████▙           Youtube (Mozilla zen)
    ▟██████▀▀▀              ▀▀██████▙
   ▟███▀▘                       ▝▀███▙
  ▟▛▀                               ▀▜▙
@@ -315,10 +344,8 @@ const musicIcon = document.getElementById('musicIcon');
 
 let isPlaying = false;
 
-// Set initial volume
 bgMusic.volume = volumeSlider.value / 100;
 
-// Play/Pause button
 playPauseBtn.addEventListener('click', () => {
   if (isPlaying) {
     bgMusic.pause();
@@ -339,12 +366,10 @@ playPauseBtn.addEventListener('click', () => {
   }
 });
 
-// Volume control
 volumeSlider.addEventListener('input', (e) => {
   bgMusic.volume = e.target.value / 100;
 });
 
-// Update status when music ends
 bgMusic.addEventListener('ended', () => {
   playPauseIcon.className = 'fas fa-play';
   musicStatus.textContent = 'Ended';
@@ -352,20 +377,15 @@ bgMusic.addEventListener('ended', () => {
   isPlaying = false;
 });
 
-// Loading screen functionality
+// Loading screen
 const loadingScreen = document.getElementById('loadingScreen');
 const bgVideo = document.getElementById('bgVideo');
 const pipesVideo = document.getElementById('pipesVideo');
 const pipesPlaceholder = document.getElementById('pipesPlaceholder');
 
 loadingScreen.addEventListener('click', () => {
-  // Hide loading screen
   loadingScreen.classList.add('hidden');
-
-  // Start videos
   tryAutoLoad();
-
-  // Auto-play music
   setTimeout(() => {
     bgMusic.play().then(() => {
       playPauseIcon.className = 'fas fa-pause';
@@ -379,75 +399,38 @@ loadingScreen.addEventListener('click', () => {
   }, 500);
 });
 
-// Try to auto-load if videos are in same directory (fallback)
-async function tryAutoLoad() {
-  try {
-    const bgResponse = await fetch('backgroundVideo.mp4');
-    if (bgResponse.ok) {
-      const blob = await bgResponse.blob();
-      const url = URL.createObjectURL(blob);
-      bgVideo.src = url;
-      bgVideo.load();
-      bgVideo.play().catch(e => console.error('BG video error:', e));
-    }
-  } catch (e) {
-    console.log('Background video not found, trying .webm');
+async function tryFetch(paths) {
+  for (const path of paths) {
     try {
-      const bgResponse = await fetch('backgroundVideo.webm');
-      if (bgResponse.ok) {
-        const blob = await bgResponse.blob();
-        const url = URL.createObjectURL(blob);
-        bgVideo.src = url;
-        bgVideo.load();
-        bgVideo.play().catch(e => console.error('BG video error:', e));
+      const res = await fetch(path);
+      if (res.ok) {
+        const blob = await res.blob();
+        return URL.createObjectURL(blob);
       }
-    } catch (e2) {
-      console.error('No background video found');
-    }
+    } catch (e) { /* try next */ }
+  }
+  return null;
+}
+
+async function tryAutoLoad() {
+  // Background video
+  const bgUrl = await tryFetch(['backgroundVideo.mp4', 'backgroundVideo.webm']);
+  if (bgUrl) {
+    bgVideo.src = bgUrl;
+    bgVideo.load();
+    bgVideo.play().catch(e => console.error('BG video error:', e));
   }
 
-  try {
-    const pipesResponse = await fetch('terminal.mp4');
-    if (pipesResponse.ok) {
-      const blob = await pipesResponse.blob();
-      const url = URL.createObjectURL(blob);
-      pipesVideo.src = url;
-      pipesVideo.style.display = 'block';
-      pipesPlaceholder.style.display = 'none';
-      pipesVideo.load();
-      pipesVideo.play().catch(e => console.error('Pipes video error:', e));
-    }
-  } catch (e) {
-    console.log('Pipes video not found, trying .webm or pipes.mp4');
-    try {
-      const pipesResponse = await fetch('terminal.webm');
-      if (pipesResponse.ok) {
-        const blob = await pipesResponse.blob();
-        const url = URL.createObjectURL(blob);
-        pipesVideo.src = url;
-        pipesVideo.style.display = 'block';
-        pipesPlaceholder.style.display = 'none';
-        pipesVideo.load();
-        pipesVideo.play().catch(e => console.error('Pipes video error:', e));
-      }
-    } catch (e2) {
-      // Try pipes.mp4 as fallback
-      try {
-        const pipesResponse = await fetch('pipes.mp4');
-        if (pipesResponse.ok) {
-          const blob = await pipesResponse.blob();
-          const url = URL.createObjectURL(blob);
-          pipesVideo.src = url;
-          pipesVideo.style.display = 'block';
-          pipesPlaceholder.style.display = 'none';
-          pipesVideo.load();
-          pipesVideo.play().catch(e => console.error('Pipes video error:', e));
-        }
-      } catch (e3) {
-        console.error('No pipes video found');
-        pipesPlaceholder.textContent = 'No video found';
-      }
-    }
+  // Terminal/pipes video — supports transparent webm (alpha channel)
+  const pipesUrl = await tryFetch(['terminal.webm', 'terminal.mp4', 'pipes.webm', 'pipes.mp4']);
+  if (pipesUrl) {
+    pipesVideo.src = pipesUrl;
+    pipesVideo.style.display = 'block';
+    pipesPlaceholder.style.display = 'none';
+    pipesVideo.load();
+    pipesVideo.play().catch(e => console.error('Pipes video error:', e));
+  } else {
+    pipesPlaceholder.textContent = 'No video found';
   }
 }
 </script>
