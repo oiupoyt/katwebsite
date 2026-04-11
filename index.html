@@ -38,9 +38,10 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
 .terminal-window .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 .terminal-window .content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
-/* Video container for pipes terminal */
+/* Visualizer canvas container */
 .video-container { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 0 0 14px 14px; background: transparent; display: flex; align-items: center; justify-content: center; }
-.video-container video { width: 100%; height: 100%; object-fit: cover; display: block; background: transparent; }
+#vizCanvas { width: 100%; height: 100%; display: block; border-radius: 0 0 13px 13px; }
+.viz-idle-msg { position: absolute; color: rgba(255,255,255,0.22); font-size: 11px; letter-spacing: 2px; pointer-events: none; text-transform: uppercase; }
 
 /* Loading screen */
 #loadingScreen {
@@ -251,8 +252,8 @@ body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--t
     visualizer
   </div>
   <div class="video-container" id="pipesContainer">
-    <div class="placeholder-text" id="pipesPlaceholder">Loading...</div>
-    <video id="pipesVideo" autoplay loop muted playsinline style="display:none;"></video>
+    <canvas id="vizCanvas"></canvas>
+    <span class="viz-idle-msg" id="vizIdleMsg">play music to visualize</span>
   </div>
 </div>
 
@@ -355,15 +356,12 @@ bgMusic.addEventListener('ended', () => {
 // Loading screen functionality
 const loadingScreen = document.getElementById('loadingScreen');
 const bgVideo = document.getElementById('bgVideo');
-const pipesVideo = document.getElementById('pipesVideo');
-const pipesPlaceholder = document.getElementById('pipesPlaceholder');
 
 loadingScreen.addEventListener('click', () => {
-  // Hide loading screen
   loadingScreen.classList.add('hidden');
 
-  // Start videos
-  tryAutoLoad();
+  // Load background video
+  tryLoadBgVideo();
 
   // Auto-play music
   setTimeout(() => {
@@ -379,77 +377,151 @@ loadingScreen.addEventListener('click', () => {
   }, 500);
 });
 
-// Try to auto-load if videos are in same directory (fallback)
-async function tryAutoLoad() {
-  try {
-    const bgResponse = await fetch('backgroundVideo.mp4');
-    if (bgResponse.ok) {
-      const blob = await bgResponse.blob();
-      const url = URL.createObjectURL(blob);
-      bgVideo.src = url;
-      bgVideo.load();
-      bgVideo.play().catch(e => console.error('BG video error:', e));
-    }
-  } catch (e) {
-    console.log('Background video not found, trying .webm');
+async function tryLoadBgVideo() {
+  for (const name of ['backgroundVideo.mp4', 'backgroundVideo.webm']) {
     try {
-      const bgResponse = await fetch('backgroundVideo.webm');
-      if (bgResponse.ok) {
-        const blob = await bgResponse.blob();
-        const url = URL.createObjectURL(blob);
+      const res = await fetch(name);
+      if (res.ok) {
+        const url = URL.createObjectURL(await res.blob());
         bgVideo.src = url;
         bgVideo.load();
-        bgVideo.play().catch(e => console.error('BG video error:', e));
+        bgVideo.play().catch(() => {});
+        return;
       }
-    } catch (e2) {
-      console.error('No background video found');
+    } catch (e) {}
+  }
+}
+
+// ── Audio Visualizer ──────────────────────────────────────────────
+const vizCanvas = document.getElementById('vizCanvas');
+const vizCtx    = vizCanvas.getContext('2d');
+const vizIdle   = document.getElementById('vizIdleMsg');
+
+let audioCtx, analyser, source, vizAnimId;
+let vizConnected = false;
+
+function setupAnalyser() {
+  if (vizConnected) return;
+  audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+  analyser  = audioCtx.createAnalyser();
+  analyser.fftSize = 256;
+  analyser.smoothingTimeConstant = 0.82;
+  source    = audioCtx.createMediaElementSource(bgMusic);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  vizConnected = true;
+}
+
+function resizeCanvas() {
+  vizCanvas.width  = vizCanvas.offsetWidth  * devicePixelRatio;
+  vizCanvas.height = vizCanvas.offsetHeight * devicePixelRatio;
+}
+
+function drawViz() {
+  vizAnimId = requestAnimationFrame(drawViz);
+  resizeCanvas();
+
+  const W = vizCanvas.width, H = vizCanvas.height;
+  const bufLen = analyser.frequencyBinCount;
+  const data   = new Uint8Array(bufLen);
+  analyser.getByteFrequencyData(data);
+
+  // Clear with a slight fade trail for smoothness
+  vizCtx.clearRect(0, 0, W, H);
+
+  const barCount  = 80;
+  const gap       = W * 0.004;
+  const barW      = (W - gap * (barCount + 1)) / barCount;
+  const step      = Math.floor(bufLen / barCount);
+  const maxH      = H * 0.82;
+  const baseY     = H * 0.92;
+
+  for (let i = 0; i < barCount; i++) {
+    // Average a small bucket for smoother freq representation
+    let sum = 0;
+    for (let k = 0; k < step; k++) sum += data[i * step + k];
+    const avg = sum / step;
+    const ratio = avg / 255;
+
+    const bh   = ratio * maxH;
+    const x    = gap + i * (barW + gap);
+    const y    = baseY - bh;
+
+    // Bar opacity and glow scale with amplitude
+    const alpha = 0.25 + ratio * 0.75;
+
+    // Subtle vertical gradient: bright top → dimmer base
+    const grad = vizCtx.createLinearGradient(0, y, 0, baseY);
+    grad.addColorStop(0,   `rgba(255,255,255,${alpha})`);
+    grad.addColorStop(0.6, `rgba(220,220,220,${alpha * 0.6})`);
+    grad.addColorStop(1,   `rgba(180,180,180,${alpha * 0.15})`);
+
+    vizCtx.fillStyle = grad;
+
+    // Rounded top on the bar
+    const radius = Math.min(barW / 2, 4);
+    vizCtx.beginPath();
+    vizCtx.moveTo(x + radius, y);
+    vizCtx.lineTo(x + barW - radius, y);
+    vizCtx.quadraticCurveTo(x + barW, y, x + barW, y + radius);
+    vizCtx.lineTo(x + barW, baseY);
+    vizCtx.lineTo(x, baseY);
+    vizCtx.lineTo(x, y + radius);
+    vizCtx.quadraticCurveTo(x, y, x + radius, y);
+    vizCtx.fill();
+
+    // Subtle glow on loud bars
+    if (ratio > 0.5) {
+      vizCtx.save();
+      vizCtx.shadowColor = `rgba(255,255,255,${(ratio - 0.5) * 0.6})`;
+      vizCtx.shadowBlur  = 8 * ratio;
+      vizCtx.fill();
+      vizCtx.restore();
+    }
+
+    // Floating dot cap above bar
+    if (bh > 4) {
+      vizCtx.fillStyle = `rgba(255,255,255,${alpha * 0.9})`;
+      vizCtx.fillRect(x, y - 3, barW, 2);
     }
   }
 
-  try {
-    const pipesResponse = await fetch('terminal.mp4');
-    if (pipesResponse.ok) {
-      const blob = await pipesResponse.blob();
-      const url = URL.createObjectURL(blob);
-      pipesVideo.src = url;
-      pipesVideo.style.display = 'block';
-      pipesPlaceholder.style.display = 'none';
-      pipesVideo.load();
-      pipesVideo.play().catch(e => console.error('Pipes video error:', e));
-    }
-  } catch (e) {
-    console.log('Pipes video not found, trying .webm or pipes.mp4');
-    try {
-      const pipesResponse = await fetch('terminal.webm');
-      if (pipesResponse.ok) {
-        const blob = await pipesResponse.blob();
-        const url = URL.createObjectURL(blob);
-        pipesVideo.src = url;
-        pipesVideo.style.display = 'block';
-        pipesPlaceholder.style.display = 'none';
-        pipesVideo.load();
-        pipesVideo.play().catch(e => console.error('Pipes video error:', e));
-      }
-    } catch (e2) {
-      // Try pipes.mp4 as fallback
-      try {
-        const pipesResponse = await fetch('pipes.mp4');
-        if (pipesResponse.ok) {
-          const blob = await pipesResponse.blob();
-          const url = URL.createObjectURL(blob);
-          pipesVideo.src = url;
-          pipesVideo.style.display = 'block';
-          pipesPlaceholder.style.display = 'none';
-          pipesVideo.load();
-          pipesVideo.play().catch(e => console.error('Pipes video error:', e));
-        }
-      } catch (e3) {
-        console.error('No pipes video found');
-        pipesPlaceholder.textContent = 'No video found';
-      }
-    }
-  }
+  // Baseline rule
+  vizCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+  vizCtx.lineWidth   = 1;
+  vizCtx.beginPath();
+  vizCtx.moveTo(0, baseY);
+  vizCtx.lineTo(W, baseY);
+  vizCtx.stroke();
 }
+
+function startViz() {
+  setupAnalyser();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  vizIdle.style.opacity = '0';
+  cancelAnimationFrame(vizAnimId);
+  drawViz();
+}
+
+function stopViz() {
+  cancelAnimationFrame(vizAnimId);
+  // Draw flat line when paused
+  resizeCanvas();
+  const W = vizCanvas.width, H = vizCanvas.height;
+  vizCtx.clearRect(0, 0, W, H);
+  vizCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+  vizCtx.lineWidth = 1;
+  vizCtx.beginPath();
+  vizCtx.moveTo(0, H * 0.92);
+  vizCtx.lineTo(W, H * 0.92);
+  vizCtx.stroke();
+  vizIdle.style.opacity = '1';
+}
+
+// Hook into existing play/pause logic
+bgMusic.addEventListener('play',  () => startViz());
+bgMusic.addEventListener('pause', () => stopViz());
+bgMusic.addEventListener('ended', () => stopViz());
 </script>
 </body>
 </html>
