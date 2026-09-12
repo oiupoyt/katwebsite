@@ -1,534 +1,1748 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>katOS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>katOS — oiupoyt</title>
 
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3876936176422477" crossorigin="anonymous"></script>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3876936176422477" crossorigin="anonymous"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-<style>
-:root {
-  --bg: #000;
-  --border: rgba(255,255,255,0.15);
-  --glass: rgba(0,0,0,0.75);
-  --text: #fff;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:"Orbitron", sans-serif; background: var(--bg); color: var(--text); height:100vh; overflow:hidden; }
-.desktop { width:100%; height:100vh; position:relative; }
-.terminal-bg, .video-bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; pointer-events:none; opacity: 0.4; }
-.taskbar { position:fixed; bottom:0; width:100%; background:rgba(255,255,255,0.05); border-top:1px solid var(--border); padding:8px 15px; font-size:12px; z-index:10; display: flex; justify-content: space-between; align-items: center; }
-.window { position:absolute; background:linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.1) 100%); border:1px solid rgba(255,255,255,0.13); border-radius:14px; backdrop-filter: blur(26px) saturate(180%) brightness(1.06); -webkit-backdrop-filter: blur(26px) saturate(180%) brightness(1.06); box-shadow: 0 4px 30px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.1) inset; z-index:2; transition: all 0.35s ease; }
-.window:hover { box-shadow: 0 8px 48px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.06), 0 1px 0 rgba(255,255,255,0.15) inset; transform: translateY(-3px); backdrop-filter: blur(32px) saturate(200%) brightness(1.1); -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.1); }
-.titlebar { padding:8px; border-bottom:1px solid var(--border); font-size:11px; cursor:grab; display:flex; align-items:center; gap:6px; }
-.mac-btn { width:12px; height:12px; border-radius:50%; background:white; border:1px solid #000; }
-.content { padding:15px; font-size:13px; overflow:auto; }
-.mono { font-family:'Fira Code', 'Courier New', monospace; white-space:pre; text-shadow: 0 0 6px rgba(255,255,255,0.25); line-height:1.4; font-size:11px; letter-spacing: 0.3px; }
-#neofetchTerminal { white-space: normal; }
-.link { cursor:pointer; margin-bottom:6px; }
-.link:hover { text-decoration:underline; }
-.glow-links .link { text-shadow: 0 0 8px rgba(255,255,255,0.45), 0 0 20px rgba(255,255,255,0.15); }
-.glow-links .link:hover { text-shadow: 0 0 12px rgba(255,255,255,0.7), 0 0 28px rgba(255,255,255,0.25); }
-.terminal-window { background: linear-gradient(145deg, rgba(0,0,0,0.85), rgba(0,0,0,0.7)); border:1px solid rgba(255,255,255,0.2); backdrop-filter: blur(22px) saturate(180%); border-radius:16px; }
-.terminal-window .content { max-height: calc(100% - 35px); overflow-y: auto; overflow-x: hidden; }
-.profile-icon { width:50px; height:50px; border-radius:50%; margin-bottom:8px; border:1px solid rgba(255,255,255,0.3); display:block; margin-left:auto; margin-right:auto; }
+  <style>
+    /* ── Reset & Brutalist Geometry ─────────────────────────────────────────── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important; /* Strict squared-out terminals & windows */
+    }
 
-/* Custom scrollbar for terminal windows */
-.terminal-window .content::-webkit-scrollbar { width: 8px; }
-.terminal-window .content::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-.terminal-window .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-.terminal-window .content::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    :root {
+      --bg: #050505;
+      --panel-bg: rgba(10, 10, 12, 0.82);
+      --panel-active: rgba(14, 14, 18, 0.94);
+      --border: rgba(255, 255, 255, 0.14);
+      --border-hover: rgba(255, 255, 255, 0.32);
+      --border-active: rgba(255, 255, 255, 0.48);
+      --text: #f0f0f0;
+      --text-dim: #777777;
+      --text-sub: #a0a0a0;
+      --accent: #4db8ff;
+      --accent-dim: rgba(77, 184, 255, 0.18);
+      --yt: #ff4444;
+      --ig: #e1306c;
+      --taskbar-h: 36px;
+    }
 
-/* Visualizer canvas container */
-.video-container { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 0 0 14px 14px; background: transparent; display: flex; align-items: center; justify-content: center; }
-#vizCanvas { width: 100%; height: 100%; display: block; border-radius: 0 0 13px 13px; }
-.viz-idle-msg { position: absolute; color: rgba(255,255,255,0.22); font-size: 11px; letter-spacing: 2px; pointer-events: none; text-transform: uppercase; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* Loading screen */
-#loadingScreen {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  cursor: pointer;
-  transition: opacity 0.5s ease;
-}
-#loadingScreen.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-.loading-content {
-  text-align: center;
-}
-.loading-logo {
-  font-size: 72px;
-  font-weight: 700;
-  margin-bottom: 30px;
-  text-shadow: 0 0 20px rgba(255,255,255,0.5);
-  animation: pulse 2s ease-in-out infinite;
-}
-.loading-text {
-  font-size: 16px;
-  opacity: 0.7;
-  animation: fadeInOut 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
-}
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
+    /* ── Background Video & Matrix Layer ────────────────────────────────────── */
+    .video-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      filter: contrast(1.1) brightness(0.9);
+    }
 
-/* Music controls */
-.music-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 11px;
-}
-.music-btn {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--text);
-}
-.music-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.1);
-}
-.music-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.music-icon {
-  animation: spin 3s linear infinite;
-}
-.music-icon.paused {
-  animation-play-state: paused;
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.volume-slider {
-  width: 60px;
-  height: 4px;
-  -webkit-appearance: none;
-  appearance: none;
-  background: rgba(255,255,255,0.2);
-  outline: none;
-  border-radius: 2px;
-}
-.volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 50%;
-}
-.volume-slider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  cursor: pointer;
-  border-radius: 50%;
-  border: none;
-}
+    #matrixCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
 
-.placeholder-text {
-  color: rgba(255,255,255,0.5);
-  font-size: 14px;
-  text-align: center;
-}
-</style>
+    #matrixCanvas.active {
+      opacity: 0.38;
+    }
+
+    .desktop-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Desktop Canvas Area ─────────────────────────────────────────────────── */
+    .desktop {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - var(--taskbar-h));
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    /* ── Windows (Squared Terminals) ─────────────────────────────────────────── */
+    .window {
+      position: absolute;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(28px) saturate(190%) brightness(1.05);
+      -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(1.05);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.15) inset;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .window.active {
+      border-color: var(--border-active);
+      background: var(--panel-active);
+      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 255, 255, 0.08), 0 0 1px rgba(255, 255, 255, 0.25) inset;
+      z-index: 30;
+    }
+
+    .window.minimized {
+      display: none;
+    }
+
+    .window.maximized {
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Titlebar */
+    .titlebar {
+      height: 32px;
+      min-height: 32px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+      padding: 0 10px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .window.active .titlebar {
+      background: rgba(255, 255, 255, 0.06);
+      border-bottom-color: var(--border-active);
+    }
+
+    .titlebar:active {
+      cursor: grabbing;
+    }
+
+    .title-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    .window.active .title-left {
+      color: #ffffff;
+    }
+
+    .title-left i {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    /* Squared Window Controls */
+    .window-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .win-btn {
+      width: 12px;
+      height: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: #000;
+      transition: all 0.12s ease;
+      opacity: 0.85;
+      line-height: 1;
+    }
+
+    .win-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .win-btn-close {
+      background: #ff5f56;
+      border: 1px solid #e0443e;
+    }
+
+    .win-btn-min {
+      background: #ffbd2e;
+      border: 1px solid #dea123;
+    }
+
+    .win-btn-max {
+      background: #27c93f;
+      border: 1px solid #1aab29;
+    }
+
+    .win-btn span {
+      display: none;
+    }
+
+    .titlebar:hover .win-btn span {
+      display: block;
+    }
+
+    /* Window Body Content */
+    .window-body {
+      flex: 1;
+      padding: 14px 16px;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #d8d8d8;
+    }
+
+    /* Custom Squared Scrollbar */
+    .window-body::-webkit-scrollbar,
+    .terminal-body::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .window-body::-webkit-scrollbar-track,
+    .terminal-body::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .window-body::-webkit-scrollbar-thumb,
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .window-body::-webkit-scrollbar-thumb:hover,
+    .terminal-body::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    /* ── Terminal Styling ────────────────────────────────────────────────────── */
+    .terminal-body {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      padding: 12px 14px;
+      color: #e5e5e5;
+      background: #08080a;
+      overflow-y: auto;
+      height: 100%;
+      user-select: text;
+    }
+
+    .fastfetch-pre {
+      white-space: pre;
+      line-height: 1.38;
+      letter-spacing: 0.2px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .term-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .term-prompt-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .term-prompt {
+      color: var(--accent);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .term-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 11px;
+      outline: none;
+      caret-color: #fff;
+    }
+
+    .term-output {
+      margin-top: 4px;
+      margin-bottom: 8px;
+      color: #bbb;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .term-cmd {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    /* Links & Lists */
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      margin-bottom: 6px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      font-size: 12px;
+      color: #ddd;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .link-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-hover);
+      color: #fff;
+      transform: translateX(4px);
+    }
+
+    .link-item i {
+      width: 16px;
+      text-align: center;
+      color: var(--accent);
+    }
+
+    .link-item .badge {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--text-dim);
+      border: 1px solid #222;
+      padding: 1px 6px;
+      background: #080808;
+    }
+
+    .skill-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      margin: 3px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 11px;
+      color: #ccc;
+    }
+
+    .skill-tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Audio Visualizer ────────────────────────────────────────────────────── */
+    .viz-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: #060608;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #vizCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .viz-overlay {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.35);
+      text-transform: uppercase;
+    }
+
+    .viz-mode-badge {
+      padding: 2px 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.5);
+      color: var(--accent);
+    }
+
+    .viz-hint {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    .viz-idle-msg {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ── Taskbar ─────────────────────────────────────────────────────────────── */
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--taskbar-h);
+      background: rgba(8, 8, 10, 0.96);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      font-size: 11px;
+    }
+
+    .taskbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .os-logo-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: #fff;
+      padding: 4px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .os-logo-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #fff;
+    }
+
+    .os-logo-btn i {
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .taskbar-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 2px;
+    }
+
+    .taskbar-windows {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+    }
+
+    .taskbar-win-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 11px;
+      color: var(--text-sub);
+      cursor: pointer;
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.15s ease;
+    }
+
+    .taskbar-win-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border-color: var(--border-hover);
+    }
+
+    .taskbar-win-btn.active {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: var(--border-active);
+      color: #fff;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .taskbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Music Player Taskbar Widget */
+    .music-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .music-icon {
+      font-size: 11px;
+      color: var(--accent);
+      animation: spinDisc 3s linear infinite;
+    }
+
+    .music-icon.paused {
+      animation-play-state: paused;
+      color: var(--text-dim);
+    }
+
+    @keyframes spinDisc {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .music-track {
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 10px;
+      color: var(--text-sub);
+    }
+
+    .player-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 9px;
+      transition: all 0.15s ease;
+    }
+
+    .player-btn:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .volume-slider {
+      width: 50px;
+      height: 3px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 8px;
+      height: 12px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    /* Tray Info */
+    .tray-widget {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .tray-time {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    /* ── Desktop Context Menu ────────────────────────────────────────────────── */
+    .context-menu {
+      position: fixed;
+      z-index: 9999;
+      background: rgba(12, 12, 14, 0.96);
+      border: 1px solid var(--border-active);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+      padding: 4px 0;
+      min-width: 180px;
+      display: none;
+    }
+
+    .ctx-item {
+      padding: 7px 14px;
+      font-size: 11px;
+      color: #ddd;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.1s ease;
+    }
+
+    .ctx-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--accent);
+    }
+
+    .ctx-item i {
+      width: 14px;
+      font-size: 11px;
+    }
+
+    .ctx-sep {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 4px 0;
+    }
+
+    /* ── Loading Screen ──────────────────────────────────────────────────────── */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.5s ease;
+    }
+
+    #loadingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .boot-box {
+      border: 1px solid #333;
+      background: #08080a;
+      padding: 36px 48px;
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+    }
+
+    .boot-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      margin-bottom: 18px;
+    }
+
+    .boot-log {
+      font-size: 11px;
+      color: #666;
+      text-align: left;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      border-top: 1px solid #1a1a1a;
+      padding-top: 14px;
+    }
+
+    .boot-btn {
+      display: inline-block;
+      padding: 10px 24px;
+      border: 1px solid #555;
+      background: #111;
+      color: #fff;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      animation: pulseBtn 1.8s infinite alternate;
+    }
+
+    @keyframes pulseBtn {
+      from { border-color: #444; color: #aaa; }
+      to { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 14px rgba(77, 184, 255, 0.3); }
+    }
+
+    /* ── Responsive Window Bounds for Small Screens ──────────────────────────── */
+    @media (max-width: 900px) {
+      .window {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        margin-bottom: 12px;
+      }
+      .desktop {
+        overflow-y: auto;
+        padding: 12px;
+        height: calc(100vh - var(--taskbar-h));
+      }
+      .taskbar-windows {
+        display: none;
+      }
+      .music-track {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-<!-- Loading Screen -->
-<div id="loadingScreen">
-  <div class="loading-content">
-    <div class="loading-logo">katOS</div>
-    <div class="loading-text">Click anywhere to enter</div>
-  </div>
-</div>
 
-<div class="desktop">
-<video class="video-bg" id="bgVideo" autoplay muted loop playsinline></video>
-<div class="taskbar">
-  <span>katOS</span>
-
-  <div class="music-controls">
-    <div class="music-info">
-      <i class="fas fa-compact-disc music-icon" id="musicIcon"></i>
-      <span id="musicStatus">Music Ready</span>
+  <!-- Loading Screen (Click to Start Audio & Video) -->
+  <div id="loadingScreen">
+    <div class="boot-box">
+      <div class="boot-logo">katOS</div>
+      <div class="boot-log">
+        <div>[ <span style="color:#22c55e;">OK</span> ] Mounted /dev/nvme0n1p2 on /home/oiupoyt</div>
+        <div>[ <span style="color:#22c55e;">OK</span> ] Audio subsystem initialized: Baiaa081</div>
+        <div>[ <span style="color:#22c55e;">OK</span> ] Wayland compositor: Hyprland 0.54.2</div>
+        <div>[ <span style="color:#22c55e;">OK</span> ] Fastfetch terminal ready</div>
+      </div>
+      <div class="boot-btn">[ click anywhere to boot ]</div>
     </div>
-    <button class="music-btn" id="playPauseBtn" title="Play/Pause">
-      <i class="fas fa-play" id="playPauseIcon"></i>
-    </button>
-    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="40" title="Volume">
   </div>
-</div>
 
-<!-- About Window -->
-<div class="window" style="top: 79px; left: 41px; width: 320px;">
-  <div class="titlebar">
-    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    about.md
+  <!-- Background Video & Ambient Canvas Layers -->
+  <video class="video-bg" id="bgVideo" autoplay muted loop playsinline></video>
+  <canvas id="matrixCanvas"></canvas>
+  <div class="desktop-grid"></div>
+
+  <!-- Desktop Workspace -->
+  <div class="desktop" id="desktop">
+
+    <!-- About Window -->
+    <div class="window active" id="win-about" style="top: 30px; left: 36px; width: 330px;">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fas fa-file-lines"></i>
+          <span>about.md</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-about')"><span>–</span></div>
+          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-about')"><span>□</span></div>
+          <div class="win-btn win-btn-close" onclick="closeWindow('win-about')"><span>×</span></div>
+        </div>
+      </div>
+      <div class="window-body">
+        <p style="color:#fff; margin-bottom: 12px;">i cant stop loving linux, pls speed i need this</p>
+        <p style="color:#aaa; margin-bottom: 12px;">minecraft shyt, networking experiments, and linux customization.</p>
+        <p style="color:#666; margin-bottom: 12px; font-family:monospace;">i was on the ███████████████</p>
+        <p style="color:#4db8ff; margin-bottom: 12px;">cats &gt; people haha.</p>
+        <p style="color:#eee; margin-bottom: 12px;">i use arch yea</p>
+        <p style="color:#ffffff; font-weight:600;">you da real kat 🤍.</p>
+      </div>
+    </div>
+
+    <!-- Skills Window -->
+    <div class="window" id="win-skills" style="top: 250px; left: 36px; width: 330px;">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fas fa-terminal"></i>
+          <span>skillz.bash</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-skills')"><span>–</span></div>
+          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-skills')"><span>□</span></div>
+          <div class="win-btn win-btn-close" onclick="closeWindow('win-skills')"><span>×</span></div>
+        </div>
+      </div>
+      <div class="window-body">
+        <div style="margin-bottom: 8px; color: var(--text-dim);"># system competencies:</div>
+        <span class="skill-tag"><i class="fab fa-linux"></i> linux / arch</span>
+        <span class="skill-tag"><i class="fas fa-cube"></i> minecraft servers</span>
+        <span class="skill-tag"><i class="fas fa-server"></i> self hosting</span>
+        <span class="skill-tag"><i class="fas fa-network-wired"></i> server networking</span>
+        <span class="skill-tag"><i class="fab fa-java"></i> java / plugins</span>
+        <div style="margin: 12px 0 6px; color: var(--text-dim);"># personality traits:</div>
+        <span class="skill-tag">yappin</span>
+        <span class="skill-tag">im crine</span>
+        <span class="skill-tag">tweaking</span>
+        <span class="skill-tag">hahahahahha</span>
+        <span class="skill-tag">cool content</span>
+        <span class="skill-tag">very funny</span>
+        <span class="skill-tag"><i class="fas fa-cat"></i> veri fond of cats</span>
+      </div>
+    </div>
+
+    <!-- Websites & Projects Window -->
+    <div class="window" id="win-websites" style="top: 30px; left: 390px; width: 340px;">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fas fa-globe"></i>
+          <span>websites.html</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-websites')"><span>–</span></div>
+          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-websites')"><span>□</span></div>
+          <div class="win-btn win-btn-close" onclick="closeWindow('win-websites')"><span>×</span></div>
+        </div>
+      </div>
+      <div class="window-body">
+        <a class="link-item" href="https://katdrop.oiupoyt.space" target="_blank" rel="noopener">
+          <i class="fas fa-file-arrow-up"></i>
+          <div>
+            <div>katdrop</div>
+            <div style="font-size:10px; color:#777;">minimal 10-min file transfer</div>
+          </div>
+          <span class="badge">live</span>
+        </a>
+        <a class="link-item" href="https://kat-images.netlify.app/" target="_blank" rel="noopener">
+          <i class="fas fa-cat"></i>
+          <div>
+            <div>katimages</div>
+            <div style="font-size:10px; color:#777;">look at cat. feel good.</div>
+          </div>
+          <span class="badge">live</span>
+        </a>
+        <a class="link-item" href="https://justdownload.netlify.app" target="_blank" rel="noopener">
+          <i class="fas fa-download"></i>
+          <div>
+            <div>just-download</div>
+            <div style="font-size:10px; color:#777;">yt &amp; ig media downloader</div>
+          </div>
+          <span class="badge">live</span>
+        </a>
+        <a class="link-item" href="https://toolbox.oiupoyt.space" target="_blank" rel="noopener">
+          <i class="fas fa-wrench"></i>
+          <div>
+            <div>kattoolbox</div>
+            <div style="font-size:10px; color:#777;">client-side dev utility suite</div>
+          </div>
+          <span class="badge">live</span>
+        </a>
+        <a class="link-item" href="https://github.com/oiupoyt" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i>
+          <div>
+            <div>github / oiupoyt</div>
+            <div style="font-size:10px; color:#777;">source code &amp; repositories</div>
+          </div>
+          <span class="badge">repos</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Social Links Window -->
+    <div class="window" id="win-links" style="top: 310px; left: 390px; width: 340px;">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fas fa-folder-closed"></i>
+          <span>links.zip</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-links')"><span>–</span></div>
+          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-links')"><span>□</span></div>
+          <div class="win-btn win-btn-close" onclick="closeWindow('win-links')"><span>×</span></div>
+        </div>
+      </div>
+      <div class="window-body">
+        <a class="link-item" href="https://discordapp.com/users/1082968457559146506" target="_blank" rel="noopener">
+          <i class="fab fa-discord" style="color:#5865F2;"></i>
+          <span>Discord</span>
+          <span class="badge">@oiupoyt</span>
+        </a>
+        <a class="link-item" href="https://www.instagram.com/oiupoyt/" target="_blank" rel="noopener">
+          <i class="fab fa-instagram" style="color:#E1306C;"></i>
+          <span>Instagram</span>
+          <span class="badge">@oiupoyt</span>
+        </a>
+        <a class="link-item" href="https://www.youtube.com/@OIUPOYT" target="_blank" rel="noopener">
+          <i class="fab fa-youtube" style="color:#FF0000;"></i>
+          <span>YouTube</span>
+          <span class="badge">@OIUPOYT</span>
+        </a>
+        <a class="link-item" href="https://www.roblox.com/users/1529210346/profile" target="_blank" rel="noopener">
+          <i class="fas fa-gamepad"></i>
+          <span>Roblox</span>
+          <span class="badge">oiupoyt</span>
+        </a>
+        <a class="link-item" href="https://modrinth.com/user/oiupoyt" target="_blank" rel="noopener">
+          <i class="fas fa-cube" style="color:#1BD96A;"></i>
+          <span>Modrinth</span>
+          <span class="badge">mods</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Interactive FastFetch Terminal Window -->
+    <div class="window active" id="win-term" style="top: 30px; left: 750px; width: 680px; height: 410px;">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fas fa-terminal"></i>
+          <span>~fastfetch</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-term')"><span>–</span></div>
+          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-term')"><span>□</span></div>
+          <div class="win-btn win-btn-close" onclick="closeWindow('win-term')"><span>×</span></div>
+        </div>
+      </div>
+      <div class="terminal-body" id="termBody" onclick="focusTermInput()">
+        <div class="fastfetch-pre" id="fastfetchArt"></div>
+        <div id="termHistory"></div>
+        <div class="term-prompt-line">
+          <span class="term-prompt">oiupoyt@archlinux:~$</span>
+          <input type="text" class="term-input" id="termInput" autocomplete="off" spellcheck="false" autofocus>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio Visualizer Window -->
+    <div class="window" id="win-viz" style="top: 460px; left: 750px; width: 680px; height: 320px;">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fas fa-wave-square"></i>
+          <span>visualizer</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-viz')"><span>–</span></div>
+          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-viz')"><span>□</span></div>
+          <div class="win-btn win-btn-close" onclick="closeWindow('win-viz')"><span>×</span></div>
+        </div>
+      </div>
+      <div class="viz-container" id="vizBox">
+        <canvas id="vizCanvas" title="Click to cycle visualizer mode"></canvas>
+        <div class="viz-overlay">
+          <span>mode:</span>
+          <span class="viz-mode-badge" id="vizModeName">spectrum bars</span>
+        </div>
+        <div class="viz-hint">[click visualizer to switch mode]</div>
+        <span class="viz-idle-msg" id="vizIdleMsg">play music to visualize</span>
+      </div>
+    </div>
+
   </div>
-  <div class="content">
-  I cant stop loving linux, pls speed i need this<br><br>
-  minecraft shyt, networking experiments, and linux customization.<br><br>
-  i was on the ███████████████<br><br>
-  cats &gt; people haha.<br><br>
-  i use arch yea <br><br>
-  you da real kat 🤍.
+
+  <!-- Taskbar -->
+  <footer class="taskbar">
+    <div class="taskbar-left">
+      <div class="os-logo-btn" onclick="toggleMenu()" title="katOS Launcher">
+        <i class="fas fa-cat"></i>
+        <span>katOS</span>
+      </div>
+      <div class="taskbar-divider"></div>
+      <div class="taskbar-windows" id="taskbarWinContainer"></div>
+    </div>
+
+    <div class="taskbar-right">
+      <!-- Music Player Controls -->
+      <div class="music-bar">
+        <i class="fas fa-compact-disc music-icon paused" id="musicDisc"></i>
+        <span class="music-track" id="musicTrack">Baiaa081 - Noite Isolada</span>
+        <button class="player-btn" id="playBtn" onclick="togglePlay()" title="Play/Pause">
+          <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        <input type="range" class="volume-slider" id="volSlider" min="0" max="100" value="45" title="Volume">
+        <button class="player-btn" onclick="cycleVizMode()" title="Switch Visualizer Mode">
+          <i class="fas fa-sliders"></i>
+        </button>
+      </div>
+
+      <!-- System Tray -->
+      <div class="tray-widget">
+        <span title="Memory usage">RAM: 4.2G</span>
+        <span class="taskbar-divider"></span>
+        <span class="tray-time" id="clock">00:00:00</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Desktop Right-Click Context Menu -->
+  <div class="context-menu" id="ctxMenu">
+    <div class="ctx-item" onclick="spawnFastfetch()"><i class="fas fa-terminal"></i> Open Terminal</div>
+    <div class="ctx-item" onclick="cycleVizMode()"><i class="fas fa-sliders"></i> Cycle Visualizer Mode</div>
+    <div class="ctx-item" onclick="toggleMatrix()"><i class="fas fa-code"></i> Toggle Matrix Rain</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="togglePlay()"><i class="fas fa-music"></i> Play / Pause Music</div>
+    <div class="ctx-item" onclick="restoreAllWindows()"><i class="fas fa-window-restore"></i> Show All Windows</div>
+    <div class="ctx-item" onclick="resetLayout()"><i class="fas fa-rotate-left"></i> Reset Window Layout</div>
   </div>
-</div>
 
-<!-- Links Window -->
-<div class="window" style="top: 434px; left: 41px; width: 320px;"">
-  <div class="titlebar">
-    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    links.zip
-  </div>
-  <div class="content">
-  <p class="link" onclick="openLink('https://discordapp.com/users/1082968457559146506')"><i class="fab fa-discord"></i> Discord</p><br>
-  <p class="link" onclick="openLink('https://www.instagram.com/oiupoyt/')"><i class="fab fa-instagram"></i> Instagram</p><br>
-  <p class="link" onclick="openLink('https://www.youtube.com/@OIUPOYT')"><i class="fab fa-youtube"></i> YouTube</p><br>
-  <p class="link" onclick="openLink('https://www.roblox.com/users/1529210346/profile')"><svg style="width:13px;height:13px;vertical-align:middle;margin-right:4px;fill:currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.686 0L0 19.314 19.314 24 24 4.686zm10.016 14.23l-5.072-1.358 1.358-5.072 5.072 1.358z"/></svg> Roblox</p><br>
-  <p class="link" onclick="openLink('https://modrinth.com/user/oiupoyt')"><img src="https://cdn.simpleicons.org/modrinth/ffffff" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;opacity:0.9;"> Modrinth</p>
-  </div>
-</div>
+  <!-- Audio Element -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
 
-<div class="window" style="top: 507px; left: 417px; width: 320px;">
-  <div class="titlebar">
-    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    websites.html
-  </div>
-  <div class="content glow-links"><br>
-<p class="link" onclick="openLink('https://katdrop.onrender.com/')"><i class="fas fa-share-alt"></i> website to share files cuz ye</p><br>
-<p class="link" onclick="openLink('https://justdownload.netlify.app')"><i class="fas fa-cloud-download-alt"></i> just download yt and insta stuff</p><br>
-<p class="link" onclick="openLink('https://kat-images.netlify.app/')"><i class="fas fa-cat"></i> kat images</p><br>
-  </div>
-</div>
-<!-- Skills Window -->
-<div class="window" style="top: 162px; left: 426px; width: 320px;">
-  <div class="titlebar">
-    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    skillz.bash
-  </div>
-  <div class="content">
-  linux / arch<br>Minecraft Servers<br>Self Hosting<br>server networking<br>Java / Plugins<br>yappin<br>im crine<br>tweaking<br>hahahahahha<br>cool content<br>very funny<br>veri fond of cats
-  </div>
-</div>
+  <script>
+    // ── Global System State ──────────────────────────────────────────────────
+    let topZIndex = 40;
+    const windowRegistry = ['win-about', 'win-skills', 'win-websites', 'win-links', 'win-term', 'win-viz'];
 
-<!-- FastFetch Profile Window -->
-<div class="window" style="top: 31px; left: 927px; width: 750px; height: 390px;">
-  <div class="titlebar">
-    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    ~fastfetch
-  </div>
-  <div class="content mono" id="neofetchTerminal"></div>
-</div>
+    // ── Window Management (Draggable, Focus, Min/Max) ────────────────────────
+    function bringToFront(win) {
+      topZIndex++;
+      win.style.zIndex = topZIndex;
+      document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+      win.classList.add('active');
+      updateTaskbar();
+    }
 
-<!-- Pipes Terminal Window -->
-<div class="window" style="top: 457.467px; left: 783px; width: 950px; height: 450px;">
-  <div class="titlebar">
-    <div class="mac-btn"></div><div class="mac-btn"></div><div class="mac-btn"></div>
-    visualizer
-  </div>
-  <div class="video-container" id="pipesContainer">
-    <canvas id="vizCanvas"></canvas>
-    <span class="viz-idle-msg" id="vizIdleMsg">play music to visualize</span>
-  </div>
-</div>
+    function initWindows() {
+      document.querySelectorAll('.window').forEach(win => {
+        const bar = win.querySelector('.titlebar');
+        if (!bar) return;
 
-</div>
+        // Focus on click
+        win.addEventListener('mousedown', () => bringToFront(win));
 
-<!-- Audio element for music -->
-<audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
+        // Dragging
+        bar.addEventListener('mousedown', e => {
+          if (e.target.closest('.win-btn')) return;
+          bringToFront(win);
+          if (win.classList.contains('maximized')) return;
 
-<script>
-function openLink(url){ window.open(url, '_blank'); }
+          const rect = win.getBoundingClientRect();
+          const shiftX = e.clientX - rect.left;
+          const shiftY = e.clientY - rect.top;
 
-document.querySelectorAll(".window").forEach(win=>{
- const bar = win.querySelector(".titlebar");
- if (!bar) return;
- bar.onmousedown = e=>{
-  let shiftX = e.clientX - win.getBoundingClientRect().left;
-  let shiftY = e.clientY - win.getBoundingClientRect().top;
-  function move(x,y){ win.style.left = x - shiftX + 'px'; win.style.top = y - shiftY + 'px'; }
-  function mouseMove(e){ move(e.pageX,e.pageY); }
-  document.addEventListener('mousemove',mouseMove);
-  document.onmouseup = ()=>{ document.removeEventListener('mousemove',mouseMove); document.onmouseup=null; }
- }
-});
+          function onMouseMove(moveEvent) {
+            let newX = moveEvent.clientX - shiftX;
+            let newY = moveEvent.clientY - shiftY;
 
-// Neofetch Output — innerHTML with Font Awesome icons
-const neofetchWin = document.getElementById("neofetchTerminal");
-const i = (cls) => `<i class="${cls}" style="width:1.1em;text-align:center;display:inline-block;opacity:0.8;font-size:10px;"></i>`;
-neofetchWin.innerHTML = [
-  `                   ▄`,
-  `                  ▟█▙`,
-  `                 ▟███▙                   <b>oiupoyt</b><span style="opacity:0.4">@</span><b>archlinux</b>`,
-  `                ▟█████▙                  <span style="opacity:0.35">────────────────────────</span>`,
-  `               ▟███████▙                 ${i('fas fa-laptop')} <span style="opacity:0.45;font-size:10px">OS</span> Arch Linux x86_64`,
-  `              ▂▔▀▜██████▙                ${i('fas fa-microchip')} <span style="opacity:0.45;font-size:10px">Kernel</span> Linux 6.19.8-arch1-1`,
-  `             ▟██▅▂▝▜█████▙               ${i('fas fa-box-open')} <span style="opacity:0.45;font-size:10px">Packages</span> 1254 (pacman), 60 (flatpak)`,
-  `            ▟█████████████▙              ${i('fas fa-terminal')} <span style="opacity:0.45;font-size:10px">Shell</span> fish 4.5.0`,
-  `           ▟███████████████▙             ${i('fas fa-display')} <span style="opacity:0.45;font-size:10px">Terminal</span> kitty 0.46.1`,
-  `          ▟█████████████████▙            ${i('fas fa-window-restore')} <span style="opacity:0.45;font-size:10px">WM</span> Hyprland 0.54.2 (Wayland)`,
-  `         ▟███████████████████▙           ${i('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> breeze`,
-  `        ▟█████████▛▀▀▜████████▙          ${i('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> NotoSansMono-Regular (11pt)`,
-  `       ▟████████▛      ▜███████▙         ${i('fas fa-clock')} <span style="opacity:0.45;font-size:10px">Uptime</span> 9 hours, 16 mins`,
-  `      ▟█████████        ████████▙        ${i('fas fa-calendar-days')} <span style="opacity:0.45;font-size:10px">Date</span> 2026-4-10`,
-  `     ▟██████████        █████▆▅▄▃▂       ${i('fas fa-music')} <span style="opacity:0.45;font-size:10px">Music</span> Baiaa081 - Noite Isolada`,
-  `    ▟██████████▛        ▜█████████▙      ${i('fab fa-firefox-browser')} <span style="opacity:0.45;font-size:10px">Browser</span> katr.netlify.app (Mozilla Zen)`,
-  `   ▟██████▀▀▀              ▀▀██████▙`,
-  `  ▟███▀▘                       ▝▀███▙`,
-  ` ▟▛▀                               ▀▜▙`,
-].map(l => `<div style="white-space:pre;line-height:1.5;display:flex;align-items:center;gap:6px;">${l}</div>`).join('');
+            // Bounds checking
+            const maxX = window.innerWidth - 60;
+            const maxY = window.innerHeight - 80;
+            if (newX < 0) newX = 0;
+            if (newX > maxX) newX = maxX;
+            if (newY < 0) newY = 0;
+            if (newY > maxY) newY = maxY;
 
+            win.style.left = newX + 'px';
+            win.style.top = newY + 'px';
+          }
 
-// Music player
-const bgMusic = document.getElementById('bgMusic');
-const playPauseBtn = document.getElementById('playPauseBtn');
-const playPauseIcon = document.getElementById('playPauseIcon');
-const volumeSlider = document.getElementById('volumeSlider');
-const musicStatus = document.getElementById('musicStatus');
-const musicIcon = document.getElementById('musicIcon');
+          function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+          }
 
-let isPlaying = false;
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
 
-// Set initial volume
-bgMusic.volume = volumeSlider.value / 100;
+        // Double click to maximize
+        bar.addEventListener('dblclick', e => {
+          if (e.target.closest('.win-btn')) return;
+          toggleMaximize(win.id);
+        });
+      });
+      updateTaskbar();
+    }
 
-// Play/Pause button
-playPauseBtn.addEventListener('click', () => {
-  if (isPlaying) {
-    bgMusic.pause();
-    playPauseIcon.className = 'fas fa-play';
-    musicStatus.textContent = 'Paused';
-    musicIcon.classList.add('paused');
-    isPlaying = false;
-  } else {
-    bgMusic.play().then(() => {
-      playPauseIcon.className = 'fas fa-pause';
-      musicStatus.textContent = 'Now Playing';
-      musicIcon.classList.remove('paused');
-      isPlaying = true;
-    }).catch(err => {
-      console.error('Music play error:', err);
-      musicStatus.textContent = 'Error playing';
-    });
-  }
-});
+    function minimizeWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.add('minimized');
+      updateTaskbar();
+    }
 
-// Volume control
-volumeSlider.addEventListener('input', (e) => {
-  bgMusic.volume = e.target.value / 100;
-});
+    function toggleMaximize(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.toggle('maximized');
+      bringToFront(win);
+    }
 
-// Update status when music ends
-bgMusic.addEventListener('ended', () => {
-  playPauseIcon.className = 'fas fa-play';
-  musicStatus.textContent = 'Ended';
-  musicIcon.classList.add('paused');
-  isPlaying = false;
-});
+    function closeWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.classList.add('minimized');
+      updateTaskbar();
+    }
 
-// Loading screen functionality
-const loadingScreen = document.getElementById('loadingScreen');
-const bgVideo = document.getElementById('bgVideo');
-
-loadingScreen.addEventListener('click', () => {
-  loadingScreen.classList.add('hidden');
-
-  // Load background video
-  tryLoadBgVideo();
-
-  // Auto-play music
-  setTimeout(() => {
-    bgMusic.play().then(() => {
-      playPauseIcon.className = 'fas fa-pause';
-      musicStatus.textContent = 'Now Playing';
-      musicIcon.classList.remove('paused');
-      isPlaying = true;
-    }).catch(err => {
-      console.error('Auto-play blocked:', err);
-      musicStatus.textContent = 'Click play';
-    });
-  }, 500);
-});
-
-async function tryLoadBgVideo() {
-  for (const name of ['backgroundVideo.mp4', 'backgroundVideo.webm']) {
-    try {
-      const res = await fetch(name);
-      if (res.ok) {
-        const url = URL.createObjectURL(await res.blob());
-        bgVideo.src = url;
-        bgVideo.load();
-        bgVideo.play().catch(() => {});
-        return;
+    function restoreWindow(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      if (win.classList.contains('minimized')) {
+        win.classList.remove('minimized');
+        bringToFront(win);
+      } else if (win.classList.contains('active')) {
+        win.classList.add('minimized');
+      } else {
+        bringToFront(win);
       }
-    } catch (e) {}
-  }
-}
-
-// ── Audio Visualizer ──────────────────────────────────────────────
-const vizCanvas = document.getElementById('vizCanvas');
-const vizCtx    = vizCanvas.getContext('2d');
-const vizIdle   = document.getElementById('vizIdleMsg');
-
-let audioCtx, analyser, source, vizAnimId;
-let vizConnected = false;
-
-function setupAnalyser() {
-  if (vizConnected) return;
-  audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
-  analyser  = audioCtx.createAnalyser();
-  analyser.fftSize = 256;
-  analyser.smoothingTimeConstant = 0.82;
-  source    = audioCtx.createMediaElementSource(bgMusic);
-  source.connect(analyser);
-  analyser.connect(audioCtx.destination);
-  vizConnected = true;
-}
-
-function resizeCanvas() {
-  vizCanvas.width  = vizCanvas.offsetWidth  * devicePixelRatio;
-  vizCanvas.height = vizCanvas.offsetHeight * devicePixelRatio;
-}
-
-function drawViz() {
-  vizAnimId = requestAnimationFrame(drawViz);
-  resizeCanvas();
-
-  const W = vizCanvas.width, H = vizCanvas.height;
-  const bufLen = analyser.frequencyBinCount;
-  const data   = new Uint8Array(bufLen);
-  analyser.getByteFrequencyData(data);
-
-  // Clear with a slight fade trail for smoothness
-  vizCtx.clearRect(0, 0, W, H);
-
-  const barCount  = 20;
-  const gap       = W * 0.012;
-  const barW      = (W - gap * (barCount + 1)) / barCount;
-  const step      = Math.floor(bufLen / barCount);
-  const maxH      = H * 0.82;
-  const baseY     = H * 0.92;
-
-  for (let i = 0; i < barCount; i++) {
-    // Average a small bucket for smoother freq representation
-    let sum = 0;
-    for (let k = 0; k < step; k++) sum += data[i * step + k];
-    const avg = sum / step;
-    const ratio = avg / 255;
-
-    const bh   = ratio * maxH;
-    const x    = gap + i * (barW + gap);
-    const y    = baseY - bh;
-
-    // Bar opacity and glow scale with amplitude
-    const alpha = 0.25 + ratio * 0.75;
-
-    // Subtle vertical gradient: bright top → dimmer base
-    const grad = vizCtx.createLinearGradient(0, y, 0, baseY);
-    grad.addColorStop(0,   `rgba(255,255,255,${alpha})`);
-    grad.addColorStop(0.6, `rgba(220,220,220,${alpha * 0.6})`);
-    grad.addColorStop(1,   `rgba(180,180,180,${alpha * 0.15})`);
-
-    vizCtx.fillStyle = grad;
-
-    // Rounded top on the bar
-    const radius = Math.min(barW / 2, 4);
-    vizCtx.beginPath();
-    vizCtx.moveTo(x + radius, y);
-    vizCtx.lineTo(x + barW - radius, y);
-    vizCtx.quadraticCurveTo(x + barW, y, x + barW, y + radius);
-    vizCtx.lineTo(x + barW, baseY);
-    vizCtx.lineTo(x, baseY);
-    vizCtx.lineTo(x, y + radius);
-    vizCtx.quadraticCurveTo(x, y, x + radius, y);
-    vizCtx.fill();
-
-    // Subtle glow on loud bars
-    if (ratio > 0.5) {
-      vizCtx.save();
-      vizCtx.shadowColor = `rgba(255,255,255,${(ratio - 0.5) * 0.6})`;
-      vizCtx.shadowBlur  = 8 * ratio;
-      vizCtx.fill();
-      vizCtx.restore();
+      updateTaskbar();
     }
 
-    // Floating dot cap above bar
-    if (bh > 4) {
-      vizCtx.fillStyle = `rgba(255,255,255,${alpha * 0.9})`;
-      vizCtx.fillRect(x, y - 3, barW, 2);
+    function restoreAllWindows() {
+      windowRegistry.forEach(id => {
+        const win = document.getElementById(id);
+        if (win) {
+          win.classList.remove('minimized');
+          win.classList.remove('maximized');
+        }
+      });
+      updateTaskbar();
     }
-  }
 
-  // Baseline rule
-  vizCtx.strokeStyle = 'rgba(255,255,255,0.08)';
-  vizCtx.lineWidth   = 1;
-  vizCtx.beginPath();
-  vizCtx.moveTo(0, baseY);
-  vizCtx.lineTo(W, baseY);
-  vizCtx.stroke();
-}
+    function resetLayout() {
+      restoreAllWindows();
+      const layouts = {
+        'win-about':    { top: '30px',  left: '36px',  width: '330px', height: 'auto' },
+        'win-skills':   { top: '250px', left: '36px',  width: '330px', height: 'auto' },
+        'win-websites': { top: '30px',  left: '390px', width: '340px', height: 'auto' },
+        'win-links':    { top: '310px', left: '390px', width: '340px', height: 'auto' },
+        'win-term':     { top: '30px',  left: '750px', width: '680px', height: '410px' },
+        'win-viz':      { top: '460px', left: '750px', width: '680px', height: '320px' }
+      };
+      Object.keys(layouts).forEach(id => {
+        const win = document.getElementById(id);
+        if (win) {
+          Object.assign(win.style, layouts[id]);
+        }
+      });
+      bringToFront(document.getElementById('win-term'));
+    }
 
-function startViz() {
-  setupAnalyser();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  vizIdle.style.opacity = '0';
-  cancelAnimationFrame(vizAnimId);
-  drawViz();
-}
+    function updateTaskbar() {
+      const container = document.getElementById('taskbarWinContainer');
+      if (!container) return;
+      container.innerHTML = '';
 
-function stopViz() {
-  cancelAnimationFrame(vizAnimId);
-  // Draw flat line when paused
-  resizeCanvas();
-  const W = vizCanvas.width, H = vizCanvas.height;
-  vizCtx.clearRect(0, 0, W, H);
-  vizCtx.strokeStyle = 'rgba(255,255,255,0.1)';
-  vizCtx.lineWidth = 1;
-  vizCtx.beginPath();
-  vizCtx.moveTo(0, H * 0.92);
-  vizCtx.lineTo(W, H * 0.92);
-  vizCtx.stroke();
-  vizIdle.style.opacity = '1';
-}
+      windowRegistry.forEach(id => {
+        const win = document.getElementById(id);
+        if (!win) return;
+        const titleEl = win.querySelector('.title-left span');
+        const iconEl = win.querySelector('.title-left i');
+        const titleText = titleEl ? titleEl.textContent : id;
+        const iconClass = iconEl ? iconEl.className : 'fas fa-window-maximize';
 
-// Hook into existing play/pause logic
-bgMusic.addEventListener('play',  () => startViz());
-bgMusic.addEventListener('pause', () => stopViz());
-bgMusic.addEventListener('ended', () => stopViz());
-</script>
+        const btn = document.createElement('div');
+        btn.className = 'taskbar-win-btn' + (win.classList.contains('active') && !win.classList.contains('minimized') ? ' active' : '');
+        btn.innerHTML = `<i class="${iconClass}"></i><span>${titleText}</span>`;
+        btn.onclick = () => restoreWindow(id);
+        container.appendChild(btn);
+      });
+    }
+
+    // ── FastFetch ASCII Art & System Specs ────────────────────────────────────
+    const fastfetchArtEl = document.getElementById('fastfetchArt');
+    const fa = cls => `<i class="${cls}" style="width:1.2em;text-align:center;display:inline-block;opacity:0.8;font-size:10px;"></i>`;
+
+    const fastfetchLines = [
+      `                   ▄`,
+      `                  ▟█▙`,
+      `                 ▟███▙                   <b style="color:#4db8ff">oiupoyt</b><span style="opacity:0.4">@</span><b>archlinux</b>`,
+      `                ▟█████▙                  <span style="opacity:0.35">────────────────────────</span>`,
+      `               ▟███████▙                 ${fa('fas fa-laptop')} <span style="opacity:0.45;font-size:10px">OS</span> Arch Linux x86_64`,
+      `              ▂▔▀▜██████▙                ${fa('fas fa-microchip')} <span style="opacity:0.45;font-size:10px">Kernel</span> Linux 6.19.8-arch1-1`,
+      `             ▟██▅▂▝▜█████▙               ${fa('fas fa-box-open')} <span style="opacity:0.45;font-size:10px">Packages</span> 1254 (pacman), 60 (flatpak)`,
+      `            ▟█████████████▙              ${fa('fas fa-terminal')} <span style="opacity:0.45;font-size:10px">Shell</span> fish 4.5.0`,
+      `           ▟███████████████▙             ${fa('fas fa-display')} <span style="opacity:0.45;font-size:10px">Terminal</span> kitty 0.46.1`,
+      `          ▟█████████████████▙            ${fa('fas fa-window-restore')} <span style="opacity:0.45;font-size:10px">WM</span> Hyprland 0.54.2 (Wayland)`,
+      `         ▟███████████████████▙           ${fa('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> breeze-dark`,
+      `        ▟█████████▛▀▀▜████████▙          ${fa('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> JetBrains Mono (11pt)`,
+      `       ▟████████▛      ▜███████▙         ${fa('fas fa-clock')} <span style="opacity:0.45;font-size:10px">Uptime</span> <span id="dynUptime">12 hours, 42 mins</span>`,
+      `      ▟█████████        ████████▙        ${fa('fas fa-music')} <span style="opacity:0.45;font-size:10px">Music</span> Baiaa081 - Noite Isolada`,
+      `     ▟██████████        █████▆▅▄▃▂       ${fa('fas fa-cat')} <span style="opacity:0.45;font-size:10px">Status</span> you da real kat 🤍`,
+      `    ▟██████████▛        ▜█████████▙      ${fa('fas fa-network-wired')} <span style="opacity:0.45;font-size:10px">Websites</span> katdrop • katimages • toolbox`,
+      `   ▟██████▀▀▀              ▀▀██████▙`,
+      `  ▟███▀▘                       ▝▀███▙`,
+      ` ▟▛▀                               ▀▜▙`,
+    ];
+    fastfetchArtEl.innerHTML = fastfetchLines.map(l => `<div class="term-row">${l}</div>`).join('');
+
+    // ── Interactive Terminal CLI ─────────────────────────────────────────────
+    const termInput = document.getElementById('termInput');
+    const termHistory = document.getElementById('termHistory');
+    const termBody = document.getElementById('termBody');
+    let cmdHistory = [];
+    let historyIdx = -1;
+
+    function focusTermInput() {
+      termInput.focus();
+    }
+
+    termInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const cmd = termInput.value.trim();
+        if (cmd) {
+          cmdHistory.push(cmd);
+          historyIdx = cmdHistory.length;
+          execCommand(cmd);
+        }
+        termInput.value = '';
+        termBody.scrollTop = termBody.scrollHeight;
+      } else if (e.key === 'ArrowUp') {
+        if (historyIdx > 0) {
+          historyIdx--;
+          termInput.value = cmdHistory[historyIdx];
+        }
+      } else if (e.key === 'ArrowDown') {
+        if (historyIdx < cmdHistory.length - 1) {
+          historyIdx++;
+          termInput.value = cmdHistory[historyIdx];
+        } else {
+          historyIdx = cmdHistory.length;
+          termInput.value = '';
+        }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        const cur = termInput.value.trim().toLowerCase();
+        const available = ['help', 'fastfetch', 'neofetch', 'clear', 'cat', 'ls', 'projects', 'skills', 'music', 'matrix', 'whoami', 'date', 'reboot'];
+        const match = available.find(c => c.startsWith(cur));
+        if (match) termInput.value = match;
+      }
+    });
+
+    function execCommand(cmdLine) {
+      const parts = cmdLine.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const arg = parts.slice(1).join(' ');
+
+      const row = document.createElement('div');
+      row.innerHTML = `<span class="term-prompt">oiupoyt@archlinux:~$</span> <span class="term-cmd">${escapeHtml(cmdLine)}</span>`;
+      termHistory.appendChild(row);
+
+      const out = document.createElement('div');
+      out.className = 'term-output';
+
+      switch(cmd) {
+        case 'help':
+          out.innerHTML = `Available commands:
+  <b style="color:#4db8ff">fastfetch</b>    - display Arch Linux logo & system specs
+  <b style="color:#4db8ff">ls</b>           - list virtual directory contents
+  <b style="color:#4db8ff">cat &lt;file&gt;</b>     - display contents of a file (e.g. cat about.md)
+  <b style="color:#4db8ff">projects</b>       - list active web projects & links
+  <b style="color:#4db8ff">skills</b>         - show competencies & skills
+  <b style="color:#4db8ff">music [play|pause|vol]</b> - control background audio
+  <b style="color:#4db8ff">catpic</b>         - fetch a fresh cat image
+  <b style="color:#4db8ff">matrix</b>         - toggle digital rain animation
+  <b style="color:#4db8ff">whoami</b>         - print current session bio
+  <b style="color:#4db8ff">clear</b>          - clear terminal screen
+  <b style="color:#4db8ff">date</b>           - show current date and time
+  <b style="color:#4db8ff">reboot</b>         - restart katOS desktop`;
+          break;
+
+        case 'fastfetch':
+        case 'neofetch':
+          fastfetchArtEl.style.display = 'block';
+          out.textContent = '';
+          break;
+
+        case 'ls':
+          out.innerHTML = `<span style="color:#4db8ff">about.md</span>   <span style="color:#22c55e">skillz.bash</span>   <span style="color:#eab308">websites.html</span>   <span style="color:#ec4899">links.zip</span>   <span style="color:#aaa">music.mp3</span>   <span style="color:#aaa">backgroundVideo.mp4</span>`;
+          break;
+
+        case 'cat':
+          if (!arg) {
+            out.textContent = 'cat: missing file operand. try: cat about.md';
+          } else if (arg.includes('about')) {
+            out.textContent = `i cant stop loving linux, pls speed i need this\nminecraft shyt, networking experiments, and linux customization.\ni was on the ███████████████\ncats > people haha.\ni use arch yea\nyou da real kat 🤍.`;
+          } else if (arg.includes('skill')) {
+            out.textContent = `linux / arch • Minecraft Servers • Self Hosting • server networking • Java / Plugins • yappin • im crine • tweaking • hahahahahha • cool content • very funny • veri fond of cats`;
+          } else if (arg.includes('website')) {
+            out.innerHTML = `• katdrop: https://katdrop.oiupoyt.space\n• katimages: https://kat-images.netlify.app/\n• just-download: https://justdownload.netlify.app\n• kattoolbox: https://toolbox.oiupoyt.space`;
+          } else {
+            out.textContent = `cat: ${arg}: Permission denied or file is binary`;
+          }
+          break;
+
+        case 'projects':
+          out.innerHTML = `katOS Projects:
+  1. <a href="https://katdrop.oiupoyt.space" target="_blank" style="color:#4db8ff">katdrop</a> - minimal 10-min file transfer service
+  2. <a href="https://kat-images.netlify.app/" target="_blank" style="color:#4db8ff">katimages</a> - look at cat. feel good.
+  3. <a href="https://justdownload.netlify.app" target="_blank" style="color:#4db8ff">just-download</a> - youtube & instagram media downloader
+  4. <a href="https://toolbox.oiupoyt.space" target="_blank" style="color:#4db8ff">kattoolbox</a> - client-side developer utility suite`;
+          break;
+
+        case 'skills':
+          out.textContent = 'linux / arch, minecraft servers, self hosting, server networking, java / plugins, yappin, im crine, tweaking, cats';
+          break;
+
+        case 'music':
+          if (arg === 'play') {
+            playMusic();
+            out.textContent = 'audio: playing';
+          } else if (arg === 'pause') {
+            pauseMusic();
+            out.textContent = 'audio: paused';
+          } else if (arg.startsWith('vol')) {
+            const val = parseInt(arg.split(' ')[1]);
+            if (!isNaN(val) && val >= 0 && val <= 100) {
+              setVolume(val);
+              out.textContent = `audio: volume set to ${val}%`;
+            } else {
+              out.textContent = 'usage: music vol <0-100>';
+            }
+          } else {
+            out.textContent = 'usage: music [play | pause | vol <0-100>]';
+          }
+          break;
+
+        case 'catpic':
+        case 'cat-image':
+          out.innerHTML = `Fetching cat image...`;
+          fetch('https://api.thecatapi.com/v1/images/search')
+            .then(r => r.json())
+            .then(data => {
+              if (data && data[0] && data[0].url) {
+                out.innerHTML = `<img src="${data[0].url}" style="max-width:280px;max-height:200px;border:1px solid #333;margin-top:6px;display:block;"><span style="font-size:10px;color:#777;">meow</span>`;
+                termBody.scrollTop = termBody.scrollHeight;
+              }
+            }).catch(() => {
+              out.textContent = 'cat error: no cat found :(';
+            });
+          break;
+
+        case 'matrix':
+          toggleMatrix();
+          out.textContent = `matrix digital rain: ${matrixActive ? 'ON' : 'OFF'}`;
+          break;
+
+        case 'clear':
+          termHistory.innerHTML = '';
+          fastfetchArtEl.style.display = 'none';
+          return;
+
+        case 'whoami':
+          out.textContent = 'oiupoyt — linux enthusiast, minecraft tinkerer, cat lover';
+          break;
+
+        case 'uname':
+        case 'uname -a':
+          out.textContent = 'Linux katOS 6.19.8-arch1-1 #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux';
+          break;
+
+        case 'date':
+          out.textContent = new Date().toString();
+          break;
+
+        case 'sudo':
+          out.textContent = 'user oiupoyt is not in the sudoers file. this incident will be reported to kat.';
+          break;
+
+        case 'reboot':
+          location.reload();
+          return;
+
+        default:
+          out.textContent = `bash: ${cmd}: command not found. type 'help' for available commands.`;
+      }
+
+      termHistory.appendChild(out);
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    function spawnFastfetch() {
+      restoreWindow('win-term');
+      fastfetchArtEl.style.display = 'block';
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>'"]/g, t => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[t] || t));
+    }
+
+    // ── Audio & Visualizer Engine ────────────────────────────────────────────
+    const bgMusic = document.getElementById('bgMusic');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const musicDisc = document.getElementById('musicDisc');
+    const volSlider = document.getElementById('volSlider');
+    const vizCanvas = document.getElementById('vizCanvas');
+    const vizCtx = vizCanvas.getContext('2d');
+    const vizIdleMsg = document.getElementById('vizIdleMsg');
+    const vizModeName = document.getElementById('vizModeName');
+
+    let isPlaying = false;
+    let audioCtx, analyser, source, vizAnimId;
+    let vizConnected = false;
+
+    const vizModes = ['spectrum bars', 'waveform beam', 'mirror pulse'];
+    let currentVizModeIdx = 0;
+
+    function setupAudio() {
+      if (vizConnected) return;
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.82;
+        source = audioCtx.createMediaElementSource(bgMusic);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        vizConnected = true;
+      } catch (err) {
+        console.warn('AudioContext init error:', err);
+      }
+    }
+
+    function playMusic() {
+      setupAudio();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      bgMusic.play().then(() => {
+        isPlaying = true;
+        playIcon.className = 'fas fa-pause';
+        musicDisc.classList.remove('paused');
+        startVisualizer();
+      }).catch(err => {
+        console.warn('Audio play prevented:', err);
+      });
+    }
+
+    function pauseMusic() {
+      bgMusic.pause();
+      isPlaying = false;
+      playIcon.className = 'fas fa-play';
+      musicDisc.classList.add('paused');
+      stopVisualizer();
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        pauseMusic();
+      } else {
+        playMusic();
+      }
+    }
+
+    function setVolume(val) {
+      bgMusic.volume = val / 100;
+      volSlider.value = val;
+    }
+
+    volSlider.addEventListener('input', e => {
+      setVolume(e.target.value);
+    });
+
+    bgMusic.volume = volSlider.value / 100;
+    bgMusic.addEventListener('ended', () => {
+      pauseMusic();
+    });
+
+    // ── Visualizer Rendering Modes ───────────────────────────────────────────
+    function cycleVizMode() {
+      currentVizModeIdx = (currentVizModeIdx + 1) % vizModes.length;
+      vizModeName.textContent = vizModes[currentVizModeIdx];
+    }
+
+    vizCanvas.addEventListener('click', cycleVizMode);
+
+    function resizeVizCanvas() {
+      const rect = vizCanvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      vizCanvas.width = rect.width * dpr;
+      vizCanvas.height = rect.height * dpr;
+    }
+
+    function startVisualizer() {
+      if (!analyser) return;
+      vizIdleMsg.style.opacity = '0';
+      cancelAnimationFrame(vizAnimId);
+      drawVisualizerFrame();
+    }
+
+    function stopVisualizer() {
+      cancelAnimationFrame(vizAnimId);
+      resizeVizCanvas();
+      const W = vizCanvas.width;
+      const H = vizCanvas.height;
+      vizCtx.clearRect(0, 0, W, H);
+
+      // Resting zero line
+      vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      vizCtx.lineWidth = 1;
+      vizCtx.beginPath();
+      vizCtx.moveTo(0, H * 0.9);
+      vizCtx.lineTo(W, H * 0.9);
+      vizCtx.stroke();
+
+      vizIdleMsg.style.opacity = '1';
+    }
+
+    function drawVisualizerFrame() {
+      vizAnimId = requestAnimationFrame(drawVisualizerFrame);
+      resizeVizCanvas();
+
+      const W = vizCanvas.width;
+      const H = vizCanvas.height;
+      if (W === 0 || H === 0) return;
+
+      vizCtx.clearRect(0, 0, W, H);
+
+      const bufLen = analyser.frequencyBinCount;
+      const freqData = new Uint8Array(bufLen);
+      analyser.getByteFrequencyData(freqData);
+
+      const mode = vizModes[currentVizModeIdx];
+
+      if (mode === 'spectrum bars') {
+        // Mode 1: Squared Spectrum Bars with floating glowing peaks
+        const barCount = 28;
+        const gap = W * 0.012;
+        const barW = (W - gap * (barCount + 1)) / barCount;
+        const step = Math.floor(bufLen / barCount);
+        const maxH = H * 0.82;
+        const baseY = H * 0.92;
+
+        for (let i = 0; i < barCount; i++) {
+          let sum = 0;
+          for (let k = 0; k < step; k++) sum += freqData[i * step + k];
+          const ratio = (sum / step) / 255;
+          const bh = ratio * maxH;
+          const x = gap + i * (barW + gap);
+          const y = baseY - bh;
+
+          const alpha = 0.25 + ratio * 0.75;
+          const grad = vizCtx.createLinearGradient(0, y, 0, baseY);
+          grad.addColorStop(0, `rgba(77, 184, 255, ${alpha})`);
+          grad.addColorStop(0.5, `rgba(255, 255, 255, ${alpha * 0.7})`);
+          grad.addColorStop(1, `rgba(77, 184, 255, ${alpha * 0.1})`);
+
+          vizCtx.fillStyle = grad;
+          vizCtx.fillRect(x, y, barW, bh);
+
+          // Squared glowing peak cap
+          if (bh > 4) {
+            vizCtx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha + 0.2)})`;
+            vizCtx.fillRect(x, y - 3, barW, 2);
+          }
+        }
+
+        // Base line
+        vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        vizCtx.lineWidth = 1;
+        vizCtx.beginPath();
+        vizCtx.moveTo(0, baseY);
+        vizCtx.lineTo(W, baseY);
+        vizCtx.stroke();
+
+      } else if (mode === 'waveform beam') {
+        // Mode 2: Oscilloscope Waveform Beam
+        const timeData = new Uint8Array(analyser.fftSize);
+        analyser.getByteTimeDomainData(timeData);
+
+        vizCtx.lineWidth = 2;
+        vizCtx.strokeStyle = '#4db8ff';
+        vizCtx.shadowColor = 'rgba(77, 184, 255, 0.8)';
+        vizCtx.shadowBlur = 10;
+        vizCtx.beginPath();
+
+        const sliceW = W / timeData.length;
+        let x = 0;
+
+        for (let i = 0; i < timeData.length; i++) {
+          const v = timeData[i] / 128.0;
+          const y = (v * H) / 2;
+          if (i === 0) vizCtx.moveTo(x, y);
+          else vizCtx.lineTo(x, y);
+          x += sliceW;
+        }
+
+        vizCtx.lineTo(W, H / 2);
+        vizCtx.stroke();
+        vizCtx.shadowBlur = 0;
+
+      } else if (mode === 'mirror pulse') {
+        // Mode 3: Symmetric Center-Out Pulse
+        const barCount = 18;
+        const center = W / 2;
+        const barW = (W / 2) / (barCount + 1);
+        const maxH = H * 0.75;
+        const centerY = H / 2;
+
+        for (let i = 0; i < barCount; i++) {
+          const ratio = freqData[i * 4] / 255;
+          const bh = ratio * maxH;
+          const alpha = 0.2 + ratio * 0.8;
+
+          vizCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+          // Right wing
+          vizCtx.fillRect(center + i * barW, centerY - bh / 2, barW - 2, bh);
+          // Left wing
+          vizCtx.fillRect(center - (i + 1) * barW, centerY - bh / 2, barW - 2, bh);
+        }
+
+        vizCtx.strokeStyle = 'rgba(77, 184, 255, 0.4)';
+        vizCtx.lineWidth = 1;
+        vizCtx.beginPath();
+        vizCtx.moveTo(0, centerY);
+        vizCtx.lineTo(W, centerY);
+        vizCtx.stroke();
+      }
+    }
+
+    // ── Matrix Rain Effect ───────────────────────────────────────────────────
+    const matrixCanvas = document.getElementById('matrixCanvas');
+    const mCtx = matrixCanvas.getContext('2d');
+    let matrixActive = false;
+    let matrixInterval = null;
+    const mChars = '01KATOSOIUPOYTARCHLINUXλπ#$><;:~';
+    let mCols, mDrops;
+
+    function initMatrix() {
+      matrixCanvas.width = window.innerWidth;
+      matrixCanvas.height = window.innerHeight;
+      mCols = Math.floor(matrixCanvas.width / 18);
+      mDrops = Array(mCols).fill(1);
+    }
+    initMatrix();
+    window.addEventListener('resize', initMatrix);
+
+    function drawMatrix() {
+      mCtx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+      mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+      mCtx.fillStyle = '#4db8ff';
+      mCtx.font = '12px "JetBrains Mono", monospace';
+
+      for (let i = 0; i < mDrops.length; i++) {
+        const text = mChars.charAt(Math.floor(Math.random() * mChars.length));
+        mCtx.fillText(text, i * 18, mDrops[i] * 18);
+        if (mDrops[i] * 18 > matrixCanvas.height && Math.random() > 0.975) {
+          mDrops[i] = 0;
+        }
+        mDrops[i]++;
+      }
+    }
+
+    function toggleMatrix() {
+      matrixActive = !matrixActive;
+      matrixCanvas.classList.toggle('active', matrixActive);
+      if (matrixActive) {
+        if (!matrixInterval) matrixInterval = setInterval(drawMatrix, 40);
+      } else {
+        clearInterval(matrixInterval);
+        matrixInterval = null;
+        mCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+      }
+    }
+
+    // ── Desktop Context Menu ─────────────────────────────────────────────────
+    const ctxMenu = document.getElementById('ctxMenu');
+
+    document.addEventListener('contextmenu', e => {
+      if (e.target.closest('.window-body') || e.target.closest('input')) return;
+      e.preventDefault();
+      ctxMenu.style.display = 'block';
+      let x = e.clientX;
+      let y = e.clientY;
+      if (x + 190 > window.innerWidth) x = window.innerWidth - 195;
+      if (y + 200 > window.innerHeight) y = window.innerHeight - 205;
+      ctxMenu.style.left = x + 'px';
+      ctxMenu.style.top = y + 'px';
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.context-menu')) {
+        ctxMenu.style.display = 'none';
+      }
+    });
+
+    // ── Clock & System Monitor ───────────────────────────────────────────────
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ── Background Video Loader ──────────────────────────────────────────────
+    const bgVideo = document.getElementById('bgVideo');
+    async function tryLoadBgVideo() {
+      for (const name of ['backgroundVideo.mp4', 'backgroundVideo.webm']) {
+        try {
+          const res = await fetch(name);
+          if (res.ok) {
+            const url = URL.createObjectURL(await res.blob());
+            bgVideo.src = url;
+            bgVideo.load();
+            bgVideo.play().catch(() => {});
+            return;
+          }
+        } catch (e) {}
+      }
+    }
+
+    // ── Loading Screen Enter ─────────────────────────────────────────────────
+    const loadingScreen = document.getElementById('loadingScreen');
+    loadingScreen.addEventListener('click', () => {
+      loadingScreen.classList.add('hidden');
+      tryLoadBgVideo();
+      setTimeout(() => {
+        playMusic();
+        focusTermInput();
+      }, 300);
+    });
+
+    // Keyboard Shortcut (Space to play/pause music outside text inputs)
+    window.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
+    // Initialize System
+    initWindows();
+  </script>
 </body>
 </html>
