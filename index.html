@@ -147,6 +147,9 @@
       z-index: 10;
       display: flex;
       flex-direction: column;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      contain: layout style;
       transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
 
@@ -1090,27 +1093,34 @@
           const shiftX = e.clientX - rect.left;
           const shiftY = e.clientY - rect.top;
 
+          win.style.willChange = 'left, top';
+          let dragRaf = null;
+
           function onMouseMove(moveEvent) {
-            let newX = moveEvent.clientX - shiftX;
-            let newY = moveEvent.clientY - shiftY;
+            const newX = Math.max(0, Math.min(window.innerWidth - 60, moveEvent.clientX - shiftX));
+            const newY = Math.max(0, Math.min(window.innerHeight - 70, moveEvent.clientY - shiftY));
 
-            const maxX = window.innerWidth - 60;
-            const maxY = window.innerHeight - 70;
-            if (newX < 0) newX = 0;
-            if (newX > maxX) newX = maxX;
-            if (newY < 0) newY = 0;
-            if (newY > maxY) newY = maxY;
-
-            win.style.left = newX + 'px';
-            win.style.top = newY + 'px';
+            if (!dragRaf) {
+              dragRaf = requestAnimationFrame(() => {
+                win.style.left = newX + 'px';
+                win.style.top = newY + 'px';
+                dragRaf = null;
+              });
+            }
           }
 
           function onMouseUp() {
+            if (dragRaf) {
+              cancelAnimationFrame(dragRaf);
+              dragRaf = null;
+            }
+            win.style.willChange = 'auto';
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
+            if (win.id === 'win-viz' && typeof resizeVizCanvas === 'function') resizeVizCanvas();
           }
 
-          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mousemove', onMouseMove, { passive: true });
           document.addEventListener('mouseup', onMouseUp);
         });
       });
@@ -1214,6 +1224,7 @@
       if (e.key === 'Enter') {
         const cmd = termInput.value.trim();
         if (cmd) {
+          if (cmdHistory.length > 60) cmdHistory.shift();
           cmdHistory.push(cmd);
           historyIdx = cmdHistory.length;
           execCommand(cmd);
@@ -1246,6 +1257,11 @@
       const parts = cmdLine.split(' ');
       const cmd = parts[0].toLowerCase();
       const arg = parts.slice(1).join(' ');
+
+      // Prune old terminal nodes to keep DOM lightweight
+      while (termHistory.children.length > 60) {
+        termHistory.removeChild(termHistory.firstChild);
+      }
 
       const row = document.createElement('div');
       row.innerHTML = `<span class="term-prompt">oiupoyt@archlinux:~$</span> <span class="term-cmd">${escapeHtml(cmdLine)}</span>`;
@@ -1498,16 +1514,19 @@
 
     vizCanvas.addEventListener('click', cycleVizMode);
 
+    const sharedFreqData = new Uint8Array(128);
+
     function resizeVizCanvas() {
       const rect = vizCanvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      vizCanvas.width = rect.width * dpr;
-      vizCanvas.height = rect.height * dpr;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      vizCanvas.width = (rect.width || 500) * dpr;
+      vizCanvas.height = (rect.height || 240) * dpr;
     }
 
     function startVisualizer() {
       if (!analyser) return;
       vizIdleMsg.style.opacity = '0';
+      resizeVizCanvas();
       cancelAnimationFrame(vizAnimId);
       drawVisualizerFrame();
     }
@@ -1532,7 +1551,7 @@
 
     function drawVisualizerFrame() {
       vizAnimId = requestAnimationFrame(drawVisualizerFrame);
-      resizeVizCanvas();
+      if (document.hidden) return; // Pause rendering on inactive tab
 
       const W = vizCanvas.width;
       const H = vizCanvas.height;
@@ -1540,9 +1559,9 @@
 
       vizCtx.clearRect(0, 0, W, H);
 
-      const bufLen = analyser.frequencyBinCount;
-      const freqData = new Uint8Array(bufLen);
-      analyser.getByteFrequencyData(freqData);
+      analyser.getByteFrequencyData(sharedFreqData);
+      const freqData = sharedFreqData;
+      const bufLen = sharedFreqData.length;
 
       const mode = vizModes[currentVizModeIdx];
 
@@ -1634,6 +1653,13 @@
       }, 1900);
     }
 
+    function safeStorageGet(key, def = null) {
+      try { return localStorage.getItem(key) || def; } catch(e) { return def; }
+    }
+    function safeStorageSet(key, val) {
+      try { localStorage.setItem(key, val); } catch(e) {}
+    }
+
     const bgModes = [
       { id: 'liquid-void',   name: 'Liquid Void Fluid' },
       { id: 'cyber-horizon', name: 'Cyber 3D Horizon' },
@@ -1641,13 +1667,13 @@
       { id: 'video-ambient', name: 'Ambient Video' }
     ];
     let currentBgModeIdx = 0; // Default: 'liquid-void'
-    const savedBg = localStorage.getItem('katos_bg_mode');
+    const savedBg = safeStorageGet('katos_bg_mode');
     if (savedBg && savedBg !== 'video-ambient') {
       const idx = bgModes.findIndex(m => m.id === savedBg);
       if (idx !== -1) currentBgModeIdx = idx;
     } else {
       currentBgModeIdx = 0;
-      localStorage.setItem('katos_bg_mode', 'liquid-void');
+      safeStorageSet('katos_bg_mode', 'liquid-void');
     }
 
     function setBgMode(modeId, silent = false) {
@@ -1665,7 +1691,7 @@
 
     function applyBgMode(silent = false) {
       const mode = bgModes[currentBgModeIdx];
-      localStorage.setItem('katos_bg_mode', mode.id);
+      safeStorageSet('katos_bg_mode', mode.id);
       if (mode.id === 'video-ambient') {
         bgVideo.style.display = 'block';
         tryLoadBgVideo();
@@ -1695,16 +1721,17 @@
       bgMouse.targetX = e.clientX;
       bgMouse.targetY = e.clientY;
       bgMouse.active = true;
-    });
+    }, { passive: true });
 
     window.addEventListener('mouseleave', () => {
       bgMouse.active = false;
-    });
+    }, { passive: true });
 
     // Gravitational Shockwaves on Click
     const shockwaves = [];
     window.addEventListener('mousedown', e => {
       if (e.target.closest('.window-body') || e.target.closest('input') || e.target.closest('.player-btn')) return;
+      if (shockwaves.length > 5) shockwaves.shift();
       shockwaves.push({
         x: e.clientX,
         y: e.clientY,
@@ -1713,6 +1740,13 @@
         alpha: 0.65,
         power: 1.2
       });
+    });
+
+    // Pause CPU/GPU canvas rendering when user switches tabs or minimizes window
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && isPlaying) {
+        startVisualizer();
+      }
     });
 
     // ── Liquid Void Kinetic Particle Fluid ──────────────────────────────────
@@ -1742,14 +1776,19 @@
       }
     }
 
-    // Incompressible Curl-Noise Flow Field Generator (Zero Divergence)
-    function getCurlVector(x, y, t) {
+    // Incompressible Curl-Noise Flow Field Generator (Zero Allocation & Fast Math)
+    let curlVx = 0, curlVy = 0;
+    function computeCurl(x, y, t) {
       const s1 = 0.0016;
       const s2 = 0.0034;
-      const vx = -s1 * Math.sin(x * s1 + t * 0.00035) * Math.sin(y * s1 + t * 0.0003) + 0.45 * s2 * Math.cos((x + y) * s2 - t * 0.00045);
-      const vy = -(s1 * Math.cos(x * s1 + t * 0.00035) * Math.cos(y * s1 + t * 0.0003) + 0.45 * s2 * Math.cos((x + y) * s2 - t * 0.00045));
-      const len = Math.hypot(vx, vy) || 1;
-      return { vx: vx / len, vy: vy / len };
+      const t1 = t * 0.00035;
+      const t2 = t * 0.0003;
+      const t3 = t * 0.00045;
+      const vx = -s1 * Math.sin(x * s1 + t1) * Math.sin(y * s1 + t2) + 0.45 * s2 * Math.cos((x + y) * s2 - t3);
+      const vy = -(s1 * Math.cos(x * s1 + t1) * Math.sin(y * s1 + t2) + 0.45 * s2 * Math.cos((x + y) * s2 - t3));
+      const invLen = 1 / (Math.sqrt(vx * vx + vy * vy) || 1);
+      curlVx = vx * invLen;
+      curlVy = vy * invLen;
     }
 
     // Matrix Rain Setup
@@ -1766,19 +1805,19 @@
       bgCanvas.height = window.innerHeight;
       initFluidParticles();
       initMatrixDrops();
+      if (typeof resizeVizCanvas === 'function') resizeVizCanvas();
     }
     window.addEventListener('resize', resizeBgCanvas);
     resizeBgCanvas();
 
-    // Audio frequency extractor
+    // Audio frequency extractor (zero garbage collection overhead)
     function getAudioBeat() {
       if (!isPlaying || !analyser) return { bass: 0, mid: 0, energy: 0 };
-      const freqData = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(freqData);
-      let bSum = 0; for (let i = 0; i < 5; i++) bSum += freqData[i];
-      let mSum = 0; for (let i = 5; i < 20; i++) mSum += freqData[i];
-      const bass = (bSum / 5) / 255;
-      const mid = (mSum / 15) / 255;
+      analyser.getByteFrequencyData(sharedFreqData);
+      let bSum = 0; for (let i = 0; i < 5; i++) bSum += sharedFreqData[i];
+      let mSum = 0; for (let i = 5; i < 20; i++) mSum += sharedFreqData[i];
+      const bass = (bSum * 0.2) * 0.00392156862745098;
+      const mid = (mSum * 0.06666666666666667) * 0.00392156862745098;
       return { bass, mid, energy: (bass * 0.65 + mid * 0.35) };
     }
 
@@ -1787,6 +1826,7 @@
 
     function renderBgFrame(timestamp) {
       requestAnimationFrame(renderBgFrame);
+      if (document.hidden) return; // Full GPU/CPU pause on inactive tab
       const W = bgCanvas.width;
       const H = bgCanvas.height;
       if (W === 0 || H === 0) return;
@@ -1876,28 +1916,30 @@
           p.oldX = p.x;
           p.oldY = p.y;
 
-          // 1. Natural Incompressible Curl Flow Field
-          const curl = getCurlVector(p.x, p.y, timestamp);
-          p.vx += curl.vx * 0.22 * p.speed;
-          p.vy += curl.vy * 0.22 * p.speed;
+          // 1. Natural Incompressible Curl Flow Field (Zero Allocation)
+          computeCurl(p.x, p.y, timestamp);
+          p.vx += curlVx * 0.22 * p.speed;
+          p.vy += curlVy * 0.22 * p.speed;
 
           // 2. Interactive Mouse Vortex & Kinetic Attraction
           if (bgMouse.active) {
             const mdx = bgMouse.x - p.x;
             const mdy = bgMouse.y - p.y;
-            const mDist = Math.hypot(mdx, mdy);
-            if (mDist < 220 && mDist > 0.001) {
-              const factor = (1 - mDist / 220);
+            const mDistSq = mdx * mdx + mdy * mdy;
+            if (mDistSq < 48400 && mDistSq > 0.0001) {
+              const mDist = Math.sqrt(mDistSq);
+              const factor = (1 - mDist * 0.00454545);
+              const invMDist = 1 / mDist;
 
               // Tangential vortex whirlpool force
-              const swirlX = -mdy / mDist;
-              const swirlY = mdx / mDist;
+              const swirlX = -mdy * invMDist;
+              const swirlY = mdx * invMDist;
               p.vx += swirlX * factor * 2.8;
               p.vy += swirlY * factor * 2.8;
 
               // Gentle radial pull into the vortex center
-              p.vx += (mdx / mDist) * factor * 1.1;
-              p.vy += (mdy / mDist) * factor * 1.1;
+              p.vx += (mdx * invMDist) * factor * 1.1;
+              p.vy += (mdy * invMDist) * factor * 1.1;
 
               // Kinetic velocity transfer from rapid cursor movement
               p.vx += bgMouse.vx * factor * 0.18;
@@ -1910,12 +1952,13 @@
             const sw = shockwaves[k];
             const sdx = p.x - sw.x;
             const sdy = p.y - sw.y;
-            const sDist = Math.hypot(sdx, sdy);
+            const sDist = Math.sqrt(sdx * sdx + sdy * sdy);
             const ringDist = Math.abs(sDist - sw.radius);
             if (ringDist < 45 && sDist > 0.001) {
-              const push = (1 - ringDist / 45) * 3.5 * sw.alpha * sw.power;
-              p.vx += (sdx / sDist) * push;
-              p.vy += (sdy / sDist) * push;
+              const push = (1 - ringDist * 0.02222) * 3.5 * sw.alpha * sw.power;
+              const invSDist = 1 / sDist;
+              p.vx += (sdx * invSDist) * push;
+              p.vy += (sdy * invSDist) * push;
             }
           }
 
@@ -1939,7 +1982,7 @@
           }
 
           // 4. Render Silky Luminous Trail
-          const vMag = Math.hypot(p.vx, p.vy);
+          const vMag = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
           const glowAlpha = Math.min(1, p.alpha * (0.8 + audio.bass * 0.9) + vMag * 0.08);
 
           bgCtx.strokeStyle = `rgba(255, 255, 255, ${glowAlpha})`;
