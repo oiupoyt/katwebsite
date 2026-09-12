@@ -1941,54 +1941,7 @@
           }
           bgCtx.stroke();
         }
-
-        // Center Horizon Cyber Kat Mark
-        bgCtx.font = '10px "JetBrains Mono", monospace';
-        bgCtx.fillStyle = `rgba(255, 255, 255, ${0.45 + audio.bass * 0.4})`;
-        bgCtx.textAlign = 'center';
-        bgCtx.fillText('[ · ᆺ · katOS ]', centerX, horizonY - 10);
       }
-
-      // 4. Tactical Radar (Bottom-Left Corner)
-      const rX = 54;
-      const rY = H - 56;
-      const rRad = 32;
-      radarAngle = (radarAngle + 0.02) % (Math.PI * 2);
-
-      // Radar rings
-      bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      bgCtx.lineWidth = 1;
-      bgCtx.beginPath(); bgCtx.arc(rX, rY, rRad * 0.4, 0, Math.PI * 2); bgCtx.stroke();
-      bgCtx.beginPath(); bgCtx.arc(rX, rY, rRad * 0.75, 0, Math.PI * 2); bgCtx.stroke();
-      bgCtx.beginPath(); bgCtx.arc(rX, rY, rRad, 0, Math.PI * 2); bgCtx.stroke();
-
-      // Radar crosshairs
-      bgCtx.beginPath();
-      bgCtx.moveTo(rX - rRad, rY); bgCtx.lineTo(rX + rRad, rY);
-      bgCtx.moveTo(rX, rY - rRad); bgCtx.lineTo(rX, rY + rRad);
-      bgCtx.stroke();
-
-      // Radar rotating sweep line
-      const sweepX = rX + Math.cos(radarAngle) * rRad;
-      const sweepY = rY + Math.sin(radarAngle) * rRad;
-      bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-      bgCtx.beginPath();
-      bgCtx.moveTo(rX, rY);
-      bgCtx.lineTo(sweepX, sweepY);
-      bgCtx.stroke();
-
-      // Radar text
-      bgCtx.font = '8px "JetBrains Mono", monospace';
-      bgCtx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-      bgCtx.textAlign = 'left';
-      bgCtx.fillText('SWEEP 360°', rX - 22, rY + rRad + 12);
-
-      // 5. Top-Right Tactical Telemetry Readout
-      bgCtx.font = '9px "JetBrains Mono", monospace';
-      bgCtx.fillStyle = 'rgba(255, 255, 255, 0.28)';
-      bgCtx.textAlign = 'right';
-      bgCtx.fillText('katOS // ARCH_LINUX_WAYLAND', W - 18, 22);
-      bgCtx.fillText(isPlaying ? 'AUDIO FLUX: ACTIVE [●]' : 'AUDIO FLUX: IDLE [○]', W - 18, 34);
     }
 
     requestAnimationFrame(renderBgFrame);
