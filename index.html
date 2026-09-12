@@ -66,7 +66,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Background Video & Matrix Rain ─────────────────────────────────────── */
+    /* ── Background Engine & Tactical CRT Layer ────────────────────────────── */
     .video-bg {
       position: fixed;
       inset: 0;
@@ -75,34 +75,55 @@
       object-fit: cover;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.55;
+      opacity: 0;
+      transition: opacity 0.5s ease;
       filter: contrast(1.15) brightness(0.88);
     }
 
-    #matrixCanvas {
+    #bgCanvas {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
       z-index: 1;
-      opacity: 0;
-      transition: opacity 0.6s ease;
     }
 
-    #matrixCanvas.active {
-      opacity: 0.35;
-    }
-
-    .desktop-grid {
+    .crt-overlay {
       position: fixed;
       inset: 0;
-      background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 36px 36px;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
+      background: 
+        radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.72) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 3px);
+    }
+
+    /* Minimalist On-Screen HUD Notification Toast */
+    .kat-toast {
+      position: fixed;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: rgba(10, 10, 14, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 6px 16px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 99999;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.22s ease;
+    }
+
+    .kat-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     /* ── Desktop Workspace ───────────────────────────────────────────────────── */
@@ -746,10 +767,11 @@
     </div>
   </div>
 
-  <!-- Background Video & Ambient Canvas Layers -->
+  <!-- Dynamic Ambient & Cybernetic Background Layers -->
   <video class="video-bg" id="bgVideo" autoplay muted loop playsinline></video>
-  <canvas id="matrixCanvas"></canvas>
-  <div class="desktop-grid"></div>
+  <canvas id="bgCanvas"></canvas>
+  <div class="crt-overlay"></div>
+  <div id="katToast" class="kat-toast"></div>
 
   <!-- Desktop Workspace -->
   <div class="desktop" id="desktop">
@@ -973,8 +995,7 @@
   <!-- Desktop Right-Click Context Menu -->
   <div class="context-menu" id="ctxMenu">
     <div class="ctx-item" onclick="spawnFastfetch()"><i class="fas fa-terminal"></i> Open Terminal</div>
-    <div class="ctx-item" onclick="cycleVizMode()"><i class="fas fa-sliders"></i> Cycle Visualizer Mode</div>
-    <div class="ctx-item" onclick="toggleMatrix()"><i class="fas fa-code"></i> Toggle Matrix Rain</div>
+    <div class="ctx-item" onclick="cycleBgMode()"><i class="fas fa-layer-group"></i> Switch Background Mode</div>
     <div class="ctx-sep"></div>
     <div class="ctx-item" onclick="togglePlay()"><i class="fas fa-music"></i> Play / Pause Music</div>
     <div class="ctx-item" onclick="restoreAllWindows()"><i class="fas fa-window-restore"></i> Show All Windows</div>
@@ -1236,8 +1257,8 @@
   <b style="color:#ffffff">projects</b>       - list active web projects & links
   <b style="color:#ffffff">skills</b>         - show competencies & skills
   <b style="color:#ffffff">music</b>          - music play | pause | vol &lt;0-100&gt;
+  <b style="color:#ffffff">bg &lt;mode&gt;</b>       - change background (horizon, neural, matrix, video)
   <b style="color:#ffffff">catpic</b>         - fetch a fresh cat image
-  <b style="color:#ffffff">matrix</b>         - toggle digital rain animation
   <b style="color:#ffffff">whoami</b>         - print current session bio
   <b style="color:#ffffff">clear</b>          - clear terminal screen
   <b style="color:#ffffff">date</b>           - show current date and time
@@ -1318,9 +1339,29 @@
             });
           break;
 
+        case 'bg':
+        case 'background':
+          if (arg === 'cyber' || arg === 'horizon') {
+            setBgMode('cyber-horizon');
+            out.textContent = 'background set to: Cyber 3D Horizon';
+          } else if (arg === 'neural' || arg === 'stars' || arg === 'mesh') {
+            setBgMode('neural-mesh');
+            out.textContent = 'background set to: Neural Star-Mesh';
+          } else if (arg === 'matrix' || arg === 'rain') {
+            setBgMode('matrix-rain');
+            out.textContent = 'background set to: KatOS Digital Rain';
+          } else if (arg === 'video') {
+            setBgMode('video-ambient');
+            out.textContent = 'background set to: Ambient Video';
+          } else {
+            cycleBgMode();
+            out.textContent = `background switched to: ${bgModes[currentBgModeIdx].name}\nusage: bg [horizon | neural | matrix | video]`;
+          }
+          break;
+
         case 'matrix':
-          toggleMatrix();
-          out.textContent = `matrix digital rain: ${matrixActive ? 'ON' : 'OFF'}`;
+          setBgMode('matrix-rain');
+          out.textContent = 'background set to: KatOS Digital Rain';
           break;
 
         case 'clear':
@@ -1570,50 +1611,387 @@
       }
     }
 
-    // ── Matrix Rain (Monochrome White) ───────────────────────────────────────
-    const matrixCanvas = document.getElementById('matrixCanvas');
-    const mCtx = matrixCanvas.getContext('2d');
-    let matrixActive = false;
-    let matrixInterval = null;
-    const mChars = '01KATOSOIUPOYTARCHLINUXλπ#$><;:~';
-    let mCols, mDrops;
+    // ── Unique Cybernetic & Audio-Reactive Background Engine ────────────────
+    const bgCanvas = document.getElementById('bgCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const katToast = document.getElementById('katToast');
+    let toastTimer = null;
 
-    function initMatrix() {
-      matrixCanvas.width = window.innerWidth;
-      matrixCanvas.height = window.innerHeight;
-      mCols = Math.floor(matrixCanvas.width / 18);
-      mDrops = Array(mCols).fill(1);
+    function showToast(text) {
+      if (!katToast) return;
+      katToast.textContent = text;
+      katToast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        katToast.classList.remove('show');
+      }, 1900);
     }
-    initMatrix();
-    window.addEventListener('resize', initMatrix);
 
-    function drawMatrix() {
-      mCtx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-      mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-      mCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-      mCtx.font = '12px "JetBrains Mono", monospace';
+    const bgModes = [
+      { id: 'cyber-horizon', name: 'Cyber 3D Horizon' },
+      { id: 'neural-mesh',   name: 'Neural Star-Mesh' },
+      { id: 'matrix-rain',   name: 'KatOS Digital Rain' },
+      { id: 'video-ambient', name: 'Ambient Video' }
+    ];
+    let currentBgModeIdx = 0;
+    const savedBg = localStorage.getItem('katos_bg_mode');
+    if (savedBg) {
+      const idx = bgModes.findIndex(m => m.id === savedBg);
+      if (idx !== -1) currentBgModeIdx = idx;
+    }
 
-      for (let i = 0; i < mDrops.length; i++) {
-        const text = mChars.charAt(Math.floor(Math.random() * mChars.length));
-        mCtx.fillText(text, i * 18, mDrops[i] * 18);
-        if (mDrops[i] * 18 > matrixCanvas.height && Math.random() > 0.975) {
-          mDrops[i] = 0;
-        }
-        mDrops[i]++;
+    function setBgMode(modeId, silent = false) {
+      const idx = bgModes.findIndex(m => m.id === modeId);
+      if (idx !== -1) {
+        currentBgModeIdx = idx;
+        applyBgMode(silent);
       }
     }
 
-    function toggleMatrix() {
-      matrixActive = !matrixActive;
-      matrixCanvas.classList.toggle('active', matrixActive);
-      if (matrixActive) {
-        if (!matrixInterval) matrixInterval = setInterval(drawMatrix, 40);
+    function cycleBgMode() {
+      currentBgModeIdx = (currentBgModeIdx + 1) % bgModes.length;
+      applyBgMode(false);
+    }
+
+    function applyBgMode(silent = false) {
+      const mode = bgModes[currentBgModeIdx];
+      localStorage.setItem('katos_bg_mode', mode.id);
+      if (mode.id === 'video-ambient') {
+        bgVideo.style.display = 'block';
+        setTimeout(() => { bgVideo.style.opacity = '0.55'; }, 20);
       } else {
-        clearInterval(matrixInterval);
-        matrixInterval = null;
-        mCtx.clearRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        bgVideo.style.opacity = '0';
+        setTimeout(() => {
+          if (bgModes[currentBgModeIdx].id !== 'video-ambient') bgVideo.style.display = 'none';
+        }, 500);
+      }
+      if (!silent) showToast(`[ BG: ${mode.name} ]`);
+    }
+
+    // Mouse Tracking with Smooth Lerp
+    const bgMouse = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      targetX: window.innerWidth / 2,
+      targetY: window.innerHeight / 2,
+      active: false
+    };
+
+    window.addEventListener('mousemove', e => {
+      bgMouse.targetX = e.clientX;
+      bgMouse.targetY = e.clientY;
+      bgMouse.active = true;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      bgMouse.active = false;
+    });
+
+    // Star / Constellation Node Pool
+    const STAR_COUNT = 85;
+    const stars = [];
+    function initStars() {
+      stars.length = 0;
+      const W = bgCanvas.width;
+      const H = bgCanvas.height;
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: 0.8 + Math.random() * 1.8,
+          alpha: 0.2 + Math.random() * 0.65,
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.02 + Math.random() * 0.03
+        });
       }
     }
+
+    // Matrix Rain Columns
+    let mCols = 0;
+    let mDrops = [];
+    const mChars = '01KATOSOIUPOYTARCHLINUX7942#$><;:~^._.^';
+    function initMatrixDrops() {
+      mCols = Math.floor(bgCanvas.width / 18);
+      mDrops = Array.from({ length: mCols }, () => Math.floor(Math.random() * -45));
+    }
+
+    function resizeBgCanvas() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+      initStars();
+      initMatrixDrops();
+    }
+    window.addEventListener('resize', resizeBgCanvas);
+    resizeBgCanvas();
+
+    // Audio frequency extractor helper
+    function getAudioBeat() {
+      if (!isPlaying || !analyser) return { bass: 0, mid: 0, energy: 0 };
+      const freqData = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(freqData);
+      let bSum = 0; for (let i = 0; i < 5; i++) bSum += freqData[i];
+      let mSum = 0; for (let i = 5; i < 20; i++) mSum += freqData[i];
+      const bass = (bSum / 5) / 255;
+      const mid = (mSum / 15) / 255;
+      return { bass, mid, energy: (bass * 0.65 + mid * 0.35) };
+    }
+
+    // Expanding shockwave pulse on bass hits
+    const shockwaves = [];
+    let lastBeatTime = 0;
+    let gridOffset = 0;
+    let radarAngle = 0;
+
+    function renderBgFrame(timestamp) {
+      requestAnimationFrame(renderBgFrame);
+      const W = bgCanvas.width;
+      const H = bgCanvas.height;
+      if (W === 0 || H === 0) return;
+
+      // Smooth mouse lerp
+      bgMouse.x += (bgMouse.targetX - bgMouse.x) * 0.08;
+      bgMouse.y += (bgMouse.targetY - bgMouse.y) * 0.08;
+
+      const audio = getAudioBeat();
+
+      // Trigger beat shockwave on intense bass
+      if (audio.bass > 0.65 && timestamp - lastBeatTime > 340) {
+        lastBeatTime = timestamp;
+        shockwaves.push({
+          x: W / 2,
+          y: H * 0.65,
+          radius: 8,
+          maxRadius: Math.max(W, H) * 0.8,
+          alpha: 0.55
+        });
+      }
+
+      const currentMode = bgModes[currentBgModeIdx].id;
+
+      if (currentMode === 'video-ambient') {
+        bgCtx.clearRect(0, 0, W, H);
+        return;
+      }
+
+      if (currentMode === 'matrix-rain') {
+        // High-definition monochrome KatOS matrix rain
+        bgCtx.fillStyle = 'rgba(0, 0, 0, 0.09)';
+        bgCtx.fillRect(0, 0, W, H);
+        bgCtx.font = '12px "JetBrains Mono", monospace';
+
+        for (let i = 0; i < mDrops.length; i++) {
+          const char = mChars.charAt(Math.floor(Math.random() * mChars.length));
+          const x = i * 18;
+          const y = mDrops[i] * 18;
+
+          if (y >= 0) {
+            bgCtx.fillStyle = '#ffffff';
+            bgCtx.shadowColor = '#ffffff';
+            bgCtx.shadowBlur = 8;
+            bgCtx.fillText(char, x, y);
+            bgCtx.shadowBlur = 0;
+
+            bgCtx.fillStyle = 'rgba(210, 210, 210, 0.45)';
+            const prevChar = mChars.charAt(Math.floor(Math.random() * mChars.length));
+            bgCtx.fillText(prevChar, x, y - 18);
+          }
+
+          if (y > H && Math.random() > 0.978) {
+            mDrops[i] = 0;
+          }
+          mDrops[i]++;
+        }
+        return;
+      }
+
+      // Default modes: 'cyber-horizon' or 'neural-mesh'
+      bgCtx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+      bgCtx.fillRect(0, 0, W, H);
+
+      const isHorizon = (currentMode === 'cyber-horizon');
+      const horizonY = isHorizon ? H * 0.65 : H + 200;
+
+      // 1. Draw Starfield & Constellation Network
+      const activeStars = isHorizon ? stars.filter(s => s.y < horizonY + 25) : stars;
+
+      for (let i = 0; i < activeStars.length; i++) {
+        const s = activeStars[i];
+        s.x += s.vx * (1 + audio.bass * 0.5);
+        s.y += s.vy * (1 + audio.bass * 0.5);
+        s.pulse += s.pulseSpeed;
+
+        if (s.x < 0) s.x = W;
+        if (s.x > W) s.x = 0;
+        if (s.y < 0) s.y = isHorizon ? horizonY : H;
+        if (s.y > (isHorizon ? horizonY + 15 : H)) s.y = 0;
+
+        // Mouse gravity pull (subtle warp)
+        const dx = bgMouse.x - s.x;
+        const dy = bgMouse.y - s.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (bgMouse.active && dist < 140) {
+          const force = (1 - dist / 140) * 0.015;
+          s.x += dx * force;
+          s.y += dy * force;
+
+          // Glowing laser thread connecting cursor to node
+          bgCtx.strokeStyle = `rgba(255, 255, 255, ${(1 - dist / 140) * 0.32})`;
+          bgCtx.lineWidth = 1;
+          bgCtx.beginPath();
+          bgCtx.moveTo(bgMouse.x, bgMouse.y);
+          bgCtx.lineTo(s.x, s.y);
+          bgCtx.stroke();
+        }
+
+        // Connections between neighboring stars
+        for (let j = i + 1; j < activeStars.length; j++) {
+          const s2 = activeStars[j];
+          const cdx = s.x - s2.x;
+          const cdy = s.y - s2.y;
+          const cDist = Math.sqrt(cdx * cdx + cdy * cdy);
+          if (cDist < 85) {
+            const lineAlpha = (1 - cDist / 85) * 0.16 * (1 + audio.mid * 0.8);
+            bgCtx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha})`;
+            bgCtx.lineWidth = 0.8;
+            bgCtx.beginPath();
+            bgCtx.moveTo(s.x, s.y);
+            bgCtx.lineTo(s2.x, s2.y);
+            bgCtx.stroke();
+          }
+        }
+
+        // Draw star node
+        const glowBoost = audio.bass * 0.65;
+        const currentAlpha = Math.min(1, s.alpha * (0.8 + 0.3 * Math.sin(s.pulse)) + glowBoost);
+        bgCtx.fillStyle = `rgba(255, 255, 255, ${currentAlpha})`;
+        bgCtx.beginPath();
+        bgCtx.arc(s.x, s.y, s.size * (1 + glowBoost * 0.5), 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+
+      // 2. Render expanding shockwaves
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.radius += 5.5;
+        sw.alpha *= 0.96;
+        if (sw.radius > sw.maxRadius || sw.alpha < 0.01) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+        bgCtx.strokeStyle = `rgba(255, 255, 255, ${sw.alpha * 0.28})`;
+        bgCtx.lineWidth = 1.5;
+        bgCtx.beginPath();
+        bgCtx.ellipse(sw.x, sw.y, sw.radius, sw.radius * 0.35, 0, 0, Math.PI * 2);
+        bgCtx.stroke();
+      }
+
+      // 3. Render 3D Perspective Cyber-Grid (if in cyber-horizon mode)
+      if (isHorizon) {
+        // Horizon glow aura
+        const hGrad = bgCtx.createLinearGradient(0, horizonY - 35, 0, horizonY + 25);
+        hGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        hGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.1 + audio.bass * 0.2})`);
+        hGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        bgCtx.fillStyle = hGrad;
+        bgCtx.fillRect(0, horizonY - 35, W, 60);
+
+        // Horizon sharp divider line
+        bgCtx.strokeStyle = `rgba(255, 255, 255, ${0.4 + audio.bass * 0.4})`;
+        bgCtx.lineWidth = 1;
+        bgCtx.beginPath();
+        bgCtx.moveTo(0, horizonY);
+        bgCtx.lineTo(W, horizonY);
+        bgCtx.stroke();
+
+        // Longitudinal radiating perspective lines
+        const lineCount = 28;
+        const centerX = W / 2;
+        const bottomSpread = W * 1.4;
+        bgCtx.lineWidth = 1;
+        for (let i = -lineCount / 2; i <= lineCount / 2; i++) {
+          const topX = centerX + i * 16;
+          const bottomX = centerX + (i / (lineCount / 2)) * (bottomSpread / 2);
+          const lineAlpha = 0.04 + (1 - Math.abs(i) / (lineCount / 2)) * 0.12 + audio.bass * 0.08;
+          bgCtx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha})`;
+          bgCtx.beginPath();
+          bgCtx.moveTo(topX, horizonY);
+          bgCtx.lineTo(bottomX, H);
+          bgCtx.stroke();
+        }
+
+        // Transverse rolling perspective lines
+        gridOffset = (gridOffset + 0.005 + audio.bass * 0.01) % 1;
+        const transLines = 14;
+        for (let k = 0; k < transLines; k++) {
+          const progress = (k + gridOffset) / transLines;
+          const py = horizonY + (H - horizonY) * Math.pow(progress, 2.4);
+          const tAlpha = Math.min(0.35, progress * 0.38 + audio.bass * 0.15);
+
+          // Audio-reactive terrain ripple across the line
+          bgCtx.strokeStyle = `rgba(255, 255, 255, ${tAlpha})`;
+          bgCtx.beginPath();
+          const stepX = 20;
+          for (let x = 0; x <= W; x += stepX) {
+            const wave = Math.sin(x * 0.007 + timestamp * 0.003) * audio.bass * 14 * progress;
+            if (x === 0) bgCtx.moveTo(x, py + wave);
+            else bgCtx.lineTo(x, py + wave);
+          }
+          bgCtx.stroke();
+        }
+
+        // Center Horizon Cyber Kat Mark
+        bgCtx.font = '10px "JetBrains Mono", monospace';
+        bgCtx.fillStyle = `rgba(255, 255, 255, ${0.45 + audio.bass * 0.4})`;
+        bgCtx.textAlign = 'center';
+        bgCtx.fillText('[ · ᆺ · katOS ]', centerX, horizonY - 10);
+      }
+
+      // 4. Tactical Radar (Bottom-Left Corner)
+      const rX = 54;
+      const rY = H - 56;
+      const rRad = 32;
+      radarAngle = (radarAngle + 0.02) % (Math.PI * 2);
+
+      // Radar rings
+      bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      bgCtx.lineWidth = 1;
+      bgCtx.beginPath(); bgCtx.arc(rX, rY, rRad * 0.4, 0, Math.PI * 2); bgCtx.stroke();
+      bgCtx.beginPath(); bgCtx.arc(rX, rY, rRad * 0.75, 0, Math.PI * 2); bgCtx.stroke();
+      bgCtx.beginPath(); bgCtx.arc(rX, rY, rRad, 0, Math.PI * 2); bgCtx.stroke();
+
+      // Radar crosshairs
+      bgCtx.beginPath();
+      bgCtx.moveTo(rX - rRad, rY); bgCtx.lineTo(rX + rRad, rY);
+      bgCtx.moveTo(rX, rY - rRad); bgCtx.lineTo(rX, rY + rRad);
+      bgCtx.stroke();
+
+      // Radar rotating sweep line
+      const sweepX = rX + Math.cos(radarAngle) * rRad;
+      const sweepY = rY + Math.sin(radarAngle) * rRad;
+      bgCtx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      bgCtx.beginPath();
+      bgCtx.moveTo(rX, rY);
+      bgCtx.lineTo(sweepX, sweepY);
+      bgCtx.stroke();
+
+      // Radar text
+      bgCtx.font = '8px "JetBrains Mono", monospace';
+      bgCtx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      bgCtx.textAlign = 'left';
+      bgCtx.fillText('SWEEP 360°', rX - 22, rY + rRad + 12);
+
+      // 5. Top-Right Tactical Telemetry Readout
+      bgCtx.font = '9px "JetBrains Mono", monospace';
+      bgCtx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+      bgCtx.textAlign = 'right';
+      bgCtx.fillText('katOS // ARCH_LINUX_WAYLAND', W - 18, 22);
+      bgCtx.fillText(isPlaying ? 'AUDIO FLUX: ACTIVE [●]' : 'AUDIO FLUX: IDLE [○]', W - 18, 34);
+    }
+
+    requestAnimationFrame(renderBgFrame);
+    applyBgMode(true);
 
     // ── Desktop Right-Click Context Menu ─────────────────────────────────────
     const ctxMenu = document.getElementById('ctxMenu');
