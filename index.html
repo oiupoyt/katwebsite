@@ -677,16 +677,17 @@
     }
 
     .boot-logo {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 52px;
+      font-family: 'Space Mono', 'Share Tech Mono', monospace;
+      font-size: 54px;
       font-weight: 700;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.03em;
       color: #ffffff;
-      text-shadow: 0 0 24px rgba(255, 255, 255, 0.8), 0 0 45px rgba(255, 255, 255, 0.3);
+      text-shadow: 0 0 24px rgba(255, 255, 255, 0.85), 0 0 45px rgba(255, 255, 255, 0.35);
       margin-bottom: 12px;
     }
 
     .boot-sub {
+      font-family: 'Space Mono', 'Share Tech Mono', monospace;
       font-size: 11px;
       color: #777777;
       letter-spacing: 0.12em;
@@ -1173,7 +1174,7 @@
         <canvas id="vizCanvas" title="Click to cycle visualizer mode"></canvas>
         <div class="viz-overlay">
           <span>mode:</span>
-          <span class="viz-mode-badge" id="vizModeName">spectrum bars</span>
+          <span class="viz-mode-badge" id="vizModeName">mirror pulse</span>
         </div>
         <div class="viz-hint">[click visualizer to switch mode]</div>
         <span class="viz-idle-msg" id="vizIdleMsg">play music to visualize</span>
@@ -1929,7 +1930,7 @@
     let audioCtx, analyser, source, vizAnimId;
     let vizConnected = false;
 
-    const vizModes = ['spectrum bars', 'mirror pulse'];
+    const vizModes = ['mirror pulse', 'spectrum bars'];
     let currentVizModeIdx = 0;
 
     function setupAudio() {
@@ -2029,8 +2030,9 @@
       vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       vizCtx.lineWidth = 1;
       vizCtx.beginPath();
-      vizCtx.moveTo(0, H * 0.92);
-      vizCtx.lineTo(W, H * 0.92);
+      const restY = vizModes[currentVizModeIdx] === 'mirror pulse' ? (H / 2) : (H * 0.92);
+      vizCtx.moveTo(0, restY);
+      vizCtx.lineTo(W, restY);
       vizCtx.stroke();
 
       vizIdleMsg.style.opacity = '1';
