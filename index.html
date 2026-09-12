@@ -912,8 +912,8 @@
 
       /* Mobile visualizer height */
       .viz-container {
-        height: 190px !important;
-        min-height: 190px !important;
+        height: 250px !important;
+        min-height: 250px !important;
       }
 
       /* Mobile terminal optimization */
@@ -1251,7 +1251,7 @@
         setWinPos('win-websites', 85,   510,  355, null);
         setWinPos('win-links',    435,  560,  340, null);
         setWinPos('win-term',     40,   955,  Math.min(620, W - 990), 378);
-        setWinPos('win-viz',      480,  1080, Math.min(580, W - 1115), 240);
+        setWinPos('win-viz',      450,  1060, Math.min(680, W - 1080), 305);
       } else if (W >= 1150) {
         // Standard laptop / desktop: spread out with natural asymmetry & zero overlap
         setWinPos('win-about',    28,   32,   335, null);
@@ -1259,7 +1259,7 @@
         setWinPos('win-websites', 48,   418,  340, null);
         setWinPos('win-links',    365,  438,  330, null);
         setWinPos('win-term',     22,   785,  Math.min(560, W - 805), 378);
-        setWinPos('win-viz',      442,  810,  Math.min(535, W - 830), 240);
+        setWinPos('win-viz',      420,  790,  Math.min(620, W - 810), 285);
       } else if (W >= 800) {
         // Tablet / compact
         setWinPos('win-about',    20,   24,   335, null);
@@ -1267,7 +1267,7 @@
         setWinPos('win-websites', 36,   395,  335, null);
         setWinPos('win-links',    355,  420,  325, null);
         setWinPos('win-term',     685,  20,   W - 44, 378);
-        setWinPos('win-viz',      1085, 35,   W - 70, 240);
+        setWinPos('win-viz',      1085, 35,   W - 70, 280);
       } else {
         // Mobile (<800px): clear inline pixel coordinates so responsive CSS applies cleanly
         windowRegistry.forEach(id => {
@@ -2376,19 +2376,6 @@
         } else {
           katPetAscii.style.transform = 'none';
         }
-      }
-
-      // Audio beat drop shockwave
-      if (audio.bass > 0.68 && timestamp - lastAudioBeat > 320) {
-        lastAudioBeat = timestamp;
-        shockwaves.push({
-          x: W / 2,
-          y: H / 2,
-          radius: 12,
-          maxRadius: Math.max(W, H) * 0.75,
-          alpha: 0.5,
-          power: 1.5
-        });
       }
 
       // Update shockwaves
