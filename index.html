@@ -8,10 +8,10 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3876936176422477" crossorigin="anonymous"></script>
 
-  <!-- Fonts & Icons -->
+  <!-- Fonts & Icons: JetBrains Mono Nerd aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <style>
@@ -24,19 +24,18 @@
     }
 
     :root {
-      --bg: #050505;
-      --panel-bg: rgba(10, 10, 12, 0.82);
-      --panel-active: rgba(14, 14, 18, 0.94);
-      --border: rgba(255, 255, 255, 0.14);
-      --border-hover: rgba(255, 255, 255, 0.32);
-      --border-active: rgba(255, 255, 255, 0.48);
+      --bg: #000000;
+      --panel-bg: rgba(6, 6, 8, 0.48);       /* High transparency */
+      --panel-active: rgba(10, 10, 14, 0.68);  /* Focused transparency */
+      --border: rgba(255, 255, 255, 0.12);
+      --border-hover: rgba(255, 255, 255, 0.35);
+      --border-active: rgba(255, 255, 255, 0.7);
       --text: #f0f0f0;
-      --text-dim: #777777;
-      --text-sub: #a0a0a0;
-      --accent: #4db8ff;
-      --accent-dim: rgba(77, 184, 255, 0.18);
-      --yt: #ff4444;
-      --ig: #e1306c;
+      --text-dim: #666666;
+      --text-sub: #999999;
+      --accent: #ffffff;
+      --glow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 22px rgba(255, 255, 255, 0.4);
+      --glow-subtle: 0 0 8px rgba(255, 255, 255, 0.4);
       --taskbar-h: 36px;
     }
 
@@ -51,7 +50,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Background Video & Matrix Layer ────────────────────────────────────── */
+    /* ── Background Video & Matrix Rain ─────────────────────────────────────── */
     .video-bg {
       position: fixed;
       inset: 0;
@@ -60,8 +59,8 @@
       object-fit: cover;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.35;
-      filter: contrast(1.1) brightness(0.9);
+      opacity: 0.32;
+      filter: contrast(1.15) brightness(0.85);
     }
 
     #matrixCanvas {
@@ -72,25 +71,25 @@
       pointer-events: none;
       z-index: 1;
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.6s ease;
     }
 
     #matrixCanvas.active {
-      opacity: 0.38;
+      opacity: 0.35;
     }
 
     .desktop-grid {
       position: fixed;
       inset: 0;
       background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-      background-size: 40px 40px;
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 36px 36px;
       pointer-events: none;
       z-index: 1;
     }
 
-    /* ── Desktop Canvas Area ─────────────────────────────────────────────────── */
+    /* ── Desktop Workspace ───────────────────────────────────────────────────── */
     .desktop {
       position: relative;
       width: 100%;
@@ -99,29 +98,29 @@
       overflow: hidden;
     }
 
-    /* ── Windows (Squared Terminals) ─────────────────────────────────────────── */
+    /* ── Transparent Squared Windows ─────────────────────────────────────────── */
     .window {
       position: absolute;
       background: var(--panel-bg);
       border: 1px solid var(--border);
-      backdrop-filter: blur(28px) saturate(190%) brightness(1.05);
-      -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(1.05);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.15) inset;
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1) inset;
       z-index: 10;
       display: flex;
       flex-direction: column;
-      transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
 
     .window.active {
       border-color: var(--border-active);
       background: var(--panel-active);
-      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 255, 255, 0.08), 0 0 1px rgba(255, 255, 255, 0.25) inset;
+      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.85), 0 0 14px rgba(255, 255, 255, 0.18), 0 0 1px rgba(255, 255, 255, 0.4) inset;
       z-index: 30;
     }
 
     .window.minimized {
-      display: none;
+      display: none !important;
     }
 
     .window.maximized {
@@ -133,8 +132,8 @@
 
     /* Titlebar */
     .titlebar {
-      height: 32px;
-      min-height: 32px;
+      height: 30px;
+      min-height: 30px;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid var(--border);
       padding: 0 10px;
@@ -162,68 +161,42 @@
       gap: 8px;
       color: var(--text-sub);
       font-weight: 500;
+      font-size: 11px;
     }
 
     .window.active .title-left {
       color: #ffffff;
+      text-shadow: var(--glow-subtle);
     }
 
     .title-left i {
-      font-size: 11px;
+      font-size: 10px;
       opacity: 0.7;
     }
 
-    /* Squared Window Controls */
+    /* Single Dot Window Close Control */
     .window-controls {
       display: flex;
       align-items: center;
-      gap: 6px;
     }
 
-    .win-btn {
-      width: 12px;
-      height: 12px;
+    .win-dot-close {
+      width: 9px;
+      height: 9px;
+      background: rgba(255, 255, 255, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 9px;
-      font-weight: 700;
-      color: #000;
-      transition: all 0.12s ease;
-      opacity: 0.85;
-      line-height: 1;
+      transition: all 0.15s ease;
+      display: inline-block;
     }
 
-    .win-btn:hover {
-      opacity: 1;
-      transform: scale(1.1);
+    .win-dot-close:hover {
+      background: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+      transform: scale(1.2);
     }
 
-    .win-btn-close {
-      background: #ff5f56;
-      border: 1px solid #e0443e;
-    }
-
-    .win-btn-min {
-      background: #ffbd2e;
-      border: 1px solid #dea123;
-    }
-
-    .win-btn-max {
-      background: #27c93f;
-      border: 1px solid #1aab29;
-    }
-
-    .win-btn span {
-      display: none;
-    }
-
-    .titlebar:hover .win-btn span {
-      display: block;
-    }
-
-    /* Window Body Content */
+    /* Window Body */
     .window-body {
       flex: 1;
       padding: 14px 16px;
@@ -231,36 +204,36 @@
       line-height: 1.6;
       overflow-y: auto;
       overflow-x: hidden;
-      color: #d8d8d8;
+      color: #d0d0d0;
     }
 
-    /* Custom Squared Scrollbar */
+    /* Squared Monochrome Scrollbars */
     .window-body::-webkit-scrollbar,
     .terminal-body::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .window-body::-webkit-scrollbar-track,
     .terminal-body::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
     }
     .window-body::-webkit-scrollbar-thumb,
     .terminal-body::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.2);
     }
     .window-body::-webkit-scrollbar-thumb:hover,
     .terminal-body::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.5);
     }
 
     /* ── Terminal Styling ────────────────────────────────────────────────────── */
     .terminal-body {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      line-height: 1.5;
+      line-height: 1.48;
       padding: 12px 14px;
       color: #e5e5e5;
-      background: #08080a;
+      background: rgba(0, 0, 0, 0.42);
       overflow-y: auto;
       height: 100%;
       user-select: text;
@@ -268,7 +241,7 @@
 
     .fastfetch-pre {
       white-space: pre;
-      line-height: 1.38;
+      line-height: 1.35;
       letter-spacing: 0.2px;
       margin-bottom: 12px;
       display: block;
@@ -288,7 +261,8 @@
     }
 
     .term-prompt {
-      color: var(--accent);
+      color: #ffffff;
+      text-shadow: var(--glow-subtle);
       font-weight: 600;
       flex-shrink: 0;
     }
@@ -307,52 +281,54 @@
     .term-output {
       margin-top: 4px;
       margin-bottom: 8px;
-      color: #bbb;
+      color: #aaa;
       line-height: 1.5;
       white-space: pre-wrap;
     }
 
     .term-cmd {
       color: #fff;
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    /* Links & Lists */
+    /* Links & Lists in Windows */
     .link-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 7px 10px;
+      padding: 8px 10px;
       margin-bottom: 6px;
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       cursor: pointer;
-      font-size: 12px;
+      font-size: 11px;
       color: #ddd;
       transition: all 0.15s ease;
       text-decoration: none;
     }
 
     .link-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.09);
+      border-color: #ffffff;
       color: #fff;
-      transform: translateX(4px);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+      transform: translateX(3px);
     }
 
     .link-item i {
       width: 16px;
       text-align: center;
-      color: var(--accent);
+      color: #ffffff;
+      opacity: 0.85;
     }
 
     .link-item .badge {
       margin-left: auto;
       font-size: 10px;
       color: var(--text-dim);
-      border: 1px solid #222;
+      border: 1px solid rgba(255, 255, 255, 0.15);
       padding: 1px 6px;
-      background: #080808;
+      background: rgba(0, 0, 0, 0.6);
     }
 
     .skill-tag {
@@ -363,19 +339,21 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       font-size: 11px;
       color: #ccc;
+      transition: all 0.15s ease;
     }
 
     .skill-tag:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+      border-color: #ffffff;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
     }
 
-    /* ── Audio Visualizer ────────────────────────────────────────────────────── */
+    /* ── Visualizer Container ────────────────────────────────────────────────── */
     .viz-container {
       width: 100%;
       height: 100%;
       position: relative;
-      background: #060608;
+      background: rgba(0, 0, 0, 0.42);
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -396,19 +374,20 @@
       left: 12px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       pointer-events: none;
       font-size: 10px;
       letter-spacing: 0.08em;
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(255, 255, 255, 0.4);
       text-transform: uppercase;
     }
 
     .viz-mode-badge {
       padding: 2px 6px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(0, 0, 0, 0.5);
-      color: var(--accent);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      text-shadow: var(--glow-subtle);
     }
 
     .viz-hint {
@@ -439,54 +418,51 @@
       left: 0;
       width: 100%;
       height: var(--taskbar-h);
-      background: rgba(8, 8, 10, 0.96);
+      background: rgba(4, 4, 6, 0.94);
       border-top: 1px solid var(--border);
       backdrop-filter: blur(20px);
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 12px;
       font-size: 11px;
     }
 
     .taskbar-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       height: 100%;
     }
 
+    /* Clean KatOS button without icon */
     .os-logo-btn {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
       font-size: 12px;
-      letter-spacing: 0.06em;
-      color: #fff;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      text-shadow: var(--glow-subtle);
       padding: 4px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.05);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
       transition: all 0.15s ease;
     }
 
     .os-logo-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: #fff;
-    }
-
-    .os-logo-btn i {
-      color: var(--accent);
-      font-size: 11px;
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #ffffff;
+      box-shadow: var(--glow-subtle);
     }
 
     .taskbar-divider {
       width: 1px;
-      height: 18px;
-      background: rgba(255, 255, 255, 0.1);
+      height: 16px;
+      background: rgba(255, 255, 255, 0.12);
       margin: 0 2px;
     }
 
@@ -515,37 +491,37 @@
     }
 
     .taskbar-win-btn:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       color: #fff;
       border-color: var(--border-hover);
     }
 
     .taskbar-win-btn.active {
-      background: rgba(255, 255, 255, 0.09);
-      border-color: var(--border-active);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #ffffff;
       color: #fff;
-      border-bottom: 2px solid var(--accent);
+      box-shadow: var(--glow-subtle);
     }
 
     .taskbar-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
-    /* Music Player Taskbar Widget */
+    /* Music Player Widget in Taskbar */
     .music-bar {
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 2px 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(255, 255, 255, 0.02);
     }
 
     .music-icon {
       font-size: 11px;
-      color: var(--accent);
+      color: #ffffff;
       animation: spinDisc 3s linear infinite;
     }
 
@@ -560,7 +536,7 @@
     }
 
     .music-track {
-      max-width: 150px;
+      max-width: 160px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -570,7 +546,7 @@
 
     .player-btn {
       background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
       width: 20px;
       height: 20px;
@@ -585,6 +561,7 @@
     .player-btn:hover {
       background: #fff;
       color: #000;
+      box-shadow: var(--glow-subtle);
     }
 
     .volume-slider {
@@ -592,7 +569,7 @@
       height: 3px;
       -webkit-appearance: none;
       appearance: none;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       outline: none;
     }
 
@@ -605,25 +582,65 @@
       cursor: pointer;
     }
 
-    /* Tray Info */
-    .tray-widget {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 11px;
-      color: var(--text-dim);
-    }
-
+    /* System Tray Clock */
     .tray-time {
       color: #ffffff;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-shadow: var(--glow-subtle);
     }
 
-    /* ── Desktop Context Menu ────────────────────────────────────────────────── */
+    /* ── Minimal Boot Screen ─────────────────────────────────────────────────── */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.5s ease;
+    }
+
+    #loadingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .boot-minimal {
+      text-align: center;
+    }
+
+    .boot-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      text-shadow: 0 0 24px rgba(255, 255, 255, 0.8), 0 0 45px rgba(255, 255, 255, 0.3);
+      margin-bottom: 12px;
+    }
+
+    .boot-sub {
+      font-size: 11px;
+      color: #777777;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      animation: pulseSub 1.8s infinite alternate;
+    }
+
+    @keyframes pulseSub {
+      from { opacity: 0.4; color: #666; }
+      to { opacity: 1; color: #ffffff; text-shadow: var(--glow-subtle); }
+    }
+
+    /* ── Desktop Right-Click Context Menu ────────────────────────────────────── */
     .context-menu {
       position: fixed;
       z-index: 9999;
-      background: rgba(12, 12, 14, 0.96);
+      background: rgba(10, 10, 12, 0.96);
       border: 1px solid var(--border-active);
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
       backdrop-filter: blur(20px);
@@ -644,8 +661,9 @@
     }
 
     .ctx-item:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--accent);
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      text-shadow: var(--glow-subtle);
     }
 
     .ctx-item i {
@@ -655,78 +673,11 @@
 
     .ctx-sep {
       height: 1px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       margin: 4px 0;
     }
 
-    /* ── Loading Screen ──────────────────────────────────────────────────────── */
-    #loadingScreen {
-      position: fixed;
-      inset: 0;
-      background: #000000;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: opacity 0.5s ease;
-    }
-
-    #loadingScreen.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .boot-box {
-      border: 1px solid #333;
-      background: #08080a;
-      padding: 36px 48px;
-      max-width: 520px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-    }
-
-    .boot-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 48px;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      color: #fff;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-      margin-bottom: 18px;
-    }
-
-    .boot-log {
-      font-size: 11px;
-      color: #666;
-      text-align: left;
-      line-height: 1.6;
-      margin-bottom: 24px;
-      border-top: 1px solid #1a1a1a;
-      padding-top: 14px;
-    }
-
-    .boot-btn {
-      display: inline-block;
-      padding: 10px 24px;
-      border: 1px solid #555;
-      background: #111;
-      color: #fff;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      animation: pulseBtn 1.8s infinite alternate;
-    }
-
-    @keyframes pulseBtn {
-      from { border-color: #444; color: #aaa; }
-      to { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 14px rgba(77, 184, 255, 0.3); }
-    }
-
-    /* ── Responsive Window Bounds for Small Screens ──────────────────────────── */
+    /* ── Responsive Window Bounds ────────────────────────────────────────────── */
     @media (max-width: 900px) {
       .window {
         position: static !important;
@@ -750,17 +701,11 @@
 </head>
 <body>
 
-  <!-- Loading Screen (Click to Start Audio & Video) -->
+  <!-- Minimal Boot Screen (Click to Start Audio & Video) -->
   <div id="loadingScreen">
-    <div class="boot-box">
+    <div class="boot-minimal">
       <div class="boot-logo">katOS</div>
-      <div class="boot-log">
-        <div>[ <span style="color:#22c55e;">OK</span> ] Mounted /dev/nvme0n1p2 on /home/oiupoyt</div>
-        <div>[ <span style="color:#22c55e;">OK</span> ] Audio subsystem initialized: Baiaa081</div>
-        <div>[ <span style="color:#22c55e;">OK</span> ] Wayland compositor: Hyprland 0.54.2</div>
-        <div>[ <span style="color:#22c55e;">OK</span> ] Fastfetch terminal ready</div>
-      </div>
-      <div class="boot-btn">[ click anywhere to boot ]</div>
+      <div class="boot-sub">[ click to enter ]</div>
     </div>
   </div>
 
@@ -773,39 +718,35 @@
   <div class="desktop" id="desktop">
 
     <!-- About Window -->
-    <div class="window active" id="win-about" style="top: 30px; left: 36px; width: 330px;">
+    <div class="window active" id="win-about">
       <div class="titlebar">
         <div class="title-left">
           <i class="fas fa-file-lines"></i>
           <span>about.md</span>
         </div>
         <div class="window-controls">
-          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-about')"><span>–</span></div>
-          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-about')"><span>□</span></div>
-          <div class="win-btn win-btn-close" onclick="closeWindow('win-about')"><span>×</span></div>
+          <div class="win-dot-close" onclick="closeWindow('win-about')" title="Close"></div>
         </div>
       </div>
       <div class="window-body">
-        <p style="color:#fff; margin-bottom: 12px;">i cant stop loving linux, pls speed i need this</p>
+        <p style="color:#ffffff; font-weight:500; margin-bottom: 12px;">i cant stop loving linux, pls speed i need this</p>
         <p style="color:#aaa; margin-bottom: 12px;">minecraft shyt, networking experiments, and linux customization.</p>
-        <p style="color:#666; margin-bottom: 12px; font-family:monospace;">i was on the ███████████████</p>
-        <p style="color:#4db8ff; margin-bottom: 12px;">cats &gt; people haha.</p>
-        <p style="color:#eee; margin-bottom: 12px;">i use arch yea</p>
-        <p style="color:#ffffff; font-weight:600;">you da real kat 🤍.</p>
+        <p style="color:#555; margin-bottom: 12px; font-family:monospace;">i was on the ███████████████</p>
+        <p style="color:#fff; text-shadow:var(--glow-subtle); margin-bottom: 12px;">cats &gt; people haha.</p>
+        <p style="color:#bbb; margin-bottom: 12px;">i use arch yea</p>
+        <p style="color:#ffffff; font-weight:600; text-shadow:var(--glow-subtle);">you da real kat 🤍.</p>
       </div>
     </div>
 
     <!-- Skills Window -->
-    <div class="window" id="win-skills" style="top: 250px; left: 36px; width: 330px;">
+    <div class="window" id="win-skills">
       <div class="titlebar">
         <div class="title-left">
           <i class="fas fa-terminal"></i>
           <span>skillz.bash</span>
         </div>
         <div class="window-controls">
-          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-skills')"><span>–</span></div>
-          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-skills')"><span>□</span></div>
-          <div class="win-btn win-btn-close" onclick="closeWindow('win-skills')"><span>×</span></div>
+          <div class="win-dot-close" onclick="closeWindow('win-skills')" title="Close"></div>
         </div>
       </div>
       <div class="window-body">
@@ -815,7 +756,7 @@
         <span class="skill-tag"><i class="fas fa-server"></i> self hosting</span>
         <span class="skill-tag"><i class="fas fa-network-wired"></i> server networking</span>
         <span class="skill-tag"><i class="fab fa-java"></i> java / plugins</span>
-        <div style="margin: 12px 0 6px; color: var(--text-dim);"># personality traits:</div>
+        <div style="margin: 14px 0 6px; color: var(--text-dim);"># personality traits:</div>
         <span class="skill-tag">yappin</span>
         <span class="skill-tag">im crine</span>
         <span class="skill-tag">tweaking</span>
@@ -827,47 +768,45 @@
     </div>
 
     <!-- Websites & Projects Window -->
-    <div class="window" id="win-websites" style="top: 30px; left: 390px; width: 340px;">
+    <div class="window" id="win-websites">
       <div class="titlebar">
         <div class="title-left">
           <i class="fas fa-globe"></i>
           <span>websites.html</span>
         </div>
         <div class="window-controls">
-          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-websites')"><span>–</span></div>
-          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-websites')"><span>□</span></div>
-          <div class="win-btn win-btn-close" onclick="closeWindow('win-websites')"><span>×</span></div>
+          <div class="win-dot-close" onclick="closeWindow('win-websites')" title="Close"></div>
         </div>
       </div>
       <div class="window-body">
         <a class="link-item" href="https://katdrop.oiupoyt.space" target="_blank" rel="noopener">
           <i class="fas fa-file-arrow-up"></i>
           <div>
-            <div>katdrop</div>
+            <div style="color:#fff; font-weight:500;">katdrop.oiupoyt.space</div>
             <div style="font-size:10px; color:#777;">minimal 10-min file transfer</div>
           </div>
           <span class="badge">live</span>
         </a>
-        <a class="link-item" href="https://kat-images.netlify.app/" target="_blank" rel="noopener">
+        <a class="link-item" href="https://kats.oiupoyt.space" target="_blank" rel="noopener">
           <i class="fas fa-cat"></i>
           <div>
-            <div>katimages</div>
+            <div style="color:#fff; font-weight:500;">kats.oiupoyt.space</div>
             <div style="font-size:10px; color:#777;">look at cat. feel good.</div>
           </div>
           <span class="badge">live</span>
         </a>
-        <a class="link-item" href="https://justdownload.netlify.app" target="_blank" rel="noopener">
+        <a class="link-item" href="https://jd.oiupoyt.space" target="_blank" rel="noopener">
           <i class="fas fa-download"></i>
           <div>
-            <div>just-download</div>
-            <div style="font-size:10px; color:#777;">yt &amp; ig media downloader</div>
+            <div style="color:#fff; font-weight:500;">jd.oiupoyt.space</div>
+            <div style="font-size:10px; color:#777;">just download yt &amp; ig media</div>
           </div>
           <span class="badge">live</span>
         </a>
         <a class="link-item" href="https://toolbox.oiupoyt.space" target="_blank" rel="noopener">
           <i class="fas fa-wrench"></i>
           <div>
-            <div>kattoolbox</div>
+            <div style="color:#fff; font-weight:500;">toolbox.oiupoyt.space</div>
             <div style="font-size:10px; color:#777;">client-side dev utility suite</div>
           </div>
           <span class="badge">live</span>
@@ -875,40 +814,38 @@
         <a class="link-item" href="https://github.com/oiupoyt" target="_blank" rel="noopener">
           <i class="fab fa-github"></i>
           <div>
-            <div>github / oiupoyt</div>
+            <div style="color:#fff; font-weight:500;">github.com/oiupoyt</div>
             <div style="font-size:10px; color:#777;">source code &amp; repositories</div>
           </div>
-          <span class="badge">repos</span>
+          <span class="badge">github</span>
         </a>
       </div>
     </div>
 
     <!-- Social Links Window -->
-    <div class="window" id="win-links" style="top: 310px; left: 390px; width: 340px;">
+    <div class="window" id="win-links">
       <div class="titlebar">
         <div class="title-left">
           <i class="fas fa-folder-closed"></i>
           <span>links.zip</span>
         </div>
         <div class="window-controls">
-          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-links')"><span>–</span></div>
-          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-links')"><span>□</span></div>
-          <div class="win-btn win-btn-close" onclick="closeWindow('win-links')"><span>×</span></div>
+          <div class="win-dot-close" onclick="closeWindow('win-links')" title="Close"></div>
         </div>
       </div>
       <div class="window-body">
         <a class="link-item" href="https://discordapp.com/users/1082968457559146506" target="_blank" rel="noopener">
-          <i class="fab fa-discord" style="color:#5865F2;"></i>
+          <i class="fab fa-discord"></i>
           <span>Discord</span>
           <span class="badge">@oiupoyt</span>
         </a>
         <a class="link-item" href="https://www.instagram.com/oiupoyt/" target="_blank" rel="noopener">
-          <i class="fab fa-instagram" style="color:#E1306C;"></i>
+          <i class="fab fa-instagram"></i>
           <span>Instagram</span>
           <span class="badge">@oiupoyt</span>
         </a>
         <a class="link-item" href="https://www.youtube.com/@OIUPOYT" target="_blank" rel="noopener">
-          <i class="fab fa-youtube" style="color:#FF0000;"></i>
+          <i class="fab fa-youtube"></i>
           <span>YouTube</span>
           <span class="badge">@OIUPOYT</span>
         </a>
@@ -918,7 +855,7 @@
           <span class="badge">oiupoyt</span>
         </a>
         <a class="link-item" href="https://modrinth.com/user/oiupoyt" target="_blank" rel="noopener">
-          <i class="fas fa-cube" style="color:#1BD96A;"></i>
+          <i class="fas fa-cube"></i>
           <span>Modrinth</span>
           <span class="badge">mods</span>
         </a>
@@ -926,16 +863,14 @@
     </div>
 
     <!-- Interactive FastFetch Terminal Window -->
-    <div class="window active" id="win-term" style="top: 30px; left: 750px; width: 680px; height: 410px;">
+    <div class="window active" id="win-term">
       <div class="titlebar">
         <div class="title-left">
           <i class="fas fa-terminal"></i>
           <span>~fastfetch</span>
         </div>
         <div class="window-controls">
-          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-term')"><span>–</span></div>
-          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-term')"><span>□</span></div>
-          <div class="win-btn win-btn-close" onclick="closeWindow('win-term')"><span>×</span></div>
+          <div class="win-dot-close" onclick="closeWindow('win-term')" title="Close"></div>
         </div>
       </div>
       <div class="terminal-body" id="termBody" onclick="focusTermInput()">
@@ -949,16 +884,14 @@
     </div>
 
     <!-- Audio Visualizer Window -->
-    <div class="window" id="win-viz" style="top: 460px; left: 750px; width: 680px; height: 320px;">
+    <div class="window" id="win-viz">
       <div class="titlebar">
         <div class="title-left">
           <i class="fas fa-wave-square"></i>
           <span>visualizer</span>
         </div>
         <div class="window-controls">
-          <div class="win-btn win-btn-min" onclick="minimizeWindow('win-viz')"><span>–</span></div>
-          <div class="win-btn win-btn-max" onclick="toggleMaximize('win-viz')"><span>□</span></div>
-          <div class="win-btn win-btn-close" onclick="closeWindow('win-viz')"><span>×</span></div>
+          <div class="win-dot-close" onclick="closeWindow('win-viz')" title="Close"></div>
         </div>
       </div>
       <div class="viz-container" id="vizBox">
@@ -977,8 +910,7 @@
   <!-- Taskbar -->
   <footer class="taskbar">
     <div class="taskbar-left">
-      <div class="os-logo-btn" onclick="toggleMenu()" title="katOS Launcher">
-        <i class="fas fa-cat"></i>
+      <div class="os-logo-btn" onclick="restoreAllWindows()" title="katOS Launcher">
         <span>katOS</span>
       </div>
       <div class="taskbar-divider"></div>
@@ -999,12 +931,8 @@
         </button>
       </div>
 
-      <!-- System Tray -->
-      <div class="tray-widget">
-        <span title="Memory usage">RAM: 4.2G</span>
-        <span class="taskbar-divider"></span>
-        <span class="tray-time" id="clock">00:00:00</span>
-      </div>
+      <!-- System Tray Clock (RAM removed) -->
+      <span class="tray-time" id="clock">00:00:00</span>
     </div>
   </footer>
 
@@ -1016,7 +944,7 @@
     <div class="ctx-sep"></div>
     <div class="ctx-item" onclick="togglePlay()"><i class="fas fa-music"></i> Play / Pause Music</div>
     <div class="ctx-item" onclick="restoreAllWindows()"><i class="fas fa-window-restore"></i> Show All Windows</div>
-    <div class="ctx-item" onclick="resetLayout()"><i class="fas fa-rotate-left"></i> Reset Window Layout</div>
+    <div class="ctx-item" onclick="autoSpaceWindows()"><i class="fas fa-rotate-left"></i> Reset &amp; Space Windows</div>
   </div>
 
   <!-- Audio Element -->
@@ -1029,8 +957,53 @@
     let topZIndex = 40;
     const windowRegistry = ['win-about', 'win-skills', 'win-websites', 'win-links', 'win-term', 'win-viz'];
 
-    // ── Window Management (Draggable, Focus, Min/Max) ────────────────────────
+    // ── Auto-Space Terminals on Start ────────────────────────────────────────
+    function autoSpaceWindows() {
+      const W = window.innerWidth;
+      const H = window.innerHeight - 36; // leave room for taskbar
+
+      if (W >= 1500) {
+        // High-res desktop (3 columns, generous spacing)
+        setWinPos('win-about',    40,  40, 340, 240);
+        setWinPos('win-skills',  310,  40, 340, 320);
+        setWinPos('win-websites', 40, 420, 360, 290);
+        setWinPos('win-links',   360, 420, 360, 270);
+        setWinPos('win-term',     40, 820, Math.min(760, W - 860), 380);
+        setWinPos('win-viz',     450, 820, Math.min(760, W - 860), 300);
+      } else if (W >= 1100) {
+        // Medium desktop (spacious 3-column / 2-column distribution)
+        setWinPos('win-about',    30,  30, 320, 230);
+        setWinPos('win-skills',  280,  30, 320, 300);
+        setWinPos('win-websites', 30, 380, 330, 270);
+        setWinPos('win-links',   320, 380, 330, 260);
+        setWinPos('win-term',     30, 740, W - 770, 340);
+        setWinPos('win-viz',     400, 740, W - 770, 270);
+      } else if (W >= 800) {
+        // Compact desktop
+        setWinPos('win-about',    20,  20, 320, 230);
+        setWinPos('win-skills',  270,  20, 320, 280);
+        setWinPos('win-websites', 20, 360, 320, 270);
+        setWinPos('win-links',   310, 360, 320, 240);
+        setWinPos('win-term',    570,  20, W - 40, 300);
+        setWinPos('win-viz',     890,  20, W - 40, 250);
+      }
+
+      restoreAllWindows();
+      bringToFront(document.getElementById('win-term'));
+    }
+
+    function setWinPos(id, top, left, width, height) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      win.style.top = top + 'px';
+      win.style.left = left + 'px';
+      if (width) win.style.width = width + 'px';
+      if (height) win.style.height = height + 'px';
+    }
+
+    // ── Window Dragging & State ──────────────────────────────────────────────
     function bringToFront(win) {
+      if (!win) return;
       topZIndex++;
       win.style.zIndex = topZIndex;
       document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
@@ -1048,7 +1021,7 @@
 
         // Dragging
         bar.addEventListener('mousedown', e => {
-          if (e.target.closest('.win-btn')) return;
+          if (e.target.closest('.win-dot-close')) return;
           bringToFront(win);
           if (win.classList.contains('maximized')) return;
 
@@ -1060,9 +1033,8 @@
             let newX = moveEvent.clientX - shiftX;
             let newY = moveEvent.clientY - shiftY;
 
-            // Bounds checking
             const maxX = window.innerWidth - 60;
-            const maxY = window.innerHeight - 80;
+            const maxY = window.innerHeight - 70;
             if (newX < 0) newX = 0;
             if (newX > maxX) newX = maxX;
             if (newY < 0) newY = 0;
@@ -1080,28 +1052,10 @@
           document.addEventListener('mousemove', onMouseMove);
           document.addEventListener('mouseup', onMouseUp);
         });
-
-        // Double click to maximize
-        bar.addEventListener('dblclick', e => {
-          if (e.target.closest('.win-btn')) return;
-          toggleMaximize(win.id);
-        });
       });
-      updateTaskbar();
-    }
 
-    function minimizeWindow(id) {
-      const win = document.getElementById(id);
-      if (!win) return;
-      win.classList.add('minimized');
+      autoSpaceWindows();
       updateTaskbar();
-    }
-
-    function toggleMaximize(id) {
-      const win = document.getElementById(id);
-      if (!win) return;
-      win.classList.toggle('maximized');
-      bringToFront(win);
     }
 
     function closeWindow(id) {
@@ -1136,25 +1090,6 @@
       updateTaskbar();
     }
 
-    function resetLayout() {
-      restoreAllWindows();
-      const layouts = {
-        'win-about':    { top: '30px',  left: '36px',  width: '330px', height: 'auto' },
-        'win-skills':   { top: '250px', left: '36px',  width: '330px', height: 'auto' },
-        'win-websites': { top: '30px',  left: '390px', width: '340px', height: 'auto' },
-        'win-links':    { top: '310px', left: '390px', width: '340px', height: 'auto' },
-        'win-term':     { top: '30px',  left: '750px', width: '680px', height: '410px' },
-        'win-viz':      { top: '460px', left: '750px', width: '680px', height: '320px' }
-      };
-      Object.keys(layouts).forEach(id => {
-        const win = document.getElementById(id);
-        if (win) {
-          Object.assign(win.style, layouts[id]);
-        }
-      });
-      bringToFront(document.getElementById('win-term'));
-    }
-
     function updateTaskbar() {
       const container = document.getElementById('taskbarWinContainer');
       if (!container) return;
@@ -1166,7 +1101,7 @@
         const titleEl = win.querySelector('.title-left span');
         const iconEl = win.querySelector('.title-left i');
         const titleText = titleEl ? titleEl.textContent : id;
-        const iconClass = iconEl ? iconEl.className : 'fas fa-window-maximize';
+        const iconClass = iconEl ? iconEl.className : 'fas fa-terminal';
 
         const btn = document.createElement('div');
         btn.className = 'taskbar-win-btn' + (win.classList.contains('active') && !win.classList.contains('minimized') ? ' active' : '');
@@ -1176,14 +1111,14 @@
       });
     }
 
-    // ── FastFetch ASCII Art & System Specs ────────────────────────────────────
+    // ── FastFetch ASCII Art & Specs (Monochrome Glow) ─────────────────────────
     const fastfetchArtEl = document.getElementById('fastfetchArt');
-    const fa = cls => `<i class="${cls}" style="width:1.2em;text-align:center;display:inline-block;opacity:0.8;font-size:10px;"></i>`;
+    const fa = cls => `<i class="${cls}" style="width:1.2em;text-align:center;display:inline-block;opacity:0.75;font-size:10px;"></i>`;
 
     const fastfetchLines = [
       `                   ▄`,
       `                  ▟█▙`,
-      `                 ▟███▙                   <b style="color:#4db8ff">oiupoyt</b><span style="opacity:0.4">@</span><b>archlinux</b>`,
+      `                 ▟███▙                   <b style="color:#ffffff; text-shadow:var(--glow-subtle);">oiupoyt</b><span style="opacity:0.4">@</span><b style="color:#ffffff;">archlinux</b>`,
       `                ▟█████▙                  <span style="opacity:0.35">────────────────────────</span>`,
       `               ▟███████▙                 ${fa('fas fa-laptop')} <span style="opacity:0.45;font-size:10px">OS</span> Arch Linux x86_64`,
       `              ▂▔▀▜██████▙                ${fa('fas fa-microchip')} <span style="opacity:0.45;font-size:10px">Kernel</span> Linux 6.19.8-arch1-1`,
@@ -1191,19 +1126,19 @@
       `            ▟█████████████▙              ${fa('fas fa-terminal')} <span style="opacity:0.45;font-size:10px">Shell</span> fish 4.5.0`,
       `           ▟███████████████▙             ${fa('fas fa-display')} <span style="opacity:0.45;font-size:10px">Terminal</span> kitty 0.46.1`,
       `          ▟█████████████████▙            ${fa('fas fa-window-restore')} <span style="opacity:0.45;font-size:10px">WM</span> Hyprland 0.54.2 (Wayland)`,
-      `         ▟███████████████████▙           ${fa('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> breeze-dark`,
+      `         ▟███████████████████▙           ${fa('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> monochrome-dark`,
       `        ▟█████████▛▀▀▜████████▙          ${fa('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> JetBrains Mono (11pt)`,
       `       ▟████████▛      ▜███████▙         ${fa('fas fa-clock')} <span style="opacity:0.45;font-size:10px">Uptime</span> <span id="dynUptime">12 hours, 42 mins</span>`,
       `      ▟█████████        ████████▙        ${fa('fas fa-music')} <span style="opacity:0.45;font-size:10px">Music</span> Baiaa081 - Noite Isolada`,
       `     ▟██████████        █████▆▅▄▃▂       ${fa('fas fa-cat')} <span style="opacity:0.45;font-size:10px">Status</span> you da real kat 🤍`,
-      `    ▟██████████▛        ▜█████████▙      ${fa('fas fa-network-wired')} <span style="opacity:0.45;font-size:10px">Websites</span> katdrop • katimages • toolbox`,
+      `    ▟██████████▛        ▜█████████▙      ${fa('fas fa-network-wired')} <span style="opacity:0.45;font-size:10px">Websites</span> katdrop • kats • jd • toolbox`,
       `   ▟██████▀▀▀              ▀▀██████▙`,
       `  ▟███▀▘                       ▝▀███▙`,
       ` ▟▛▀                               ▀▜▙`,
     ];
     fastfetchArtEl.innerHTML = fastfetchLines.map(l => `<div class="term-row">${l}</div>`).join('');
 
-    // ── Interactive Terminal CLI ─────────────────────────────────────────────
+    // ── Interactive Terminal Shell ───────────────────────────────────────────
     const termInput = document.getElementById('termInput');
     const termHistory = document.getElementById('termHistory');
     const termBody = document.getElementById('termBody');
@@ -1261,18 +1196,18 @@
       switch(cmd) {
         case 'help':
           out.innerHTML = `Available commands:
-  <b style="color:#4db8ff">fastfetch</b>    - display Arch Linux logo & system specs
-  <b style="color:#4db8ff">ls</b>           - list virtual directory contents
-  <b style="color:#4db8ff">cat &lt;file&gt;</b>     - display contents of a file (e.g. cat about.md)
-  <b style="color:#4db8ff">projects</b>       - list active web projects & links
-  <b style="color:#4db8ff">skills</b>         - show competencies & skills
-  <b style="color:#4db8ff">music [play|pause|vol]</b> - control background audio
-  <b style="color:#4db8ff">catpic</b>         - fetch a fresh cat image
-  <b style="color:#4db8ff">matrix</b>         - toggle digital rain animation
-  <b style="color:#4db8ff">whoami</b>         - print current session bio
-  <b style="color:#4db8ff">clear</b>          - clear terminal screen
-  <b style="color:#4db8ff">date</b>           - show current date and time
-  <b style="color:#4db8ff">reboot</b>         - restart katOS desktop`;
+  <b style="color:#ffffff">fastfetch</b>    - display Arch Linux logo & system specs
+  <b style="color:#ffffff">ls</b>           - list virtual directory contents
+  <b style="color:#ffffff">cat &lt;file&gt;</b>     - display contents of a file (e.g. cat about.md)
+  <b style="color:#ffffff">projects</b>       - list active web projects & links
+  <b style="color:#ffffff">skills</b>         - show competencies & skills
+  <b style="color:#ffffff">music</b>          - music play | pause | vol &lt;0-100&gt;
+  <b style="color:#ffffff">catpic</b>         - fetch a fresh cat image
+  <b style="color:#ffffff">matrix</b>         - toggle digital rain animation
+  <b style="color:#ffffff">whoami</b>         - print current session bio
+  <b style="color:#ffffff">clear</b>          - clear terminal screen
+  <b style="color:#ffffff">date</b>           - show current date and time
+  <b style="color:#ffffff">reboot</b>         - restart katOS desktop`;
           break;
 
         case 'fastfetch':
@@ -1282,7 +1217,7 @@
           break;
 
         case 'ls':
-          out.innerHTML = `<span style="color:#4db8ff">about.md</span>   <span style="color:#22c55e">skillz.bash</span>   <span style="color:#eab308">websites.html</span>   <span style="color:#ec4899">links.zip</span>   <span style="color:#aaa">music.mp3</span>   <span style="color:#aaa">backgroundVideo.mp4</span>`;
+          out.innerHTML = `<span style="color:#ffffff">about.md</span>   <span style="color:#ffffff">skillz.bash</span>   <span style="color:#ffffff">websites.html</span>   <span style="color:#ffffff">links.zip</span>   <span style="color:#888">music.mp3</span>   <span style="color:#888">backgroundVideo.mp4</span>`;
           break;
 
         case 'cat':
@@ -1293,18 +1228,18 @@
           } else if (arg.includes('skill')) {
             out.textContent = `linux / arch • Minecraft Servers • Self Hosting • server networking • Java / Plugins • yappin • im crine • tweaking • hahahahahha • cool content • very funny • veri fond of cats`;
           } else if (arg.includes('website')) {
-            out.innerHTML = `• katdrop: https://katdrop.oiupoyt.space\n• katimages: https://kat-images.netlify.app/\n• just-download: https://justdownload.netlify.app\n• kattoolbox: https://toolbox.oiupoyt.space`;
+            out.innerHTML = `• katdrop: https://katdrop.oiupoyt.space\n• kats: https://kats.oiupoyt.space\n• jd: https://jd.oiupoyt.space\n• toolbox: https://toolbox.oiupoyt.space`;
           } else {
             out.textContent = `cat: ${arg}: Permission denied or file is binary`;
           }
           break;
 
         case 'projects':
-          out.innerHTML = `katOS Projects:
-  1. <a href="https://katdrop.oiupoyt.space" target="_blank" style="color:#4db8ff">katdrop</a> - minimal 10-min file transfer service
-  2. <a href="https://kat-images.netlify.app/" target="_blank" style="color:#4db8ff">katimages</a> - look at cat. feel good.
-  3. <a href="https://justdownload.netlify.app" target="_blank" style="color:#4db8ff">just-download</a> - youtube & instagram media downloader
-  4. <a href="https://toolbox.oiupoyt.space" target="_blank" style="color:#4db8ff">kattoolbox</a> - client-side developer utility suite`;
+          out.innerHTML = `oiupoyt projects:
+  1. <a href="https://katdrop.oiupoyt.space" target="_blank" style="color:#ffffff; text-decoration:underline;">katdrop.oiupoyt.space</a> - minimal 10-min file transfer service
+  2. <a href="https://kats.oiupoyt.space" target="_blank" style="color:#ffffff; text-decoration:underline;">kats.oiupoyt.space</a> - look at cat. feel good.
+  3. <a href="https://jd.oiupoyt.space" target="_blank" style="color:#ffffff; text-decoration:underline;">jd.oiupoyt.space</a> - youtube & instagram media downloader
+  4. <a href="https://toolbox.oiupoyt.space" target="_blank" style="color:#ffffff; text-decoration:underline;">toolbox.oiupoyt.space</a> - client-side developer utility suite`;
           break;
 
         case 'skills':
@@ -1333,12 +1268,13 @@
 
         case 'catpic':
         case 'cat-image':
-          out.innerHTML = `Fetching cat image...`;
+        case 'cat':
+          out.innerHTML = `Fetching cat...`;
           fetch('https://api.thecatapi.com/v1/images/search')
             .then(r => r.json())
             .then(data => {
               if (data && data[0] && data[0].url) {
-                out.innerHTML = `<img src="${data[0].url}" style="max-width:280px;max-height:200px;border:1px solid #333;margin-top:6px;display:block;"><span style="font-size:10px;color:#777;">meow</span>`;
+                out.innerHTML = `<img src="${data[0].url}" style="max-width:280px;max-height:200px;border:1px solid #444;margin-top:6px;display:block;"><span style="font-size:10px;color:#888;">meow</span>`;
                 termBody.scrollTop = termBody.scrollHeight;
               }
             }).catch(() => {
@@ -1369,10 +1305,6 @@
           out.textContent = new Date().toString();
           break;
 
-        case 'sudo':
-          out.textContent = 'user oiupoyt is not in the sudoers file. this incident will be reported to kat.';
-          break;
-
         case 'reboot':
           location.reload();
           return;
@@ -1396,7 +1328,7 @@
       }[t] || t));
     }
 
-    // ── Audio & Visualizer Engine ────────────────────────────────────────────
+    // ── Audio & Visualizer Engine (Glow White Monochrome) ─────────────────────
     const bgMusic = document.getElementById('bgMusic');
     const playBtn = document.getElementById('playBtn');
     const playIcon = document.getElementById('playIcon');
@@ -1475,7 +1407,7 @@
       pauseMusic();
     });
 
-    // ── Visualizer Rendering Modes ───────────────────────────────────────────
+    // ── Visualizer Rendering (Glow White Spectrum) ────────────────────────────
     function cycleVizMode() {
       currentVizModeIdx = (currentVizModeIdx + 1) % vizModes.length;
       vizModeName.textContent = vizModes[currentVizModeIdx];
@@ -1504,12 +1436,12 @@
       const H = vizCanvas.height;
       vizCtx.clearRect(0, 0, W, H);
 
-      // Resting zero line
-      vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      // Baseline resting line
+      vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       vizCtx.lineWidth = 1;
       vizCtx.beginPath();
-      vizCtx.moveTo(0, H * 0.9);
-      vizCtx.lineTo(W, H * 0.9);
+      vizCtx.moveTo(0, H * 0.92);
+      vizCtx.lineTo(W, H * 0.92);
       vizCtx.stroke();
 
       vizIdleMsg.style.opacity = '1';
@@ -1532,8 +1464,8 @@
       const mode = vizModes[currentVizModeIdx];
 
       if (mode === 'spectrum bars') {
-        // Mode 1: Squared Spectrum Bars with floating glowing peaks
-        const barCount = 28;
+        // Mode 1: Squared Glowing White Spectrum Bars
+        const barCount = 26;
         const gap = W * 0.012;
         const barW = (W - gap * (barCount + 1)) / barCount;
         const step = Math.floor(bufLen / barCount);
@@ -1550,22 +1482,25 @@
 
           const alpha = 0.25 + ratio * 0.75;
           const grad = vizCtx.createLinearGradient(0, y, 0, baseY);
-          grad.addColorStop(0, `rgba(77, 184, 255, ${alpha})`);
-          grad.addColorStop(0.5, `rgba(255, 255, 255, ${alpha * 0.7})`);
-          grad.addColorStop(1, `rgba(77, 184, 255, ${alpha * 0.1})`);
+          grad.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+          grad.addColorStop(0.5, `rgba(220, 220, 220, ${alpha * 0.6})`);
+          grad.addColorStop(1, `rgba(180, 180, 180, ${alpha * 0.1})`);
 
           vizCtx.fillStyle = grad;
           vizCtx.fillRect(x, y, barW, bh);
 
-          // Squared glowing peak cap
+          // Glowing white peak cap
           if (bh > 4) {
-            vizCtx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha + 0.2)})`;
+            vizCtx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha + 0.3)})`;
+            vizCtx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+            vizCtx.shadowBlur = 6;
             vizCtx.fillRect(x, y - 3, barW, 2);
+            vizCtx.shadowBlur = 0;
           }
         }
 
         // Base line
-        vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
         vizCtx.lineWidth = 1;
         vizCtx.beginPath();
         vizCtx.moveTo(0, baseY);
@@ -1573,14 +1508,14 @@
         vizCtx.stroke();
 
       } else if (mode === 'waveform beam') {
-        // Mode 2: Oscilloscope Waveform Beam
+        // Mode 2: Oscilloscope Waveform Beam in Glowing White
         const timeData = new Uint8Array(analyser.fftSize);
         analyser.getByteTimeDomainData(timeData);
 
         vizCtx.lineWidth = 2;
-        vizCtx.strokeStyle = '#4db8ff';
-        vizCtx.shadowColor = 'rgba(77, 184, 255, 0.8)';
-        vizCtx.shadowBlur = 10;
+        vizCtx.strokeStyle = '#ffffff';
+        vizCtx.shadowColor = 'rgba(255, 255, 255, 0.85)';
+        vizCtx.shadowBlur = 12;
         vizCtx.beginPath();
 
         const sliceW = W / timeData.length;
@@ -1612,13 +1547,11 @@
           const alpha = 0.2 + ratio * 0.8;
 
           vizCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-          // Right wing
           vizCtx.fillRect(center + i * barW, centerY - bh / 2, barW - 2, bh);
-          // Left wing
           vizCtx.fillRect(center - (i + 1) * barW, centerY - bh / 2, barW - 2, bh);
         }
 
-        vizCtx.strokeStyle = 'rgba(77, 184, 255, 0.4)';
+        vizCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
         vizCtx.lineWidth = 1;
         vizCtx.beginPath();
         vizCtx.moveTo(0, centerY);
@@ -1627,7 +1560,7 @@
       }
     }
 
-    // ── Matrix Rain Effect ───────────────────────────────────────────────────
+    // ── Matrix Rain (Monochrome White) ───────────────────────────────────────
     const matrixCanvas = document.getElementById('matrixCanvas');
     const mCtx = matrixCanvas.getContext('2d');
     let matrixActive = false;
@@ -1647,7 +1580,7 @@
     function drawMatrix() {
       mCtx.fillStyle = 'rgba(0, 0, 0, 0.08)';
       mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-      mCtx.fillStyle = '#4db8ff';
+      mCtx.fillStyle = 'rgba(255, 255, 255, 0.75)';
       mCtx.font = '12px "JetBrains Mono", monospace';
 
       for (let i = 0; i < mDrops.length; i++) {
@@ -1672,7 +1605,7 @@
       }
     }
 
-    // ── Desktop Context Menu ─────────────────────────────────────────────────
+    // ── Desktop Right-Click Context Menu ─────────────────────────────────────
     const ctxMenu = document.getElementById('ctxMenu');
 
     document.addEventListener('contextmenu', e => {
@@ -1693,7 +1626,7 @@
       }
     });
 
-    // ── Clock & System Monitor ───────────────────────────────────────────────
+    // ── Clock ────────────────────────────────────────────────────────────────
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
@@ -1732,7 +1665,7 @@
       }, 300);
     });
 
-    // Keyboard Shortcut (Space to play/pause music outside text inputs)
+    // Keyboard Shortcut (Space to play/pause music)
     window.addEventListener('keydown', e => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.code === 'Space') {
