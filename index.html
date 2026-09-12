@@ -21,9 +21,22 @@
       margin: 0;
       padding: 0;
       border-radius: 0 !important; /* Strict squared-out terminals & windows */
-      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
       scrollbar-width: none !important;
       -ms-overflow-style: none !important;
+    }
+
+    body, button, input, textarea, select, pre, code, p, a, span, div, h1, h2, h3, h4, h5, h6 {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* Preserve Font Awesome Icons strictly */
+    .fa, .fas, .far, .fal, .fad, i[class*="fa-"] {
+      font-family: "Font Awesome 6 Free" !important;
+      font-weight: 900 !important;
+    }
+    .fab, i.fab {
+      font-family: "Font Awesome 6 Brands" !important;
+      font-weight: 400 !important;
     }
 
     :root {
@@ -45,7 +58,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
       height: 100vh;
       width: 100vw;
       overflow: hidden;
@@ -325,6 +338,10 @@
       color: #ddd;
       transition: all 0.15s ease;
       text-decoration: none;
+    }
+
+    .link-item:last-child {
+      margin-bottom: 0;
     }
 
     .link-item:hover {
@@ -980,29 +997,29 @@
       const H = window.innerHeight - 36; // leave room for taskbar
 
       if (W >= 1500) {
-        // Broad monitor: organic offsets & sized generously to eliminate scrollbars
-        setWinPos('win-about',    32,   32,  400, 260);
-        setWinPos('win-skills',   325,  72,  420, 340);
-        setWinPos('win-websites', 55,   495, 400, 310);
-        setWinPos('win-links',    405,  540, 380, 370);
-        setWinPos('win-term',     25,   955, Math.min(900, W - 985), 465);
-        setWinPos('win-viz',      520,  885, Math.min(970, W - 915), 295);
+        // Broad monitor: snug fit without dead space, 50px clearance between links & viz
+        setWinPos('win-about',    30,   32,  380, 215);
+        setWinPos('win-skills',   275,  65,  395, 248);
+        setWinPos('win-websites', 48,   440, 375, 248);
+        setWinPos('win-links',    325,  470, 350, 285);
+        setWinPos('win-term',     25,   895, Math.min(910, W - 935), 465);
+        setWinPos('win-viz',      520,  870, Math.min(935, W - 910), 285);
       } else if (W >= 1150) {
-        // Standard laptop / desktop: non-parallel staggered coordinates
-        setWinPos('win-about',    22,   24,  380, 255);
-        setWinPos('win-skills',   305,  60,  395, 330);
-        setWinPos('win-websites', 48,   440, 375, 300);
-        setWinPos('win-links',    380,  485, 360, 360);
-        setWinPos('win-term',     20,   845, Math.max(500, W - 875), 445);
-        setWinPos('win-viz',      495,  795, Math.max(540, W - 825), 285);
+        // Standard laptop / desktop: non-parallel coordinates & no overlap
+        setWinPos('win-about',    22,   22,  350, 215);
+        setWinPos('win-skills',   265,  48,  365, 248);
+        setWinPos('win-websites', 40,   400, 350, 248);
+        setWinPos('win-links',    315,  425, 335, 285);
+        setWinPos('win-term',     20,   835, Math.max(480, W - 865), 445);
+        setWinPos('win-viz',      495,  810, Math.max(500, W - 840), 275);
       } else if (W >= 800) {
         // Tablet / compact
-        setWinPos('win-about',    18,   16,  360, 250);
-        setWinPos('win-skills',   290,  45,  370, 320);
-        setWinPos('win-websites', 35,   415, 355, 295);
-        setWinPos('win-links',    355,  445, 345, 355);
-        setWinPos('win-term',     615,  22,  W - 48, 435);
-        setWinPos('win-viz',      1075, 38,  W - 68, 280);
+        setWinPos('win-about',    18,   16,  340, 215);
+        setWinPos('win-skills',   255,  35,  350, 248);
+        setWinPos('win-websites', 35,   385, 335, 248);
+        setWinPos('win-links',    305,  410, 325, 285);
+        setWinPos('win-term',     620,  22,  W - 48, 435);
+        setWinPos('win-viz',      1080, 38,  W - 68, 270);
       }
 
       restoreAllWindows();
