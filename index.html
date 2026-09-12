@@ -740,24 +740,145 @@
       margin: 4px 0;
     }
 
-    /* ── Responsive Window Bounds ────────────────────────────────────────────── */
+    /* ── Mobile Navigation Bar ───────────────────────────────────────────────── */
+    .mobile-nav {
+      display: none;
+    }
+
+    /* ── Responsive Mobile & Tablet Experience ──────────────────────────────── */
     @media (max-width: 900px) {
+      :root {
+        --taskbar-h: 44px;
+      }
+
+      .desktop {
+        position: relative !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 6px 12px 76px 12px !important;
+        height: calc(100vh - var(--taskbar-h)) !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Sticky Mobile Quick App Dock */
+      .mobile-nav {
+        display: flex !important;
+        position: sticky;
+        top: 0;
+        z-index: 80;
+        gap: 8px;
+        padding: 10px 0;
+        margin-bottom: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        scrollbar-width: none;
+      }
+      .mobile-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .mob-nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #dcdcdc;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.15s ease;
+      }
+      .mob-nav-btn i {
+        font-size: 10px;
+        opacity: 0.75;
+      }
+      .mob-nav-btn:active, .mob-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #ffffff;
+        color: #ffffff;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      }
+
       .window {
         position: static !important;
         width: 100% !important;
+        max-width: 100% !important;
         height: auto !important;
-        margin-bottom: 12px;
+        margin-bottom: 16px !important;
+        transform: none !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7) !important;
       }
-      .desktop {
-        overflow-y: auto;
-        padding: 12px;
-        height: calc(100vh - var(--taskbar-h));
+
+      .titlebar {
+        cursor: default !important;
+        height: 32px;
+        padding: 0 12px;
       }
-      .taskbar-windows {
-        display: none;
+
+      .window-body {
+        padding: 14px 12px !important;
+      }
+
+      .link-item {
+        padding: 10px 12px !important;
+        min-height: 46px !important;
+      }
+      .link-item:active {
+        background: rgba(255, 255, 255, 0.18) !important;
+        transform: scale(0.99);
+      }
+
+      /* Mobile visualizer height */
+      .viz-container {
+        height: 190px !important;
+        min-height: 190px !important;
+      }
+
+      /* Mobile terminal optimization */
+      .terminal-body {
+        max-height: 440px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Mobile Taskbar */
+      .taskbar {
+        height: 44px;
+        padding: 0 12px;
+      }
+      .taskbar-windows, .taskbar-divider {
+        display: none !important;
+      }
+      .os-logo-btn {
+        padding: 5px 12px;
+        font-size: 12px;
+      }
+      .music-bar {
+        gap: 10px;
+        padding: 3px 8px;
+      }
+      .player-btn {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 11px !important;
+      }
+      .volume-slider {
+        display: none !important;
       }
       .music-track {
-        display: none;
+        display: inline-block !important;
+        max-width: 110px;
+        font-size: 9.5px;
+      }
+      .tray-time {
+        font-size: 11px;
       }
     }
   </style>
@@ -780,6 +901,16 @@
 
   <!-- Desktop Workspace -->
   <div class="desktop" id="desktop">
+
+    <!-- Mobile Quick Navigation Bar (Sticky App Dock on Phones) -->
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile Navigation">
+      <button class="mob-nav-btn" onclick="scrollToWin('win-about')"><i class="fas fa-file-lines"></i> about</button>
+      <button class="mob-nav-btn" onclick="scrollToWin('win-websites')"><i class="fas fa-globe"></i> websites</button>
+      <button class="mob-nav-btn" onclick="scrollToWin('win-links')"><i class="fas fa-folder-closed"></i> links</button>
+      <button class="mob-nav-btn" onclick="scrollToWin('win-skills')"><i class="fas fa-terminal"></i> skillz</button>
+      <button class="mob-nav-btn" onclick="scrollToWin('win-term')"><i class="fas fa-laptop-code"></i> terminal</button>
+      <button class="mob-nav-btn" onclick="scrollToWin('win-viz')"><i class="fas fa-wave-square"></i> visualizer</button>
+    </nav>
 
     <!-- About Window -->
     <div class="window active" id="win-about">
@@ -971,7 +1102,7 @@
   <!-- Taskbar -->
   <footer class="taskbar">
     <div class="taskbar-left">
-      <div class="os-logo-btn" onclick="restoreAllWindows()" title="katOS Launcher">
+      <div class="os-logo-btn" onclick="handleOsLogoClick()" title="katOS Launcher / Scroll to Top">
         <span>katOS</span>
       </div>
       <div class="taskbar-divider"></div>
@@ -1046,10 +1177,52 @@
         setWinPos('win-links',    355,  420,  325, null);
         setWinPos('win-term',     685,  20,   W - 44, 378);
         setWinPos('win-viz',      1085, 35,   W - 70, 240);
+      } else {
+        // Mobile (<800px): clear inline pixel coordinates so responsive CSS applies cleanly
+        windowRegistry.forEach(id => {
+          const win = document.getElementById(id);
+          if (win) {
+            win.style.top = '';
+            win.style.left = '';
+            win.style.width = '';
+            win.style.height = '';
+          }
+        });
       }
 
       restoreAllWindows();
       bringToFront(document.getElementById('win-term'));
+    }
+
+    // ── Mobile App Navigation Quick Jump ─────────────────────────────────────
+    function scrollToWin(id) {
+      const win = document.getElementById(id);
+      if (!win) return;
+      if (win.classList.contains('minimized')) {
+        win.classList.remove('minimized');
+      }
+      bringToFront(win);
+
+      if (window.innerWidth <= 900) {
+        const desktop = document.getElementById('desktop');
+        if (desktop) {
+          const winTop = win.offsetTop - 54;
+          desktop.scrollTo({ top: Math.max(0, winTop), behavior: 'smooth' });
+        }
+      }
+    }
+
+    // ── Taskbar OS Logo Action (Mobile: Scroll to Top, Desktop: Reset Windows) ─
+    function handleOsLogoClick() {
+      if (window.innerWidth <= 900) {
+        const desktop = document.getElementById('desktop');
+        if (desktop) {
+          desktop.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } else {
+        autoSpaceWindows();
+        showToast('[ katOS: Windows Reset & Centered ]');
+      }
     }
 
     function setWinPos(id, top, left, width, height) {
@@ -1186,7 +1359,7 @@
     const fastfetchArtEl = document.getElementById('fastfetchArt');
     const fa = cls => `<i class="${cls}" style="width:1.2em;text-align:center;display:inline-block;opacity:0.75;font-size:10px;"></i>`;
 
-    const fastfetchLines = [
+    const fastfetchLinesDesktop = [
       `                   ▄`,
       `                  ▟█▙`,
       `                 ▟███▙               <b style="color:#ffffff; text-shadow:var(--glow-subtle);">oiupoyt</b><span style="opacity:0.4">@</span><b style="color:#ffffff;">archlinux</b>`,
@@ -1207,7 +1380,44 @@
       `  ▟███▀▘                       ▝▀███▙`,
       ` ▟▛▀                               ▀▜▙`,
     ];
-    fastfetchArtEl.innerHTML = fastfetchLines.map(l => `<div class="term-row">${l}</div>`).join('');
+
+    function renderFastfetch() {
+      if (!fastfetchArtEl) return;
+      if (window.innerWidth <= 640) {
+        const logoAscii = [
+          `       ▟█▙`,
+          `      ▟███▙`,
+          `     ▟█████▙`,
+          `    ▟███████▙`,
+          `   ▂▔▀▜██████▙`,
+          `  ▟██▅▂▝▜█████▙`,
+          ` ▟█████████████▙`,
+          `▟██████▀▀   ▀▀████▙`
+        ].map(l => `<div class="term-row" style="color:#ffffff;text-shadow:var(--glow-subtle);">${l}</div>`).join('');
+
+        const specItems = [
+          `<b style="color:#ffffff; text-shadow:var(--glow-subtle);">oiupoyt</b><span style="opacity:0.4">@</span><b style="color:#ffffff;">archlinux</b>`,
+          `<span style="opacity:0.35">────────────────────────</span>`,
+          `${fa('fas fa-laptop')} <span style="opacity:0.45;font-size:10px">OS</span> Arch Linux x86_64`,
+          `${fa('fas fa-microchip')} <span style="opacity:0.45;font-size:10px">Kernel</span> Linux 6.19.8-arch1-1`,
+          `${fa('fas fa-box-open')} <span style="opacity:0.45;font-size:10px">Packages</span> 1254 (pacman), 60 (flatpak)`,
+          `${fa('fas fa-terminal')} <span style="opacity:0.45;font-size:10px">Shell</span> fish 4.5.0`,
+          `${fa('fas fa-display')} <span style="opacity:0.45;font-size:10px">Terminal</span> kitty 0.46.1`,
+          `${fa('fas fa-window-restore')} <span style="opacity:0.45;font-size:10px">WM</span> Hyprland 0.54.2`,
+          `${fa('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> monochrome-dark`,
+          `${fa('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> Space Mono (11pt)`,
+          `${fa('fas fa-clock')} <span style="opacity:0.45;font-size:10px">Uptime</span> <span id="dynUptime">12 hours, 42 mins</span>`,
+          `${fa('fas fa-music')} <span style="opacity:0.45;font-size:10px">Music</span> Baiaa081 - Noite Isolada`,
+          `${fa('fas fa-cat')} <span style="opacity:0.45;font-size:10px">Status</span> you da real kat 🤍`,
+          `${fa('fas fa-network-wired')} <span style="opacity:0.45;font-size:10px">Websites</span> katdrop • kats • jd • toolbox`
+        ].map(s => `<div class="term-row">${s}</div>`).join('');
+
+        fastfetchArtEl.innerHTML = `<div style="margin-bottom:8px;text-align:center;">${logoAscii}</div><div>${specItems}</div>`;
+      } else {
+        fastfetchArtEl.innerHTML = fastfetchLinesDesktop.map(l => `<div class="term-row">${l}</div>`).join('');
+      }
+    }
+    renderFastfetch();
 
     // ── Interactive Terminal Shell ───────────────────────────────────────────
     const termInput = document.getElementById('termInput');
@@ -1290,6 +1500,7 @@
         case 'fastfetch':
         case 'neofetch':
           fastfetchArtEl.style.display = 'block';
+          renderFastfetch();
           out.textContent = '';
           break;
 
@@ -1742,6 +1953,39 @@
       });
     });
 
+    // Mobile Touch Interaction for Liquid Void Fluid
+    window.addEventListener('touchstart', e => {
+      if (e.touches.length > 0) {
+        const t = e.touches[0];
+        bgMouse.targetX = t.clientX;
+        bgMouse.targetY = t.clientY;
+        bgMouse.active = true;
+        if (!e.target.closest('.window-body') && !e.target.closest('input') && !e.target.closest('button') && !e.target.closest('.player-btn')) {
+          if (shockwaves.length > 5) shockwaves.shift();
+          shockwaves.push({
+            x: t.clientX,
+            y: t.clientY,
+            radius: 10,
+            maxRadius: Math.max(window.innerWidth, window.innerHeight) * 0.45,
+            alpha: 0.65,
+            power: 1.2
+          });
+        }
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', e => {
+      if (e.touches.length > 0) {
+        bgMouse.targetX = e.touches[0].clientX;
+        bgMouse.targetY = e.touches[0].clientY;
+        bgMouse.active = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      bgMouse.active = false;
+    }, { passive: true });
+
     // Pause CPU/GPU canvas rendering when user switches tabs or minimizes window
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && isPlaying) {
@@ -1800,14 +2044,22 @@
       mDrops = Array.from({ length: mCols }, () => Math.floor(Math.random() * -45));
     }
 
+    let lastTrackedWidth = window.innerWidth;
     function resizeBgCanvas() {
       bgCanvas.width = window.innerWidth;
       bgCanvas.height = window.innerHeight;
       initFluidParticles();
       initMatrixDrops();
+      renderFastfetch();
       if (typeof resizeVizCanvas === 'function') resizeVizCanvas();
     }
-    window.addEventListener('resize', resizeBgCanvas);
+    window.addEventListener('resize', () => {
+      resizeBgCanvas();
+      if (Math.abs(window.innerWidth - lastTrackedWidth) > 60) {
+        lastTrackedWidth = window.innerWidth;
+        autoSpaceWindows();
+      }
+    });
     resizeBgCanvas();
 
     // Audio frequency extractor (zero garbage collection overhead)
