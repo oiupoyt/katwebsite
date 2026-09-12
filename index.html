@@ -997,9 +997,9 @@
       const H = window.innerHeight - 36; // leave room for taskbar
 
       if (W >= 1500) {
-        // Broad monitor: snug fit without dead space, 50px clearance between links & viz
+        // Broad monitor: snug fit without dead space, skills lowered below websites
         setWinPos('win-about',    30,   32,  380, 215);
-        setWinPos('win-skills',   275,  65,  395, 248);
+        setWinPos('win-skills',   315,  50,  385, 248);
         setWinPos('win-websites', 48,   440, 375, 248);
         setWinPos('win-links',    325,  470, 350, 285);
         setWinPos('win-term',     25,   895, Math.min(910, W - 935), 465);
@@ -1007,7 +1007,7 @@
       } else if (W >= 1150) {
         // Standard laptop / desktop: non-parallel coordinates & no overlap
         setWinPos('win-about',    22,   22,  350, 215);
-        setWinPos('win-skills',   265,  48,  365, 248);
+        setWinPos('win-skills',   305,  40,  360, 248);
         setWinPos('win-websites', 40,   400, 350, 248);
         setWinPos('win-links',    315,  425, 335, 285);
         setWinPos('win-term',     20,   835, Math.max(480, W - 865), 445);
@@ -1015,7 +1015,7 @@
       } else if (W >= 800) {
         // Tablet / compact
         setWinPos('win-about',    18,   16,  340, 215);
-        setWinPos('win-skills',   255,  35,  350, 248);
+        setWinPos('win-skills',   295,  30,  345, 248);
         setWinPos('win-websites', 35,   385, 335, 248);
         setWinPos('win-links',    305,  410, 325, 285);
         setWinPos('win-term',     620,  22,  W - 48, 435);
