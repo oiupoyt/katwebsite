@@ -11,7 +11,7 @@
   <!-- Fonts & Icons: JetBrains Mono Nerd aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <style>
@@ -21,12 +21,15 @@
       margin: 0;
       padding: 0;
       border-radius: 0 !important; /* Strict squared-out terminals & windows */
+      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
     }
 
     :root {
       --bg: #000000;
-      --panel-bg: rgba(6, 6, 8, 0.48);       /* High transparency */
-      --panel-active: rgba(10, 10, 14, 0.68);  /* Focused transparency */
+      --panel-bg: rgba(6, 6, 10, 0.22);       /* High glass transparency */
+      --panel-active: rgba(10, 10, 16, 0.35);  /* Focused transparency */
       --border: rgba(255, 255, 255, 0.12);
       --border-hover: rgba(255, 255, 255, 0.35);
       --border-active: rgba(255, 255, 255, 0.7);
@@ -42,7 +45,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
       height: 100vh;
       width: 100vw;
       overflow: hidden;
@@ -59,8 +62,8 @@
       object-fit: cover;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.32;
-      filter: contrast(1.15) brightness(0.85);
+      opacity: 0.55;
+      filter: contrast(1.15) brightness(0.88);
     }
 
     #matrixCanvas {
@@ -103,9 +106,9 @@
       position: absolute;
       background: var(--panel-bg);
       border: 1px solid var(--border);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.15) inset;
       z-index: 10;
       display: flex;
       flex-direction: column;
@@ -115,7 +118,7 @@
     .window.active {
       border-color: var(--border-active);
       background: var(--panel-active);
-      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.85), 0 0 14px rgba(255, 255, 255, 0.18), 0 0 1px rgba(255, 255, 255, 0.4) inset;
+      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.75), 0 0 14px rgba(255, 255, 255, 0.18), 0 0 1px rgba(255, 255, 255, 0.4) inset;
       z-index: 30;
     }
 
@@ -225,6 +228,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       color: #d0d0d0;
+      background: transparent !important;
     }
 
     /* Complete scrollbar removal (clean invisible scrolling) */
@@ -244,12 +248,12 @@
 
     /* ── Terminal Styling ────────────────────────────────────────────────────── */
     .terminal-body {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
       font-size: 11px;
       line-height: 1.48;
       padding: 12px 14px;
       color: #e5e5e5;
-      background: rgba(0, 0, 0, 0.42);
+      background: transparent !important;
       overflow-y: auto;
       height: 100%;
       user-select: text;
@@ -369,7 +373,7 @@
       width: 100%;
       height: 100%;
       position: relative;
-      background: rgba(0, 0, 0, 0.42);
+      background: transparent !important;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -827,14 +831,6 @@
           </div>
           <span class="badge">live</span>
         </a>
-        <a class="link-item" href="https://github.com/oiupoyt" target="_blank" rel="noopener">
-          <i class="fab fa-github"></i>
-          <div>
-            <div style="color:#fff; font-weight:500;">github.com/oiupoyt</div>
-            <div style="font-size:10px; color:#777;">source code &amp; repositories</div>
-          </div>
-          <span class="badge">github</span>
-        </a>
       </div>
     </div>
 
@@ -850,6 +846,11 @@
         </div>
       </div>
       <div class="window-body">
+        <a class="link-item" href="https://github.com/oiupoyt" target="_blank" rel="noopener">
+          <i class="fab fa-github"></i>
+          <span>GitHub</span>
+          <span class="badge">@oiupoyt</span>
+        </a>
         <a class="link-item" href="https://discordapp.com/users/1082968457559146506" target="_blank" rel="noopener">
           <i class="fab fa-discord"></i>
           <span>Discord</span>
@@ -973,35 +974,35 @@
     let topZIndex = 40;
     const windowRegistry = ['win-about', 'win-skills', 'win-websites', 'win-links', 'win-term', 'win-viz'];
 
-    // ── Auto-Space Terminals on Start ────────────────────────────────────────
+    // ── Auto-Space Terminals on Start (Organic Staggered Layout) ───────────
     function autoSpaceWindows() {
       const W = window.innerWidth;
       const H = window.innerHeight - 36; // leave room for taskbar
 
       if (W >= 1500) {
-        // Broad monitor: terminals breathe and fill the desktop naturally
-        setWinPos('win-about',    26,   28,  335, 230);
-        setWinPos('win-skills',   276,  42,  330, 310);
-        setWinPos('win-websites', 52,   390, 355, 290);
-        setWinPos('win-links',    362,  402, 345, 260);
-        setWinPos('win-term',     26,   772, Math.min(840, W - 802), 415);
-        setWinPos('win-viz',      465,  788, Math.min(824, W - 818), 305);
+        // Broad monitor: organic offsets & sized generously to eliminate scrollbars
+        setWinPos('win-about',    32,   32,  400, 260);
+        setWinPos('win-skills',   325,  72,  420, 340);
+        setWinPos('win-websites', 55,   495, 400, 310);
+        setWinPos('win-links',    405,  540, 380, 370);
+        setWinPos('win-term',     25,   955, Math.min(900, W - 985), 465);
+        setWinPos('win-viz',      520,  885, Math.min(970, W - 915), 295);
       } else if (W >= 1150) {
-        // Standard laptop / desktop
-        setWinPos('win-about',    22,   24,  315, 225);
-        setWinPos('win-skills',   268,  34,  315, 295);
-        setWinPos('win-websites', 44,   358, 335, 280);
-        setWinPos('win-links',    344,  368, 330, 255);
-        setWinPos('win-term',     22,   714, W - 738, 370);
-        setWinPos('win-viz',      415,  728, W - 752, 280);
+        // Standard laptop / desktop: non-parallel staggered coordinates
+        setWinPos('win-about',    22,   24,  380, 255);
+        setWinPos('win-skills',   305,  60,  395, 330);
+        setWinPos('win-websites', 48,   440, 375, 300);
+        setWinPos('win-links',    380,  485, 360, 360);
+        setWinPos('win-term',     20,   845, Math.max(500, W - 875), 445);
+        setWinPos('win-viz',      495,  795, Math.max(540, W - 825), 285);
       } else if (W >= 800) {
         // Tablet / compact
-        setWinPos('win-about',    18,   18,  300, 220);
-        setWinPos('win-skills',   258,  26,  300, 280);
-        setWinPos('win-websites', 34,   336, 315, 270);
-        setWinPos('win-links',    324,  346, 315, 245);
-        setWinPos('win-term',     560,  18,  W - 36, 310);
-        setWinPos('win-viz',      890,  26,  W - 44, 260);
+        setWinPos('win-about',    18,   16,  360, 250);
+        setWinPos('win-skills',   290,  45,  370, 320);
+        setWinPos('win-websites', 35,   415, 355, 295);
+        setWinPos('win-links',    355,  445, 345, 355);
+        setWinPos('win-term',     615,  22,  W - 48, 435);
+        setWinPos('win-viz',      1075, 38,  W - 68, 280);
       }
 
       restoreAllWindows();
@@ -1245,6 +1246,8 @@
             out.textContent = `linux / arch • Minecraft Servers • Self Hosting • server networking • Java / Plugins • yappin • im crine • tweaking • hahahahahha • cool content • very funny • veri fond of cats`;
           } else if (arg.includes('website')) {
             out.innerHTML = `• katdrop: https://katdrop.oiupoyt.space\n• kats: https://kats.oiupoyt.space\n• jd: https://jd.oiupoyt.space\n• toolbox: https://toolbox.oiupoyt.space`;
+          } else if (arg.includes('link')) {
+            out.innerHTML = `• GitHub: https://github.com/oiupoyt\n• Discord: @oiupoyt\n• Instagram: @oiupoyt\n• YouTube: @OIUPOYT\n• Modrinth: oiupoyt\n• Roblox: oiupoyt`;
           } else {
             out.textContent = `cat: ${arg}: Permission denied or file is binary`;
           }
