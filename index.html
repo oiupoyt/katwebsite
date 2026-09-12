@@ -740,6 +740,80 @@
       margin: 4px 0;
     }
 
+    /* ── Desktop ASCII Cat Companion ─────────────────────────────────────────── */
+    .kat-pet-widget {
+      position: fixed;
+      bottom: calc(var(--taskbar-h) + 12px);
+      right: 18px;
+      z-index: 85;
+      background: rgba(8, 8, 12, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 255, 255, 0.08);
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .kat-pet-widget:hover, .kat-pet-widget:active {
+      border-color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 255, 255, 0.35);
+    }
+
+    .kat-pet-ascii {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: var(--glow-subtle);
+      display: inline-block;
+      transition: transform 0.12s ease;
+    }
+
+    .kat-pet-name {
+      font-size: 10px;
+      color: #888888;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .kat-pet-bubble {
+      position: absolute;
+      bottom: calc(100% + 9px);
+      right: 0;
+      background: rgba(8, 8, 12, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 6px 12px;
+      font-size: 11px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .kat-pet-bubble.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .kat-pet-bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 18px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: rgba(255, 255, 255, 0.45) transparent transparent transparent;
+    }
+
     /* ── Mobile Navigation Bar ───────────────────────────────────────────────── */
     .mobile-nav {
       display: none;
@@ -879,6 +953,15 @@
       }
       .tray-time {
         font-size: 11px;
+      }
+
+      .kat-pet-widget {
+        bottom: calc(var(--taskbar-h) + 8px) !important;
+        right: 10px !important;
+        padding: 5px 9px !important;
+      }
+      .kat-pet-name {
+        display: none !important;
       }
     }
   </style>
@@ -1097,6 +1180,13 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- Interactive Desktop ASCII Kat Companion -->
+  <div class="kat-pet-widget" id="katPet" onclick="interactKatPet()" title="Click to pet kat! (or type 'pet cat' / 'feed cat' in terminal)">
+    <div class="kat-pet-bubble" id="katPetBubble">purr 🤍</div>
+    <span class="kat-pet-ascii" id="katPetAscii">/ᐠ. ᆺ .ᐟ\</span>
+    <span class="kat-pet-name">kat</span>
   </div>
 
   <!-- Taskbar -->
@@ -1457,11 +1547,155 @@
       } else if (e.key === 'Tab') {
         e.preventDefault();
         const cur = termInput.value.trim().toLowerCase();
-        const available = ['help', 'fastfetch', 'neofetch', 'clear', 'cat', 'ls', 'projects', 'skills', 'music', 'matrix', 'whoami', 'date', 'reboot'];
+        const available = ['help', 'fastfetch', 'neofetch', 'clear', 'cat', 'cowsay', 'fortune', 'sl', 'cmatrix', 'pet', 'feed', 'ls', 'projects', 'skills', 'music', 'matrix', 'whoami', 'date', 'reboot'];
         const match = available.find(c => c.startsWith(cur));
         if (match) termInput.value = match;
       }
     });
+
+    // ── Desktop ASCII Cat Companion Interaction & Quotes ─────────────────────
+    const katPetAscii = document.getElementById('katPetAscii');
+    const katPetBubble = document.getElementById('katPetBubble');
+    let katBubbleTimer = null;
+    const katPhrases = [
+      "purrrrrrrr 🤍",
+      "mrrp! :3",
+      "cats > people haha",
+      "i use arch btw",
+      "you da real kat 🤍",
+      "*happy headbonk*",
+      "feed me fish! (type 'feed cat')",
+      "*bobs head to music*",
+      "minecraft shyt & linux",
+      "sudo give pets"
+    ];
+
+    function interactKatPet(action = 'click') {
+      if (!katPetAscii || !katPetBubble) return;
+      clearTimeout(katBubbleTimer);
+
+      if (action === 'feed') {
+        katPetAscii.textContent = '/ᐠ. ڡ .ᐟ\\ 🐟';
+        katPetBubble.textContent = '*nom nom* yummy fish! 🤍';
+      } else if (action === 'pet') {
+        katPetAscii.textContent = '/ᐠ˶> ᆺ <˶ᐟ\\ 🤍';
+        katPetBubble.textContent = 'purrrrrrrr... 🤍';
+      } else {
+        const phrase = katPhrases[Math.floor(Math.random() * katPhrases.length)];
+        katPetAscii.textContent = '/ᐠ˶> ᆺ <˶ᐟ\\';
+        katPetBubble.textContent = phrase;
+      }
+
+      katPetBubble.classList.add('show');
+      showToast('[ kat: purr 🤍 ]');
+
+      katBubbleTimer = setTimeout(() => {
+        katPetBubble.classList.remove('show');
+        katPetAscii.textContent = '/ᐠ. ᆺ .ᐟ\\';
+      }, 2600);
+    }
+
+    // ── Linux Fortunes & Cowsay Generator ────────────────────────────────────
+    const katFortunes = [
+      "Arch Linux: because installing an OS in 40 manual commands builds character.",
+      "A cat has 9 lives. A Linux kernel panic has infinite retries.",
+      "There are 10 types of people: those who understand binary, and cats who sit on keyboards.",
+      "Minecraft server status: running out of RAM. Solution: fed the cat instead.",
+      "Hyprland config broke at 3 AM. Worth it for the 1px obsidian border.",
+      "sudo rm -rf / --no-preserve-root : The cat walked across the keyboard again.",
+      "Fastfetch is not just a tool; it's an obsidian lifestyle.",
+      "Real hackers don't sleep, they just wait for pacman -Syu to finish.",
+      "Cats > People. This has been mathematically proven by Arch Linux.",
+      "Self-hosting everything because trusting the cloud is a vulnerability.",
+      "Your CPU is currently 99.8% cooler because katOS is running.",
+      "i cant stop loving linux, pls speed i need this."
+    ];
+
+    function getRandomFortune() {
+      return katFortunes[Math.floor(Math.random() * katFortunes.length)];
+    }
+
+    function formatCowsay(msg) {
+      const cleanMsg = (msg || 'meow').replace(/[\r\n]+/g, ' ').trim();
+      const maxLen = 40;
+      const wrapped = [];
+      let words = cleanMsg.split(' ');
+      let curLine = '';
+      for (let w of words) {
+        if ((curLine + ' ' + w).trim().length > maxLen) {
+          if (curLine) wrapped.push(curLine);
+          curLine = w;
+        } else {
+          curLine = (curLine ? curLine + ' ' : '') + w;
+        }
+      }
+      if (curLine) wrapped.push(curLine);
+      if (wrapped.length === 0) wrapped.push('meow');
+
+      const width = Math.max(...wrapped.map(l => l.length));
+      const borderTop = ' ' + '_'.repeat(width + 2);
+      const borderBot = ' ' + '-'.repeat(width + 2);
+      const body = wrapped.map((line, idx) => {
+        const pad = ' '.repeat(width - line.length);
+        if (wrapped.length === 1) return `< ${line} >`;
+        if (idx === 0) return `/ ${line}${pad} \\`;
+        if (idx === wrapped.length - 1) return `\\ ${line}${pad} /`;
+        return `| ${line}${pad} |`;
+      }).join('\n');
+
+      return `${borderTop}\n${body}\n${borderBot}\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||`;
+    }
+
+    // ── Classic "sl" Steam Locomotive Easter Egg ──────────────────────────────
+    function runSteamLocomotive() {
+      const trainContainer = document.createElement('pre');
+      trainContainer.className = 'sl-train';
+      trainContainer.style.cssText = 'font-family:monospace; line-height:1.15; color:#ffffff; text-shadow:var(--glow-subtle); white-space:pre; margin:8px 0; overflow:hidden; font-size:10px;';
+      termHistory.appendChild(trainContainer);
+      termInput.disabled = true;
+
+      const trainArt = [
+        `                             (  ) (@@) ( )  (@)  ()    @@    O`,
+        `                        (@@@)`,
+        `                    (    )`,
+        `                 (@@@@)`,
+        `              (   )`,
+        `           ====        ________                ___________`,
+        `       _D _|  |_______/        \\__I_I_____===__|_________|`,
+        `        |(_)---  |   H\\________/ |   |        =|___ ___|`,
+        `        /     |  |   H  |  |     |   |         |         |`,
+        `       |      |  |   H  |__--------------------| [katOS] |`,
+        `       | ________|___H__/__|_____/[ ] \\___|____|_________|`,
+        `       (O)____(O) [ ]   (O)(O)        (O)   (O)    (O)(O)`
+      ];
+
+      let offset = 42;
+      const interval = setInterval(() => {
+        if (offset < -68) {
+          clearInterval(interval);
+          trainContainer.remove();
+          termInput.disabled = false;
+          termInput.focus();
+          const doneRow = document.createElement('div');
+          doneRow.className = 'term-output';
+          doneRow.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);"><i class="fas fa-train"></i> sl: Steam Locomotive chugged past oiupoyt@archlinux!</span>`;
+          termHistory.appendChild(doneRow);
+          termBody.scrollTop = termBody.scrollHeight;
+          return;
+        }
+
+        const indent = Math.max(0, offset);
+        const padding = ' '.repeat(indent);
+        const sliceAmt = offset < 0 ? Math.abs(offset) : 0;
+
+        trainContainer.textContent = trainArt
+          .map(line => padding + (sliceAmt > 0 ? line.slice(sliceAmt) : line))
+          .join('\n');
+
+        offset -= 3;
+        termBody.scrollTop = termBody.scrollHeight;
+      }, 50);
+    }
 
     function execCommand(cmdLine) {
       const parts = cmdLine.split(' ');
@@ -1484,6 +1718,11 @@
         case 'help':
           out.innerHTML = `Available commands:
   <b style="color:#ffffff">fastfetch</b>    - display Arch Linux logo & system specs
+  <b style="color:#ffffff">cowsay &lt;msg&gt;</b>    - ASCII cow speaks your text (or fortune)
+  <b style="color:#ffffff">fortune</b>         - random funny Linux, Arch, or cat fortune
+  <b style="color:#ffffff">sl</b>              - classic steam locomotive runs across terminal
+  <b style="color:#ffffff">cmatrix</b>         - stream falling KatOS digital rain
+  <b style="color:#ffffff">pet / feed</b>       - pet or feed your desktop kat companion
   <b style="color:#ffffff">ls</b>           - list virtual directory contents
   <b style="color:#ffffff">cat &lt;file&gt;</b>     - display contents of a file (e.g. cat about.md)
   <b style="color:#ffffff">projects</b>       - list active web projects & links
@@ -1504,13 +1743,52 @@
           out.textContent = '';
           break;
 
+        case 'cowsay':
+          const cowMsg = arg.trim() || getRandomFortune();
+          out.innerHTML = `<pre style="font-family:monospace;margin:0;color:#fff;text-shadow:var(--glow-subtle);">${escapeHtml(formatCowsay(cowMsg))}</pre>`;
+          break;
+
+        case 'fortune':
+          const fort = getRandomFortune();
+          out.innerHTML = `<span style="color:#ffffff;text-shadow:var(--glow-subtle);font-style:italic;">"${escapeHtml(fort)}"</span>`;
+          break;
+
+        case 'sl':
+          runSteamLocomotive();
+          return;
+
+        case 'cmatrix':
+          setBgMode('matrix-rain');
+          out.innerHTML = `<span style="color:#00ff66; text-shadow:0 0 8px rgba(0,255,100,0.8); font-weight:bold;">[ CMATRIX PROTOCOL ENGAGED ]</span>\n"Wake up, oiupoyt... The matrix has you."\nKatOS digital rain is now cascading.\nType <b style="color:#ffffff">bg liquid</b> to return to Liquid Void.`;
+          break;
+
+        case 'pet':
+        case 'petcat':
+        case 'pet-cat':
+          interactKatPet('pet');
+          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ˶&gt; ᆺ &lt;˶ᐟ\\ *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
+          break;
+
+        case 'feed':
+        case 'feedcat':
+        case 'feed-cat':
+          interactKatPet('feed');
+          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ. ڡ .ᐟ\\ *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
+          break;
+
         case 'ls':
           out.innerHTML = `<span style="color:#ffffff">about.md</span>   <span style="color:#ffffff">skillz.bash</span>   <span style="color:#ffffff">websites.html</span>   <span style="color:#ffffff">links.zip</span>   <span style="color:#888">music.mp3</span>   <span style="color:#888">backgroundVideo.mp4</span>`;
           break;
 
         case 'cat':
           if (!arg) {
-            out.textContent = 'cat: missing file operand. try: cat about.md';
+            out.textContent = 'cat: missing file operand. try: cat about.md (or: pet cat, feed cat, catpic)';
+          } else if (arg.includes('pet')) {
+            interactKatPet('pet');
+            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ˶&gt; ᆺ &lt;˶ᐟ\\ *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
+          } else if (arg.includes('feed')) {
+            interactKatPet('feed');
+            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ. ڡ .ᐟ\\ *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
           } else if (arg.includes('about')) {
             out.textContent = `i cant stop loving linux, pls speed i need this\nminecraft shyt, networking experiments, and linux customization.\ni was on the ███████████████\ncats > people haha.\ni use arch yea\nyou da real kat 🤍.`;
           } else if (arg.includes('skill')) {
@@ -1558,7 +1836,6 @@
 
         case 'catpic':
         case 'cat-image':
-        case 'cat':
           out.innerHTML = `Fetching cat...`;
           fetch('https://api.thecatapi.com/v1/images/search')
             .then(r => r.json())
@@ -1994,14 +2271,14 @@
     });
 
     // ── Liquid Void Kinetic Particle Fluid ──────────────────────────────────
-    const FLUID_PARTICLE_COUNT = 380;
     const fluidParticles = [];
 
     function initFluidParticles() {
       fluidParticles.length = 0;
       const W = bgCanvas.width;
       const H = bgCanvas.height;
-      for (let i = 0; i < FLUID_PARTICLE_COUNT; i++) {
+      const particleCount = (window.innerWidth <= 800) ? 120 : 280;
+      for (let i = 0; i < particleCount; i++) {
         const x = Math.random() * W;
         const y = Math.random() * H;
         fluidParticles.push({
@@ -2009,11 +2286,11 @@
           y: y,
           oldX: x,
           oldY: y,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          speed: 0.85 + Math.random() * 1.3,
-          size: 0.7 + Math.random() * 1.7,
-          alpha: 0.22 + Math.random() * 0.65,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          speed: 0.85 + Math.random() * 1.2,
+          size: 0.8 + Math.random() * 1.5,
+          alpha: 0.3 + Math.random() * 0.6,
           life: Math.random() * 500,
           maxLife: 300 + Math.random() * 600
         });
@@ -2022,12 +2299,9 @@
 
     // Incompressible Curl-Noise Flow Field Generator (Zero Allocation & Fast Math)
     let curlVx = 0, curlVy = 0;
-    function computeCurl(x, y, t) {
+    function computeCurl(x, y, t1, t2, t3) {
       const s1 = 0.0016;
       const s2 = 0.0034;
-      const t1 = t * 0.00035;
-      const t2 = t * 0.0003;
-      const t3 = t * 0.00045;
       const vx = -s1 * Math.sin(x * s1 + t1) * Math.sin(y * s1 + t2) + 0.45 * s2 * Math.cos((x + y) * s2 - t3);
       const vy = -(s1 * Math.cos(x * s1 + t1) * Math.sin(y * s1 + t2) + 0.45 * s2 * Math.cos((x + y) * s2 - t3));
       const invLen = 1 / (Math.sqrt(vx * vx + vy * vy) || 1);
@@ -2091,6 +2365,15 @@
 
       const audio = getAudioBeat();
 
+      // Reactive Kat Pet bobbing with audio bass beat
+      if (katPetAscii) {
+        if (audio.bass > 0.62) {
+          katPetAscii.style.transform = 'translateY(-2.5px) scale(1.08)';
+        } else {
+          katPetAscii.style.transform = 'none';
+        }
+      }
+
       // Audio beat drop shockwave
       if (audio.bass > 0.68 && timestamp - lastAudioBeat > 320) {
         lastAudioBeat = timestamp;
@@ -2147,7 +2430,7 @@
       }
 
       if (currentMode === 'liquid-void') {
-        // ── "Liquid Void" Incompressible Kinetic Particle Fluid ─────────────
+        // ── "Liquid Void" Incompressible Kinetic Particle Fluid (Hyper-Optimized 60fps) ──
         bgCtx.fillStyle = 'rgba(0, 0, 0, 0.14)';
         bgCtx.fillRect(0, 0, W, H);
 
@@ -2162,18 +2445,24 @@
         }
 
         const flowSpeed = (1.4 + audio.bass * 2.2);
+        const isMobile = window.innerWidth <= 800;
+        const t1 = timestamp * 0.00035;
+        const t2 = timestamp * 0.0003;
+        const t3 = timestamp * 0.00045;
+        const numShock = shockwaves.length;
 
+        // Pass 1: Physics & Movement
         for (let i = 0; i < fluidParticles.length; i++) {
           const p = fluidParticles[i];
           p.oldX = p.x;
           p.oldY = p.y;
 
-          // 1. Natural Incompressible Curl Flow Field (Zero Allocation)
-          computeCurl(p.x, p.y, timestamp);
+          // 1. Natural Incompressible Curl Flow Field (Precalculated Time Factors)
+          computeCurl(p.x, p.y, t1, t2, t3);
           p.vx += curlVx * 0.22 * p.speed;
           p.vy += curlVy * 0.22 * p.speed;
 
-          // 2. Interactive Mouse Vortex & Kinetic Attraction
+          // 2. Interactive Mouse / Touch Vortex
           if (bgMouse.active) {
             const mdx = bgMouse.x - p.x;
             const mdy = bgMouse.y - p.y;
@@ -2183,34 +2472,36 @@
               const factor = (1 - mDist * 0.00454545);
               const invMDist = 1 / mDist;
 
-              // Tangential vortex whirlpool force
               const swirlX = -mdy * invMDist;
               const swirlY = mdx * invMDist;
               p.vx += swirlX * factor * 2.8;
               p.vy += swirlY * factor * 2.8;
 
-              // Gentle radial pull into the vortex center
               p.vx += (mdx * invMDist) * factor * 1.1;
               p.vy += (mdy * invMDist) * factor * 1.1;
 
-              // Kinetic velocity transfer from rapid cursor movement
               p.vx += bgMouse.vx * factor * 0.18;
               p.vy += bgMouse.vy * factor * 0.18;
             }
           }
 
-          // 3. Shockwave Impulse on particles
-          for (let k = 0; k < shockwaves.length; k++) {
-            const sw = shockwaves[k];
-            const sdx = p.x - sw.x;
-            const sdy = p.y - sw.y;
-            const sDist = Math.sqrt(sdx * sdx + sdy * sdy);
-            const ringDist = Math.abs(sDist - sw.radius);
-            if (ringDist < 45 && sDist > 0.001) {
-              const push = (1 - ringDist * 0.02222) * 3.5 * sw.alpha * sw.power;
-              const invSDist = 1 / sDist;
-              p.vx += (sdx * invSDist) * push;
-              p.vy += (sdy * invSDist) * push;
+          // 3. Shockwave Impulse (Squared Distance early rejection)
+          if (numShock > 0) {
+            for (let k = 0; k < numShock; k++) {
+              const sw = shockwaves[k];
+              const sdx = p.x - sw.x;
+              const sdy = p.y - sw.y;
+              const sDistSq = sdx * sdx + sdy * sdy;
+              const rMin = Math.max(0, sw.radius - 45);
+              const rMax = sw.radius + 45;
+              if (sDistSq >= rMin * rMin && sDistSq <= rMax * rMax) {
+                const sDist = Math.sqrt(sDistSq);
+                const ringDist = Math.abs(sDist - sw.radius);
+                const push = (1 - ringDist * 0.02222) * 3.5 * sw.alpha * sw.power;
+                const invSDist = 1 / sDist;
+                p.vx += (sdx * invSDist) * push;
+                p.vy += (sdy * invSDist) * push;
+              }
             }
           }
 
@@ -2232,22 +2523,27 @@
             p.vy = 0;
             p.life = 0;
           }
+        }
 
-          // 4. Render Silky Luminous Trail
-          const vMag = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-          const glowAlpha = Math.min(1, p.alpha * (0.8 + audio.bass * 0.9) + vMag * 0.08);
-
-          bgCtx.strokeStyle = `rgba(255, 255, 255, ${glowAlpha})`;
-          bgCtx.lineWidth = p.size * (1 + audio.bass * 0.45);
-          bgCtx.beginPath();
+        // BATCH PASS 1: Stream line trails in a single GPU draw call
+        bgCtx.beginPath();
+        for (let i = 0; i < fluidParticles.length; i++) {
+          const p = fluidParticles[i];
           bgCtx.moveTo(p.oldX, p.oldY);
           bgCtx.lineTo(p.x, p.y);
-          bgCtx.stroke();
-
-          // Bright stardust head point
-          bgCtx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, glowAlpha + 0.3)})`;
-          bgCtx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
         }
+        bgCtx.lineWidth = isMobile ? 1.1 : (1.2 + audio.bass * 0.45);
+        bgCtx.strokeStyle = isMobile ? 'rgba(255, 255, 255, 0.48)' : `rgba(255, 255, 255, ${0.42 + audio.bass * 0.35})`;
+        bgCtx.stroke();
+
+        // BATCH PASS 2: Glowing particle heads
+        bgCtx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        for (let i = 0; i < fluidParticles.length; i++) {
+          const p = fluidParticles[i];
+          const sz = isMobile ? 1.5 : p.size;
+          bgCtx.fillRect(p.x - sz * 0.5, p.y - sz * 0.5, sz, sz);
+        }
+
         return;
       }
 
