@@ -1020,29 +1020,29 @@
       const H = window.innerHeight - 36; // leave room for taskbar
 
       if (W >= 1500) {
-        // Broad monitor: snug fit without dead space, content-fitted heights
-        setWinPos('win-about',    26,   32,  360, null);
-        setWinPos('win-skills',   324,  44,  365, null);
-        setWinPos('win-websites', 38,   424, 355, null);
-        setWinPos('win-links',    346,  440, 340, null);
-        setWinPos('win-term',     24,   805, Math.min(650, W - 835), 378);
-        setWinPos('win-viz',      422,  805, Math.min(650, W - 835), 245);
+        // Broad monitor: spread out organically across entire screen width
+        setWinPos('win-about',    45,   60,   350, null);
+        setWinPos('win-skills',   380,  110,  360, null);
+        setWinPos('win-websites', 85,   510,  355, null);
+        setWinPos('win-links',    435,  560,  340, null);
+        setWinPos('win-term',     40,   955,  Math.min(620, W - 990), 378);
+        setWinPos('win-viz',      480,  1080, Math.min(580, W - 1115), 240);
       } else if (W >= 1150) {
-        // Standard laptop / desktop: non-parallel coordinates & no overlap
-        setWinPos('win-about',    18,   20,  340, null);
-        setWinPos('win-skills',   314,  30,  350, null);
-        setWinPos('win-websites', 28,   382, 345, null);
-        setWinPos('win-links',    334,  400, 335, null);
-        setWinPos('win-term',     18,   748, Math.max(580, W - 770), 378);
-        setWinPos('win-viz',      416,  748, Math.max(580, W - 770), 240);
+        // Standard laptop / desktop: spread out with natural asymmetry & zero overlap
+        setWinPos('win-about',    28,   32,   335, null);
+        setWinPos('win-skills',   345,  55,   345, null);
+        setWinPos('win-websites', 48,   418,  340, null);
+        setWinPos('win-links',    365,  438,  330, null);
+        setWinPos('win-term',     22,   785,  Math.min(560, W - 805), 378);
+        setWinPos('win-viz',      442,  810,  Math.min(535, W - 830), 240);
       } else if (W >= 800) {
         // Tablet / compact
-        setWinPos('win-about',    16,   16,  340, null);
-        setWinPos('win-skills',   310,  25,  345, null);
-        setWinPos('win-websites', 24,   380, 335, null);
-        setWinPos('win-links',    330,  395, 325, null);
-        setWinPos('win-term',     650,  20,  W - 44, 378);
-        setWinPos('win-viz',      1048, 20,  W - 44, 240);
+        setWinPos('win-about',    20,   24,   335, null);
+        setWinPos('win-skills',   325,  45,   345, null);
+        setWinPos('win-websites', 36,   395,  335, null);
+        setWinPos('win-links',    355,  420,  325, null);
+        setWinPos('win-term',     685,  20,   W - 44, 378);
+        setWinPos('win-viz',      1085, 35,   W - 70, 240);
       }
 
       restoreAllWindows();
