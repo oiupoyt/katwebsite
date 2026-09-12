@@ -1185,7 +1185,7 @@
   <!-- Interactive Desktop ASCII Kat Companion -->
   <div class="kat-pet-widget" id="katPet" onclick="interactKatPet()" title="Click to pet kat! (or type 'pet cat' / 'feed cat' in terminal)">
     <div class="kat-pet-bubble" id="katPetBubble">purr 🤍</div>
-    <span class="kat-pet-ascii" id="katPetAscii">/ᐠ. ᆺ .ᐟ\</span>
+    <span class="kat-pet-ascii" id="katPetAscii">/\_/\ (=^.^=)</span>
     <span class="kat-pet-name">kat</span>
   </div>
 
@@ -1575,23 +1575,22 @@
       clearTimeout(katBubbleTimer);
 
       if (action === 'feed') {
-        katPetAscii.textContent = '/ᐠ. ڡ .ᐟ\\ 🐟';
+        katPetAscii.textContent = '/\\_/\\ (>.<) 🐟';
         katPetBubble.textContent = '*nom nom* yummy fish! 🤍';
       } else if (action === 'pet') {
-        katPetAscii.textContent = '/ᐠ˶> ᆺ <˶ᐟ\\ 🤍';
+        katPetAscii.textContent = '/\\_/\\ (^.^)* 🤍';
         katPetBubble.textContent = 'purrrrrrrr... 🤍';
       } else {
         const phrase = katPhrases[Math.floor(Math.random() * katPhrases.length)];
-        katPetAscii.textContent = '/ᐠ˶> ᆺ <˶ᐟ\\';
+        katPetAscii.textContent = '/\\_/\\ (^.^)*';
         katPetBubble.textContent = phrase;
       }
 
       katPetBubble.classList.add('show');
-      showToast('[ kat: purr 🤍 ]');
 
       katBubbleTimer = setTimeout(() => {
         katPetBubble.classList.remove('show');
-        katPetAscii.textContent = '/ᐠ. ᆺ .ᐟ\\';
+        katPetAscii.textContent = '/\\_/\\ (=^.^=)';
       }, 2600);
     }
 
@@ -1766,14 +1765,14 @@
         case 'petcat':
         case 'pet-cat':
           interactKatPet('pet');
-          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ˶&gt; ᆺ &lt;˶ᐟ\\ *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
+          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (^.^)* *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
           break;
 
         case 'feed':
         case 'feedcat':
         case 'feed-cat':
           interactKatPet('feed');
-          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ. ڡ .ᐟ\\ *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
+          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (&gt;.&lt;) *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
           break;
 
         case 'ls':
@@ -1785,10 +1784,10 @@
             out.textContent = 'cat: missing file operand. try: cat about.md (or: pet cat, feed cat, catpic)';
           } else if (arg.includes('pet')) {
             interactKatPet('pet');
-            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ˶&gt; ᆺ &lt;˶ᐟ\\ *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
+            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (^.^)* *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
           } else if (arg.includes('feed')) {
             interactKatPet('feed');
-            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/ᐠ. ڡ .ᐟ\\ *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
+            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (&gt;.&lt;) *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
           } else if (arg.includes('about')) {
             out.textContent = `i cant stop loving linux, pls speed i need this\nminecraft shyt, networking experiments, and linux customization.\ni was on the ███████████████\ncats > people haha.\ni use arch yea\nyou da real kat 🤍.`;
           } else if (arg.includes('skill')) {
@@ -2271,14 +2270,14 @@
     });
 
     // ── Liquid Void Kinetic Particle Fluid ──────────────────────────────────
+    const FLUID_PARTICLE_COUNT = 380;
     const fluidParticles = [];
 
     function initFluidParticles() {
       fluidParticles.length = 0;
       const W = bgCanvas.width;
       const H = bgCanvas.height;
-      const particleCount = (window.innerWidth <= 800) ? 120 : 280;
-      for (let i = 0; i < particleCount; i++) {
+      for (let i = 0; i < FLUID_PARTICLE_COUNT; i++) {
         const x = Math.random() * W;
         const y = Math.random() * H;
         fluidParticles.push({
@@ -2286,11 +2285,11 @@
           y: y,
           oldX: x,
           oldY: y,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          speed: 0.85 + Math.random() * 1.2,
-          size: 0.8 + Math.random() * 1.5,
-          alpha: 0.3 + Math.random() * 0.6,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          speed: 0.85 + Math.random() * 1.3,
+          size: 0.7 + Math.random() * 1.7,
+          alpha: 0.22 + Math.random() * 0.65,
           life: Math.random() * 500,
           maxLife: 300 + Math.random() * 600
         });
@@ -2299,9 +2298,12 @@
 
     // Incompressible Curl-Noise Flow Field Generator (Zero Allocation & Fast Math)
     let curlVx = 0, curlVy = 0;
-    function computeCurl(x, y, t1, t2, t3) {
+    function computeCurl(x, y, t) {
       const s1 = 0.0016;
       const s2 = 0.0034;
+      const t1 = t * 0.00035;
+      const t2 = t * 0.0003;
+      const t3 = t * 0.00045;
       const vx = -s1 * Math.sin(x * s1 + t1) * Math.sin(y * s1 + t2) + 0.45 * s2 * Math.cos((x + y) * s2 - t3);
       const vy = -(s1 * Math.cos(x * s1 + t1) * Math.sin(y * s1 + t2) + 0.45 * s2 * Math.cos((x + y) * s2 - t3));
       const invLen = 1 / (Math.sqrt(vx * vx + vy * vy) || 1);
@@ -2430,7 +2432,7 @@
       }
 
       if (currentMode === 'liquid-void') {
-        // ── "Liquid Void" Incompressible Kinetic Particle Fluid (Hyper-Optimized 60fps) ──
+        // ── "Liquid Void" Incompressible Kinetic Particle Fluid ─────────────
         bgCtx.fillStyle = 'rgba(0, 0, 0, 0.14)';
         bgCtx.fillRect(0, 0, W, H);
 
@@ -2445,24 +2447,18 @@
         }
 
         const flowSpeed = (1.4 + audio.bass * 2.2);
-        const isMobile = window.innerWidth <= 800;
-        const t1 = timestamp * 0.00035;
-        const t2 = timestamp * 0.0003;
-        const t3 = timestamp * 0.00045;
-        const numShock = shockwaves.length;
 
-        // Pass 1: Physics & Movement
         for (let i = 0; i < fluidParticles.length; i++) {
           const p = fluidParticles[i];
           p.oldX = p.x;
           p.oldY = p.y;
 
-          // 1. Natural Incompressible Curl Flow Field (Precalculated Time Factors)
-          computeCurl(p.x, p.y, t1, t2, t3);
+          // 1. Natural Incompressible Curl Flow Field (Zero Allocation)
+          computeCurl(p.x, p.y, timestamp);
           p.vx += curlVx * 0.22 * p.speed;
           p.vy += curlVy * 0.22 * p.speed;
 
-          // 2. Interactive Mouse / Touch Vortex
+          // 2. Interactive Mouse Vortex & Kinetic Attraction
           if (bgMouse.active) {
             const mdx = bgMouse.x - p.x;
             const mdy = bgMouse.y - p.y;
@@ -2472,36 +2468,34 @@
               const factor = (1 - mDist * 0.00454545);
               const invMDist = 1 / mDist;
 
+              // Tangential vortex whirlpool force
               const swirlX = -mdy * invMDist;
               const swirlY = mdx * invMDist;
               p.vx += swirlX * factor * 2.8;
               p.vy += swirlY * factor * 2.8;
 
+              // Gentle radial pull into the vortex center
               p.vx += (mdx * invMDist) * factor * 1.1;
               p.vy += (mdy * invMDist) * factor * 1.1;
 
+              // Kinetic velocity transfer from rapid cursor movement
               p.vx += bgMouse.vx * factor * 0.18;
               p.vy += bgMouse.vy * factor * 0.18;
             }
           }
 
-          // 3. Shockwave Impulse (Squared Distance early rejection)
-          if (numShock > 0) {
-            for (let k = 0; k < numShock; k++) {
-              const sw = shockwaves[k];
-              const sdx = p.x - sw.x;
-              const sdy = p.y - sw.y;
-              const sDistSq = sdx * sdx + sdy * sdy;
-              const rMin = Math.max(0, sw.radius - 45);
-              const rMax = sw.radius + 45;
-              if (sDistSq >= rMin * rMin && sDistSq <= rMax * rMax) {
-                const sDist = Math.sqrt(sDistSq);
-                const ringDist = Math.abs(sDist - sw.radius);
-                const push = (1 - ringDist * 0.02222) * 3.5 * sw.alpha * sw.power;
-                const invSDist = 1 / sDist;
-                p.vx += (sdx * invSDist) * push;
-                p.vy += (sdy * invSDist) * push;
-              }
+          // 3. Shockwave Impulse on particles
+          for (let k = 0; k < shockwaves.length; k++) {
+            const sw = shockwaves[k];
+            const sdx = p.x - sw.x;
+            const sdy = p.y - sw.y;
+            const sDist = Math.sqrt(sdx * sdx + sdy * sdy);
+            const ringDist = Math.abs(sDist - sw.radius);
+            if (ringDist < 45 && sDist > 0.001) {
+              const push = (1 - ringDist * 0.02222) * 3.5 * sw.alpha * sw.power;
+              const invSDist = 1 / sDist;
+              p.vx += (sdx * invSDist) * push;
+              p.vy += (sdy * invSDist) * push;
             }
           }
 
@@ -2523,27 +2517,22 @@
             p.vy = 0;
             p.life = 0;
           }
-        }
 
-        // BATCH PASS 1: Stream line trails in a single GPU draw call
-        bgCtx.beginPath();
-        for (let i = 0; i < fluidParticles.length; i++) {
-          const p = fluidParticles[i];
+          // 4. Render Silky Luminous Trail
+          const vMag = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          const glowAlpha = Math.min(1, p.alpha * (0.8 + audio.bass * 0.9) + vMag * 0.08);
+
+          bgCtx.strokeStyle = `rgba(255, 255, 255, ${glowAlpha})`;
+          bgCtx.lineWidth = p.size * (1 + audio.bass * 0.45);
+          bgCtx.beginPath();
           bgCtx.moveTo(p.oldX, p.oldY);
           bgCtx.lineTo(p.x, p.y);
-        }
-        bgCtx.lineWidth = isMobile ? 1.1 : (1.2 + audio.bass * 0.45);
-        bgCtx.strokeStyle = isMobile ? 'rgba(255, 255, 255, 0.48)' : `rgba(255, 255, 255, ${0.42 + audio.bass * 0.35})`;
-        bgCtx.stroke();
+          bgCtx.stroke();
 
-        // BATCH PASS 2: Glowing particle heads
-        bgCtx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-        for (let i = 0; i < fluidParticles.length; i++) {
-          const p = fluidParticles[i];
-          const sz = isMobile ? 1.5 : p.size;
-          bgCtx.fillRect(p.x - sz * 0.5, p.y - sz * 0.5, sz, sz);
+          // Bright stardust head point
+          bgCtx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, glowAlpha + 0.3)})`;
+          bgCtx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
         }
-
         return;
       }
 
