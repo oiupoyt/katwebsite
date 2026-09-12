@@ -8,10 +8,10 @@
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3876936176422477" crossorigin="anonymous"></script>
 
-  <!-- Fonts & Icons: JetBrains Mono Nerd aesthetic -->
+  <!-- Fonts & Icons: Space Mono & Share Tech Mono nerdy aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <style>
@@ -26,7 +26,7 @@
     }
 
     body, button, input, textarea, select, pre, code, p, a, span, div, h1, h2, h3, h4, h5, h6 {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-family: 'Space Mono', 'Share Tech Mono', monospace;
     }
 
     /* Preserve Font Awesome Icons strictly */
@@ -58,7 +58,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-family: 'Space Mono', 'Share Tech Mono', monospace;
       height: 100vh;
       width: 100vw;
       overflow: hidden;
@@ -76,6 +76,7 @@
       z-index: 0;
       pointer-events: none;
       opacity: 0;
+      display: none;
       transition: opacity 0.5s ease;
       filter: contrast(1.15) brightness(0.88);
     }
@@ -282,7 +283,7 @@
 
     /* ── Terminal Styling ────────────────────────────────────────────────────── */
     .terminal-body {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+      font-family: 'Space Mono', 'Share Tech Mono', monospace !important;
       font-size: 11px;
       line-height: 1.48;
       padding: 12px 14px;
@@ -1187,7 +1188,7 @@
       `           ▟███████████████▙         ${fa('fas fa-display')} <span style="opacity:0.45;font-size:10px">Terminal</span> kitty 0.46.1`,
       `          ▟█████████████████▙        ${fa('fas fa-window-restore')} <span style="opacity:0.45;font-size:10px">WM</span> Hyprland 0.54.2 (Wayland)`,
       `         ▟███████████████████▙       ${fa('fas fa-palette')} <span style="opacity:0.45;font-size:10px">Theme</span> monochrome-dark`,
-      `        ▟█████████▛▀▀▜████████▙      ${fa('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> JetBrains Mono (11pt)`,
+      `        ▟█████████▛▀▀▜████████▙      ${fa('fas fa-font')} <span style="opacity:0.45;font-size:10px">Font</span> Space Mono (11pt)`,
       `       ▟████████▛      ▜███████▙     ${fa('fas fa-clock')} <span style="opacity:0.45;font-size:10px">Uptime</span> <span id="dynUptime">12 hours, 42 mins</span>`,
       `      ▟█████████        ████████▙    ${fa('fas fa-music')} <span style="opacity:0.45;font-size:10px">Music</span> Baiaa081 - Noite Isolada`,
       `     ▟██████████        █████▆▅▄▃▂   ${fa('fas fa-cat')} <span style="opacity:0.45;font-size:10px">Status</span> you da real kat 🤍`,
@@ -1639,11 +1640,14 @@
       { id: 'matrix-rain',   name: 'KatOS Digital Rain' },
       { id: 'video-ambient', name: 'Ambient Video' }
     ];
-    let currentBgModeIdx = 0;
+    let currentBgModeIdx = 0; // Default: 'liquid-void'
     const savedBg = localStorage.getItem('katos_bg_mode');
-    if (savedBg) {
+    if (savedBg && savedBg !== 'video-ambient') {
       const idx = bgModes.findIndex(m => m.id === savedBg);
       if (idx !== -1) currentBgModeIdx = idx;
+    } else {
+      currentBgModeIdx = 0;
+      localStorage.setItem('katos_bg_mode', 'liquid-void');
     }
 
     function setBgMode(modeId, silent = false) {
@@ -1664,12 +1668,14 @@
       localStorage.setItem('katos_bg_mode', mode.id);
       if (mode.id === 'video-ambient') {
         bgVideo.style.display = 'block';
+        tryLoadBgVideo();
         setTimeout(() => { bgVideo.style.opacity = '0.55'; }, 20);
       } else {
         bgVideo.style.opacity = '0';
+        try { bgVideo.pause(); } catch(e) {}
         setTimeout(() => {
           if (bgModes[currentBgModeIdx].id !== 'video-ambient') bgVideo.style.display = 'none';
-        }, 500);
+        }, 300);
       }
       if (!silent) showToast(`[ BG: ${mode.name} ]`);
     }
@@ -2045,6 +2051,7 @@
 
     // ── Background Video Loader ──────────────────────────────────────────────
     async function tryLoadBgVideo() {
+      if (bgModes[currentBgModeIdx].id !== 'video-ambient') return;
       for (const name of ['backgroundVideo.mp4', 'backgroundVideo.webm']) {
         try {
           const res = await fetch(name);
@@ -2064,7 +2071,7 @@
       const loadingScreen = document.getElementById('loadingScreen');
       if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
         loadingScreen.classList.add('hidden');
-        tryLoadBgVideo();
+        applyBgMode(true);
         setTimeout(() => {
           playMusic();
           focusTermInput();
