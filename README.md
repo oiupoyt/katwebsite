@@ -2,7 +2,7 @@
 
 terminal windows based about me website.
 
-🌐 **Website**: [oiupoyt.space](https://oiupoyt.space)
+↗ [oiupoyt.space](https://oiupoyt.space)
 
 ## features
 
