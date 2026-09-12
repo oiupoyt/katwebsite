@@ -760,7 +760,7 @@
 <body>
 
   <!-- Minimal Boot Screen (Click to Start Audio & Video) -->
-  <div id="loadingScreen">
+  <div id="loadingScreen" onclick="enterKatOS()">
     <div class="boot-minimal">
       <div class="boot-logo">katOS</div>
       <div class="boot-sub">[ click to enter ]</div>
@@ -1614,6 +1614,7 @@
     // ── Unique Cybernetic & Audio-Reactive Background Engine ────────────────
     const bgCanvas = document.getElementById('bgCanvas');
     const bgCtx = bgCanvas.getContext('2d');
+    const bgVideo = document.getElementById('bgVideo');
     const katToast = document.getElementById('katToast');
     let toastTimer = null;
 
@@ -2026,7 +2027,6 @@
     setInterval(updateClock, 1000);
 
     // ── Background Video Loader ──────────────────────────────────────────────
-    const bgVideo = document.getElementById('bgVideo');
     async function tryLoadBgVideo() {
       for (const name of ['backgroundVideo.mp4', 'backgroundVideo.webm']) {
         try {
@@ -2043,18 +2043,32 @@
     }
 
     // ── Loading Screen Enter ─────────────────────────────────────────────────
-    const loadingScreen = document.getElementById('loadingScreen');
-    loadingScreen.addEventListener('click', () => {
-      loadingScreen.classList.add('hidden');
-      tryLoadBgVideo();
-      setTimeout(() => {
-        playMusic();
-        focusTermInput();
-      }, 300);
-    });
+    function enterKatOS() {
+      const loadingScreen = document.getElementById('loadingScreen');
+      if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+        loadingScreen.classList.add('hidden');
+        tryLoadBgVideo();
+        setTimeout(() => {
+          playMusic();
+          focusTermInput();
+        }, 250);
+      }
+    }
+    window.enterKatOS = enterKatOS;
 
-    // Keyboard Shortcut (Space to play/pause music)
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+      loadingScreen.addEventListener('click', enterKatOS);
+    }
+
+    // Keyboard Shortcut (Space to play/pause music, Enter/Space to enter from boot screen)
     window.addEventListener('keydown', e => {
+      const loadingEl = document.getElementById('loadingScreen');
+      if (loadingEl && !loadingEl.classList.contains('hidden')) {
+        e.preventDefault();
+        enterKatOS();
+        return;
+      }
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.code === 'Space') {
         e.preventDefault();
