@@ -174,26 +174,46 @@
       opacity: 0.7;
     }
 
-    /* Single Dot Window Close Control */
+    /* Remade Minimalist Terminal Navigation Dot */
     .window-controls {
       display: flex;
       align-items: center;
+      justify-content: center;
     }
 
     .win-dot-close {
-      width: 9px;
-      height: 9px;
-      background: rgba(255, 255, 255, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      width: 14px;
+      height: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.03);
       cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.16s ease;
+      position: relative;
+    }
+
+    .win-dot-close::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.35);
+      transition: all 0.16s ease;
     }
 
     .win-dot-close:hover {
+      border-color: #ffffff;
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+    }
+
+    .win-dot-close:hover::before {
       background: #ffffff;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
-      transform: scale(1.2);
+      width: 6px;
+      height: 6px;
+      box-shadow: 0 0 8px #ffffff;
     }
 
     /* Window Body */
@@ -207,23 +227,19 @@
       color: #d0d0d0;
     }
 
-    /* Squared Monochrome Scrollbars */
+    /* Complete scrollbar removal (clean invisible scrolling) */
+    * {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    *::-webkit-scrollbar,
     .window-body::-webkit-scrollbar,
-    .terminal-body::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    .window-body::-webkit-scrollbar-track,
-    .terminal-body::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.5);
-    }
-    .window-body::-webkit-scrollbar-thumb,
-    .terminal-body::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    .window-body::-webkit-scrollbar-thumb:hover,
-    .terminal-body::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.5);
+    .terminal-body::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    .desktop::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
     }
 
     /* ── Terminal Styling ────────────────────────────────────────────────────── */
@@ -963,29 +979,29 @@
       const H = window.innerHeight - 36; // leave room for taskbar
 
       if (W >= 1500) {
-        // High-res desktop (3 columns, generous spacing)
-        setWinPos('win-about',    40,  40, 340, 240);
-        setWinPos('win-skills',  310,  40, 340, 320);
-        setWinPos('win-websites', 40, 420, 360, 290);
-        setWinPos('win-links',   360, 420, 360, 270);
-        setWinPos('win-term',     40, 820, Math.min(760, W - 860), 380);
-        setWinPos('win-viz',     450, 820, Math.min(760, W - 860), 300);
-      } else if (W >= 1100) {
-        // Medium desktop (spacious 3-column / 2-column distribution)
-        setWinPos('win-about',    30,  30, 320, 230);
-        setWinPos('win-skills',  280,  30, 320, 300);
-        setWinPos('win-websites', 30, 380, 330, 270);
-        setWinPos('win-links',   320, 380, 330, 260);
-        setWinPos('win-term',     30, 740, W - 770, 340);
-        setWinPos('win-viz',     400, 740, W - 770, 270);
+        // Broad monitor: terminals breathe and fill the desktop naturally
+        setWinPos('win-about',    26,   28,  335, 230);
+        setWinPos('win-skills',   276,  42,  330, 310);
+        setWinPos('win-websites', 52,   390, 355, 290);
+        setWinPos('win-links',    362,  402, 345, 260);
+        setWinPos('win-term',     26,   772, Math.min(840, W - 802), 415);
+        setWinPos('win-viz',      465,  788, Math.min(824, W - 818), 305);
+      } else if (W >= 1150) {
+        // Standard laptop / desktop
+        setWinPos('win-about',    22,   24,  315, 225);
+        setWinPos('win-skills',   268,  34,  315, 295);
+        setWinPos('win-websites', 44,   358, 335, 280);
+        setWinPos('win-links',    344,  368, 330, 255);
+        setWinPos('win-term',     22,   714, W - 738, 370);
+        setWinPos('win-viz',      415,  728, W - 752, 280);
       } else if (W >= 800) {
-        // Compact desktop
-        setWinPos('win-about',    20,  20, 320, 230);
-        setWinPos('win-skills',  270,  20, 320, 280);
-        setWinPos('win-websites', 20, 360, 320, 270);
-        setWinPos('win-links',   310, 360, 320, 240);
-        setWinPos('win-term',    570,  20, W - 40, 300);
-        setWinPos('win-viz',     890,  20, W - 40, 250);
+        // Tablet / compact
+        setWinPos('win-about',    18,   18,  300, 220);
+        setWinPos('win-skills',   258,  26,  300, 280);
+        setWinPos('win-websites', 34,   336, 315, 270);
+        setWinPos('win-links',    324,  346, 315, 245);
+        setWinPos('win-term',     560,  18,  W - 36, 310);
+        setWinPos('win-viz',      890,  26,  W - 44, 260);
       }
 
       restoreAllWindows();
@@ -1343,7 +1359,7 @@
     let audioCtx, analyser, source, vizAnimId;
     let vizConnected = false;
 
-    const vizModes = ['spectrum bars', 'waveform beam', 'mirror pulse'];
+    const vizModes = ['spectrum bars', 'mirror pulse'];
     let currentVizModeIdx = 0;
 
     function setupAudio() {
@@ -1507,34 +1523,8 @@
         vizCtx.lineTo(W, baseY);
         vizCtx.stroke();
 
-      } else if (mode === 'waveform beam') {
-        // Mode 2: Oscilloscope Waveform Beam in Glowing White
-        const timeData = new Uint8Array(analyser.fftSize);
-        analyser.getByteTimeDomainData(timeData);
-
-        vizCtx.lineWidth = 2;
-        vizCtx.strokeStyle = '#ffffff';
-        vizCtx.shadowColor = 'rgba(255, 255, 255, 0.85)';
-        vizCtx.shadowBlur = 12;
-        vizCtx.beginPath();
-
-        const sliceW = W / timeData.length;
-        let x = 0;
-
-        for (let i = 0; i < timeData.length; i++) {
-          const v = timeData[i] / 128.0;
-          const y = (v * H) / 2;
-          if (i === 0) vizCtx.moveTo(x, y);
-          else vizCtx.lineTo(x, y);
-          x += sliceW;
-        }
-
-        vizCtx.lineTo(W, H / 2);
-        vizCtx.stroke();
-        vizCtx.shadowBlur = 0;
-
       } else if (mode === 'mirror pulse') {
-        // Mode 3: Symmetric Center-Out Pulse
+        // Mode 2: Symmetric Center-Out Pulse
         const barCount = 18;
         const center = W / 2;
         const barW = (W / 2) / (barCount + 1);
