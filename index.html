@@ -741,79 +741,6 @@
       margin: 4px 0;
     }
 
-    /* ── Desktop ASCII Cat Companion ─────────────────────────────────────────── */
-    .kat-pet-widget {
-      position: fixed;
-      bottom: calc(var(--taskbar-h) + 12px);
-      right: 18px;
-      z-index: 85;
-      background: rgba(8, 8, 12, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      padding: 6px 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      user-select: none;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 255, 255, 0.08);
-      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .kat-pet-widget:hover, .kat-pet-widget:active {
-      border-color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 255, 255, 0.35);
-    }
-
-    .kat-pet-ascii {
-      font-size: 13px;
-      font-weight: 700;
-      color: #ffffff;
-      text-shadow: var(--glow-subtle);
-      display: inline-block;
-      transition: transform 0.12s ease;
-    }
-
-    .kat-pet-name {
-      font-size: 10px;
-      color: #888888;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .kat-pet-bubble {
-      position: absolute;
-      bottom: calc(100% + 9px);
-      right: 0;
-      background: rgba(8, 8, 12, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
-      color: #ffffff;
-      padding: 6px 12px;
-      font-size: 11px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .kat-pet-bubble.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .kat-pet-bubble::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      right: 18px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: rgba(255, 255, 255, 0.45) transparent transparent transparent;
-    }
 
     /* ── Mobile Navigation Bar ───────────────────────────────────────────────── */
     .mobile-nav {
@@ -954,15 +881,6 @@
       }
       .tray-time {
         font-size: 11px;
-      }
-
-      .kat-pet-widget {
-        bottom: calc(var(--taskbar-h) + 8px) !important;
-        right: 10px !important;
-        padding: 5px 9px !important;
-      }
-      .kat-pet-name {
-        display: none !important;
       }
     }
   </style>
@@ -1183,12 +1101,6 @@
 
   </div>
 
-  <!-- Interactive Desktop ASCII Kat Companion -->
-  <div class="kat-pet-widget" id="katPet" onclick="interactKatPet()" title="Click to pet kat! (or type 'pet cat' / 'feed cat' in terminal)">
-    <div class="kat-pet-bubble" id="katPetBubble">purr 🤍</div>
-    <span class="kat-pet-ascii" id="katPetAscii">/\_/\ (=^.^=)</span>
-    <span class="kat-pet-name"> </span>
-  </div>
 
   <!-- Taskbar -->
   <footer class="taskbar">
@@ -1548,52 +1460,11 @@
       } else if (e.key === 'Tab') {
         e.preventDefault();
         const cur = termInput.value.trim().toLowerCase();
-        const available = ['help', 'fastfetch', 'neofetch', 'clear', 'cat', 'cowsay', 'fortune', 'sl', 'cmatrix', 'pet', 'feed', 'ls', 'projects', 'skills', 'music', 'matrix', 'whoami', 'date', 'reboot'];
+        const available = ['help', 'fastfetch', 'neofetch', 'clear', 'cat', 'cowsay', 'fortune', 'sl', 'cmatrix', 'ls', 'projects', 'skills', 'music', 'matrix', 'whoami', 'date', 'reboot'];
         const match = available.find(c => c.startsWith(cur));
         if (match) termInput.value = match;
       }
     });
-
-    // ── Desktop ASCII Cat Companion Interaction & Quotes ─────────────────────
-    const katPetAscii = document.getElementById('katPetAscii');
-    const katPetBubble = document.getElementById('katPetBubble');
-    let katBubbleTimer = null;
-    const katPhrases = [
-      "purrrrrrrr 🤍",
-      "mrrp! :3",
-      "cats > people haha",
-      "i use arch btw",
-      "you da real kat 🤍",
-      "*happy headbonk*",
-      "feed me fish! (type 'feed cat')",
-      "*bobs head to music*",
-      "minecraft shyt & linux",
-      "sudo give pets"
-    ];
-
-    function interactKatPet(action = 'click') {
-      if (!katPetAscii || !katPetBubble) return;
-      clearTimeout(katBubbleTimer);
-
-      if (action === 'feed') {
-        katPetAscii.textContent = '/\\_/\\ (>.<) 🐟';
-        katPetBubble.textContent = '*nom nom* yummy fish! 🤍';
-      } else if (action === 'pet') {
-        katPetAscii.textContent = '/\\_/\\ (^.^)* 🤍';
-        katPetBubble.textContent = 'purrrrrrrr... 🤍';
-      } else {
-        const phrase = katPhrases[Math.floor(Math.random() * katPhrases.length)];
-        katPetAscii.textContent = '/\\_/\\ (^.^)*';
-        katPetBubble.textContent = phrase;
-      }
-
-      katPetBubble.classList.add('show');
-
-      katBubbleTimer = setTimeout(() => {
-        katPetBubble.classList.remove('show');
-        katPetAscii.textContent = '/\\_/\\ (=^.^=)';
-      }, 2600);
-    }
 
     // ── Linux Fortunes & Cowsay Generator ────────────────────────────────────
     const katFortunes = [
@@ -1722,7 +1593,6 @@
   <b style="color:#ffffff">fortune</b>         - random funny Linux, Arch, or cat fortune
   <b style="color:#ffffff">sl</b>              - classic steam locomotive runs across terminal
   <b style="color:#ffffff">cmatrix</b>         - stream falling KatOS digital rain
-  <b style="color:#ffffff">pet / feed</b>       - pet or feed your desktop kat companion
   <b style="color:#ffffff">ls</b>           - list virtual directory contents
   <b style="color:#ffffff">cat &lt;file&gt;</b>     - display contents of a file (e.g. cat about.md)
   <b style="color:#ffffff">projects</b>       - list active web projects & links
@@ -1762,33 +1632,13 @@
           out.innerHTML = `<span style="color:#00ff66; text-shadow:0 0 8px rgba(0,255,100,0.8); font-weight:bold;">[ CMATRIX PROTOCOL ENGAGED ]</span>\n"Wake up, oiupoyt... The matrix has you."\nKatOS digital rain is now cascading.\nType <b style="color:#ffffff">bg liquid</b> to return to Liquid Void.`;
           break;
 
-        case 'pet':
-        case 'petcat':
-        case 'pet-cat':
-          interactKatPet('pet');
-          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (^.^)* *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
-          break;
-
-        case 'feed':
-        case 'feedcat':
-        case 'feed-cat':
-          interactKatPet('feed');
-          out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (&gt;.&lt;) *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
-          break;
-
         case 'ls':
           out.innerHTML = `<span style="color:#ffffff">about.md</span>   <span style="color:#ffffff">skillz.bash</span>   <span style="color:#ffffff">websites.html</span>   <span style="color:#ffffff">links.zip</span>   <span style="color:#888">music.mp3</span>   <span style="color:#888">backgroundVideo.mp4</span>`;
           break;
 
         case 'cat':
           if (!arg) {
-            out.textContent = 'cat: missing file operand. try: cat about.md (or: pet cat, feed cat, catpic)';
-          } else if (arg.includes('pet')) {
-            interactKatPet('pet');
-            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (^.^)* *purrrrrrrrr* 🤍</span>\nYou petted the desktop kat! Kat is purring happily.`;
-          } else if (arg.includes('feed')) {
-            interactKatPet('feed');
-            out.innerHTML = `<span style="color:#ffffff; text-shadow:var(--glow-subtle);">/\\_/\\ (&gt;.&lt;) *nom nom nom* 🐟</span>\nYou fed the desktop kat a fresh fish! (+20 kat affinity)`;
+            out.textContent = 'cat: missing file operand. try: cat about.md (or: catpic)';
           } else if (arg.includes('about')) {
             out.textContent = `i cant stop loving linux, pls speed i need this\nminecraft shyt, networking experiments, and linux customization.\ni was on the ███████████████\ncats > people haha.\ni use arch yea\nyou da real kat 🤍.`;
           } else if (arg.includes('skill')) {
@@ -2369,14 +2219,6 @@
 
       const audio = getAudioBeat();
 
-      // Reactive Kat Pet bobbing with audio bass beat
-      if (katPetAscii) {
-        if (audio.bass > 0.62) {
-          katPetAscii.style.transform = 'translateY(-2.5px) scale(1.08)';
-        } else {
-          katPetAscii.style.transform = 'none';
-        }
-      }
 
       // Update shockwaves
       for (let i = shockwaves.length - 1; i >= 0; i--) {
