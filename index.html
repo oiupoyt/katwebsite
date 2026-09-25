@@ -929,6 +929,7 @@
         <p style="color:#ffffff; font-weight:500; margin-bottom: 12px;">yo sup i am the sillest internet goof</p>
         <p style="color:#aaa; margin-bottom: 12px;">minecraft shyt, networking experiments, and linux customization.</p>
         <p style="color:#555; margin-bottom: 12px; font-family:monospace;">i was on the ███████████████</p>
+        <p style="color:#aaa; font-size:11px; margin-bottom: 12px; word-break: break-all; font-family: monospace;">yo slide me some rq eth: <span style="color:#fff;">0xB77826c34B8FdfD7F8bD600F0F09Fe20658FA01f</span> btc: <span style="color:#fff;">bc1qnu8s3awtjxpcewc72y7j6cc38pew0c07ngjfwk</span></p>
         <p style="color:#bbb; margin-bottom: 12px;">i use arch yea</p>
         <p style="color:#ffffff; font-weight:600; text-shadow:var(--glow-subtle);">you da real kat 🤍.</p>
       </div>
@@ -1608,6 +1609,7 @@
   <b style="color:#ffffff">bg &lt;mode&gt;</b>       - change background (liquid, horizon, matrix, video)
   <b style="color:#ffffff">catpic</b>         - fetch a fresh cat image
   <b style="color:#ffffff">whoami</b>         - print current session bio
+  <b style="color:#ffffff">donate</b>         - crypto donation addresses (eth / btc)
   <b style="color:#ffffff">clear</b>          - clear terminal screen
   <b style="color:#ffffff">date</b>           - show current date and time
   <b style="color:#ffffff">reboot</b>         - restart katOS desktop`;
@@ -1647,7 +1649,7 @@
           if (!arg) {
             out.textContent = 'cat: missing file operand. try: cat about.md (or: catpic)';
           } else if (arg.includes('about')) {
-            out.textContent = `yo sup i am the sillest internet goof\nminecraft shyt, networking experiments, and linux customization.\ni was on the ███████████████\ni use arch yea\nyou da real kat 🤍.`;
+            out.textContent = `yo sup i am the sillest internet goof\nminecraft shyt, networking experiments, and linux customization.\ni was on the ███████████████\nyo slide me some rq eth: 0xB77826c34B8FdfD7F8bD600F0F09Fe20658FA01f btc: bc1qnu8s3awtjxpcewc72y7j6cc38pew0c07ngjfwk\ni use arch yea\nyou da real kat 🤍.`;
           } else if (arg.includes('skill')) {
             out.textContent = `linux / arch • Minecraft Servers • Self Hosting • server networking • Java / Plugins • learning rust • yappin • im crine • tweaking • hahahahahha • cool content • very funny • veri fond of cats`;
           } else if (arg.includes('website')) {
@@ -1657,6 +1659,11 @@
           } else {
             out.textContent = `cat: ${arg}: Permission denied or file is binary`;
           }
+          break;
+
+        case 'donate':
+        case 'crypto':
+          out.innerHTML = `yo slide me some rq:\n• eth: <span style="color:#ffffff;">0xB77826c34B8FdfD7F8bD600F0F09Fe20658FA01f</span>\n• btc: <span style="color:#ffffff;">bc1qnu8s3awtjxpcewc72y7j6cc38pew0c07ngjfwk</span>`;
           break;
 
         case 'projects':
