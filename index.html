@@ -1233,8 +1233,6 @@
     <div class="ctx-item" onclick="togglePlay()"><i class="fas fa-music"></i> Play / Pause Music</div>
     <div class="ctx-item" onclick="restoreAllWindows()"><i class="fas fa-window-restore"></i> Show All Windows</div>
     <div class="ctx-item" onclick="autoSpaceWindows()"><i class="fas fa-rotate-left"></i> Reset &amp; Space Windows</div>
-    <div class="ctx-sep"></div>
-    <div class="ctx-item" onclick="copyCurrentLayout()"><i class="fas fa-code"></i> Copy Layout Code</div>
   </div>
 
   <!-- Audio Element -->
@@ -1253,23 +1251,23 @@
       const H = window.innerHeight - 36; // leave room for taskbar
 
       if (W >= 1500) {
-        // Broad monitor: spread out organically across entire screen width
-        setWinPos('win-about',    45,   60,   350, null);
-        setWinPos('win-skills',   380,  110,  360, null);
-        setWinPos('win-websites', 85,   510,  355, null);
-        setWinPos('win-links',    545,  560,  340, null);
-        setWinPos('win-projects', 360,  500,  365, null);
-        setWinPos('win-term',     40,   955,  Math.min(620, W - 990), 378);
-        setWinPos('win-viz',      450,  1060, Math.min(680, W - 1080), 305);
+        // Hand-placed static layout
+        setWinPos('win-about', 45, 60, 350, null);
+        setWinPos('win-projects', 381, 74, 365, null);
+        setWinPos('win-skills', 521, 471, 360, null);
+        setWinPos('win-websites', 52, 470, 355, null);
+        setWinPos('win-links', 446, 856, 340, null);
+        setWinPos('win-term', 45, 915, 620, 378);
+        setWinPos('win-viz', 534, 1218, 680, 305);
       } else if (W >= 1150) {
-        // Standard laptop / desktop: spread out with natural asymmetry & zero overlap
+        // Standard laptop / desktop
         setWinPos('win-about',    28,   32,   335, null);
-        setWinPos('win-skills',   345,  55,   345, null);
+        setWinPos('win-projects', 355,  40,   345, null);
+        setWinPos('win-skills',   505,  415,  340, null);
         setWinPos('win-websites', 48,   418,  340, null);
-        setWinPos('win-links',    490,  438,  330, null);
-        setWinPos('win-projects', 315,  445,  350, null);
+        setWinPos('win-links',    450,  795,  330, null);
         setWinPos('win-term',     22,   785,  Math.min(560, W - 805), 378);
-        setWinPos('win-viz',      420,  790,  Math.min(620, W - 810), 285);
+        setWinPos('win-viz',      450,  1130, Math.min(620, W - 1140), 285);
       } else if (W >= 800) {
         // Tablet / compact
         setWinPos('win-about',    20,   24,   335, null);
@@ -1337,29 +1335,6 @@
         win.style.height = height + 'px';
       } else {
         win.style.height = 'auto';
-      }
-    }
-
-    // ── Copy Layout Code (Helper to capture your hand-placed window positions) ──
-    function copyCurrentLayout() {
-      const lines = windowRegistry.map(id => {
-        const win = document.getElementById(id);
-        if (!win) return `// ${id}: missing`;
-        const rect = win.getBoundingClientRect();
-        const top = Math.round(rect.top);
-        const left = Math.round(rect.left);
-        const width = Math.round(rect.width);
-        const height = win.style.height && win.style.height !== 'auto' ? Math.round(rect.height) : 'null';
-        return `        setWinPos('${id}', ${top}, ${left}, ${width}, ${height});`;
-      }).join('\n');
-
-      const snippet = `// Screen width: ${window.innerWidth}px\n${lines}`;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(snippet);
-        showToast('[ Layout copied to clipboard ]');
-      } else {
-        console.log('[ katOS Layout Export ]:\n' + snippet);
-        showToast('[ Layout logged to console ]');
       }
     }
 

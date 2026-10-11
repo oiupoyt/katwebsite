@@ -1,8 +1,0 @@
-.git
-.git/**
-.wrangler
-.wrangler/**
-.gitignore
-wrangler.json
-README.md
-LICENSE
