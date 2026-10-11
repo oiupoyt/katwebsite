@@ -907,6 +907,7 @@
     <!-- Mobile Quick Navigation Bar (Sticky App Dock on Phones) -->
     <nav class="mobile-nav" id="mobileNav" aria-label="Mobile Navigation">
       <button class="mob-nav-btn" onclick="scrollToWin('win-about')"><i class="fas fa-file-lines"></i> about</button>
+      <button class="mob-nav-btn" onclick="scrollToWin('win-projects')"><i class="fab fa-git-alt"></i> projects</button>
       <button class="mob-nav-btn" onclick="scrollToWin('win-websites')"><i class="fas fa-globe"></i> websites</button>
       <button class="mob-nav-btn" onclick="scrollToWin('win-links')"><i class="fas fa-folder-closed"></i> links</button>
       <button class="mob-nav-btn" onclick="scrollToWin('win-skills')"><i class="fas fa-terminal"></i> skillz</button>
@@ -926,12 +927,83 @@
         </div>
       </div>
       <div class="window-body">
-        <p style="color:#ffffff; font-weight:500; margin-bottom: 12px;">yo sup i am the sillest internet goof</p>
-        <p style="color:#aaa; margin-bottom: 12px;">minecraft shyt, networking experiments, and linux customization.</p>
+        <p style="color:#ffffff; font-weight:500; margin-bottom: 12px;">helo, im katR</p>
+        <p style="color:#aaa; margin-bottom: 12px;">minecraft stuff, networking experiments, and linux tinkering.</p>
         <p style="color:#555; margin-bottom: 12px; font-family:monospace;">i was on the ███████████████</p>
         <p style="color:#aaa; margin-bottom: 12px; font-family: monospace; font-size: 11px; word-break: break-all; line-height: 1.6;">yo slide me some rq eth: <span style="color:#fff; user-select: all;">0xB77826c34B8FdfD7F8bD600F0F09Fe20658FA01f</span><br>btc: <span style="color:#fff; user-select: all;">bc1qnu8s3awtjxpcewc72y7j6cc38pew0c07ngjfwk</span></p>
         <p style="color:#bbb; margin-bottom: 12px;">i use arch yea</p>
         <p style="color:#ffffff; font-weight:600; text-shadow:var(--glow-subtle);">you da real kat 🤍.</p>
+      </div>
+    </div>
+
+    <!-- Projects Window -->
+    <div class="window" id="win-projects">
+      <div class="titlebar">
+        <div class="title-left">
+          <i class="fab fa-git-alt"></i>
+          <span>project.git</span>
+        </div>
+        <div class="window-controls">
+          <div class="win-dot-close" onclick="closeWindow('win-projects')" title="Close"></div>
+        </div>
+      </div>
+      <div class="window-body">
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/scythe" target="_blank" rel="noopener">
+          <i class="fab fa-rust" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">scythe</div>
+            <div style="font-size:10px; color:#777;">gpu screen recorder • pipewire / dma-buf zero-copy</div>
+          </div>
+          <span class="badge">rust</span>
+        </a>
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/brokecrew" target="_blank" rel="noopener">
+          <i class="fab fa-rust" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">brokecrew</div>
+            <div style="font-size:10px; color:#777;">llm persona router • token budgeting &amp; pipelines</div>
+          </div>
+          <span class="badge">rust</span>
+        </a>
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/model-radar" target="_blank" rel="noopener">
+          <i class="fab fa-discord" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">model-radar</div>
+            <div style="font-size:10px; color:#777;">openrouter $0 model monitor bot • live dashboards</div>
+          </div>
+          <span class="badge">rust</span>
+        </a>
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/kattoolbox" target="_blank" rel="noopener">
+          <i class="fab fa-js" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">kattoolbox</div>
+            <div style="font-size:10px; color:#777;">39 in-browser dev utils • zero telemetry / offline</div>
+          </div>
+          <span class="badge">ts</span>
+        </a>
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/just-download" target="_blank" rel="noopener">
+          <i class="fas fa-download" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">just-download</div>
+            <div style="font-size:10px; color:#777;">media fetch engine • rust backend + py fallback</div>
+          </div>
+          <span class="badge">rust</span>
+        </a>
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/katproxy" target="_blank" rel="noopener">
+          <i class="fas fa-network-wired" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">katproxy</div>
+            <div style="font-size:10px; color:#777;">proxy list aggregator &amp; live tcp latency prober</div>
+          </div>
+          <span class="badge">rust</span>
+        </a>
+        <a class="link-item" href="https://git.oiupoyt.space/oiupoyt/katdrop" target="_blank" rel="noopener">
+          <i class="fas fa-file-arrow-up" style="color:#ffffff;"></i>
+          <div>
+            <div style="color:#fff; font-weight:500;">katdrop</div>
+            <div style="font-size:10px; color:#777;">chunked upload engine with 10-min auto-fuse</div>
+          </div>
+          <span class="badge">node</span>
+        </a>
       </div>
     </div>
 
@@ -1171,7 +1243,7 @@
   <script>
     // ── Global System State ──────────────────────────────────────────────────
     let topZIndex = 40;
-    const windowRegistry = ['win-about', 'win-skills', 'win-websites', 'win-links', 'win-term', 'win-viz'];
+    const windowRegistry = ['win-about', 'win-projects', 'win-skills', 'win-websites', 'win-links', 'win-term', 'win-viz'];
 
     // ── Auto-Space Terminals on Start (Organic Staggered Layout) ───────────
     function autoSpaceWindows() {
@@ -1180,26 +1252,29 @@
 
       if (W >= 1500) {
         // Broad monitor: spread out organically across entire screen width
-        setWinPos('win-about',    45,   60,   350, null);
-        setWinPos('win-skills',   380,  110,  360, null);
-        setWinPos('win-websites', 85,   510,  355, null);
-        setWinPos('win-links',    545,  560,  340, null);
-        setWinPos('win-term',     40,   955,  Math.min(620, W - 990), 378);
-        setWinPos('win-viz',      450,  1060, Math.min(680, W - 1080), 305);
+        setWinPos('win-about',    45,   50,   330, null);
+        setWinPos('win-projects', 360,  50,   360, null);
+        setWinPos('win-skills',   550,  430,  340, null);
+        setWinPos('win-websites', 55,   410,  345, null);
+        setWinPos('win-links',    530,  790,  330, null);
+        setWinPos('win-term',     40,   780,  Math.min(540, W - 800), 380);
+        setWinPos('win-viz',      440,  1130, Math.min(500, W - 1150), 305);
       } else if (W >= 1150) {
         // Standard laptop / desktop: spread out with natural asymmetry & zero overlap
-        setWinPos('win-about',    28,   32,   335, null);
-        setWinPos('win-skills',   345,  55,   345, null);
-        setWinPos('win-websites', 48,   418,  340, null);
-        setWinPos('win-links',    490,  438,  330, null);
-        setWinPos('win-term',     22,   785,  Math.min(560, W - 805), 378);
-        setWinPos('win-viz',      420,  790,  Math.min(620, W - 810), 285);
+        setWinPos('win-about',    25,   25,   315, null);
+        setWinPos('win-projects', 335,  35,   345, null);
+        setWinPos('win-skills',   520,  395,  335, null);
+        setWinPos('win-websites', 35,   360,  330, null);
+        setWinPos('win-links',    485,  710,  315, null);
+        setWinPos('win-term',     20,   705,  Math.min(520, W - 720), 380);
+        setWinPos('win-viz',      415,  1030, Math.min(420, W - 1050), 285);
       } else if (W >= 800) {
         // Tablet / compact
-        setWinPos('win-about',    20,   24,   335, null);
-        setWinPos('win-skills',   325,  45,   345, null);
-        setWinPos('win-websites', 36,   395,  335, null);
-        setWinPos('win-links',    480,  420,  325, null);
+        setWinPos('win-about',    20,   20,   315, null);
+        setWinPos('win-projects', 315,  25,   335, null);
+        setWinPos('win-skills',   325,  375,  330, null);
+        setWinPos('win-websites', 30,   355,  325, null);
+        setWinPos('win-links',    470,  375,  310, null);
         setWinPos('win-term',     685,  20,   W - 44, 378);
         setWinPos('win-viz',      1085, 35,   W - 70, 280);
       } else {
